@@ -1,0 +1,9 @@
+<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+    <i class="icon-user"></i> <%= item.name %>
+    <span class="caret"></span>
+</a>
+<ul class="dropdown-menu">
+    <li><a href="#profile">User profile</a></li>
+    <li class="divider"></li>
+    <li><a href="#logout">Logout</a></li>
+</ul> 

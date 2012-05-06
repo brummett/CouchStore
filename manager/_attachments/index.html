@@ -3,27 +3,59 @@
   <head>
     <title>My New CouchApp</title>
     <link rel="stylesheet" href="style/main.css" type="text/css">
+    <link rel="stylesheet" href="vendor/bootstrap/style/bootstrap.css" type="text/css">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+    </style>
+    <link rel="stylesheet" href="vendor/bootstrap/style/bootstrap-responsive.css" type="text/css">
   </head>
   <body>
-    <div id="account"></div>
+    <div id="navbar" class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container-fluid">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+          <a class="brand" href="#">CouchStore Admin</a>
+          <div id="account" class="btn-group pull-right">
+          </div>
+          <div id="navbar-menus" class="nav-collapse">
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div id="activity">
+            </div>
+        </div>
+    </div> <!--/.container-fluid -->
+
+    
 
     <h1>Generated CouchApp</h1>
 
     <div id="profile"></div>
-    <div id="items"></div>
+    <div id="noitems"></div>
 
-    <div id="sidebar">
-      <p>Edit welcome message.</p>
-      <p>Ideas: You could easily turn this into a photo sharing app, or a grocery list, or a chat room.</p>
-    </div>
   </body>
   <script src="vendor/couchapp/loader.js"></script>
+  <script src="javascripts/navbar.js"></script>
   <script type="text/javascript" charset="utf-8">
     $.couch.app(function(app) {
-      $("#account").evently("account", app);
-      $("#profile").evently("profile", app);
-      $.evently.connect("#account","#profile", ["loggedIn","loggedOut"]);
-      $("#items").evently("items", app);
+      //$("#account").evently("account", app);
+      //$("#profile").evently("profile", app);
+      //$.evently.connect("#account","#profile", ["loggedIn","loggedOut"]);
+      //$("#items").evently("items", app);
     });
   </script>
 </html>

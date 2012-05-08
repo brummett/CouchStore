@@ -1,9 +1,8 @@
 <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-    <i class="icon-user"></i> Not logged in
-    <span class="caret"></span>
+    <i class="icon-user"></i>&nbsp;<span id="user-name">Not logged in</span>&nbsp;<span class="caret"></span>
 </a>
-<ul class="dropdown-menu">
-    <li><a href="#login">Log in</a></li>
+<ul id="account-menu" class="dropdown-menu">
+    <li><a href="#/login">Log in</a></li>
     <li class="divider"></li>
-    <li><a href="#signup">Create account</a></li>
+    <li><a href="#/signup">Create account</a></li>
 </ul>

@@ -5,8 +5,9 @@ body {
   padding:4px;
 }
 
-h1 {
-  margin-top:0;
+#inline-notfication {
+    position: absolute;
+    top: 0;
 }
 
 #account {

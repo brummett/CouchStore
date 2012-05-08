@@ -1,11 +1,11 @@
-<form action="#doLogin" method="post" class="form-vertical span4 well">
+<form action="#/login" method="post" class="form-vertical span4 well">
     <label>Log in</label>
     <input type="text" name="name" placeholder="name" autocapitalize="off" autocorrect="off">
     <label></label>
     <input type="password" name="password" placeholder="password">
     <label></label>
-    <button type="submit" class="btn">Log in</button>
-    or <a id="signup" href="#signup">Create account</a>
+    <button type="submit" class="btn btn-primary">Log in</button>
+    or <a id="signup" href="#/signup">Create account</a>
     <label></label>
-    <button id="cancel" type="button" class="btn">Cancel</button>
+    <button id="cancel" type="button" class="btn" data-dismiss="modal">Cancel</button>
 </form>  

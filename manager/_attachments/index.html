@@ -16,6 +16,9 @@
     <link rel="stylesheet" href="vendor/bootstrap/style/bootstrap-responsive.css" type="text/css">
   </head>
   <body>
+
+    <div id="inline-notification" class="alert fade out"></div>
+
     <div id="navbar" class="navbar navbar-fixed-top">
         <div class="navbar-inner">
             <div class="container-fluid">
@@ -25,9 +28,29 @@
                     <span class="icon-bar"></span>
                 </a>
           <a class="brand" href="#">CouchStore Admin</a>
-          <div id="account" class="btn-group pull-right">
-          </div>
+
+          <div id="account" class="btn-group pull-right"></div> <!-- end account --!>
+
           <div id="navbar-menus" class="nav-collapse">
+            <ul class="nav">
+                <li class="dropdown logged-in-menu" id="order-menu">
+                    <a href="#order-menu" class="dropdown-toggle" data-toggle="dropdown">Orders&nbsp;<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#receive-shipment">Receive shipment</a></li>
+                        <li><a href="#sale">Sale</a></li>
+                        <li><a href="#print-pick-list">Print pick list</a></li>
+                        <li><a href="#fill-pick-list">Fill pick list</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown logged-in-menu" id="data-menu">
+                    <a href="#data-menu" class="dropdown-toggle" data-toggle="dropdown">Data&nbsp;<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#list-items">Inventory items</a></li>
+                        <li><a href="#list-customers">Customers</a></li>
+                        <li><a href="#list-warehouses">Warehouses</a></li>
+                    </ul>
+                </li>
+            </ul>
           </div><!--/.nav-collapse -->
         </div>
       </div>
@@ -49,7 +72,7 @@
 
   </body>
   <script src="vendor/couchapp/loader.js"></script>
-  <script src="javascripts/navbar.js"></script>
+  <script src="javascripts/activity.js"></script>
   <script type="text/javascript" charset="utf-8">
     $.couch.app(function(app) {
       //$("#account").evently("account", app);

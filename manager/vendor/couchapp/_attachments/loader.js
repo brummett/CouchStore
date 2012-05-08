@@ -16,5 +16,7 @@ couchapp_load([
   "vendor/couchapp/jquery.evently.js",
   "vendor/sammy.js/sammy.js",
   "vendor/sammy.js/sammy.template.js",
+  "vendor/sammy.js/sammy.title.js",
+  "vendor/sammy.js/sammy.form.js",
   "vendor/bootstrap/bootstrap.js"
 ]);

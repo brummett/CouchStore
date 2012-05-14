@@ -1,6 +1,7 @@
-(function($) {
+$.couch.app(function(couchapp) {
 
     var showNotification = function(type, message) {
+        // Type can be error, warning, success, info
         var alertClass = 'alert-' + type, notification = $('#inline-notification');
         notification
             .empty()
@@ -184,6 +185,7 @@
         this.bind('loggedOut', function(context) {
             this.$element().empty();
             this.hideNav();
+            showNotification('info','Logged Out');
         });
 
         this.before({ except: /#\/(login|signup)/ }, function() {
@@ -197,14 +199,57 @@
 
         this.get('#/list-items', function(context) {
             context.log("In list-items");
-            context.render('templates/activity-listItems.template');
+            context.render('templates/activity-listItems.template')
+                    .swap( function() {
+                                // After creating the list-items activity, trigger a search
+                                // on an empty string which will populate the initial list
+                                context.$element('form#search').trigger('submit');
+                        });
         });
 
-        this.get('#/edit-item/:id', function(context) {
+        this.post('#/search/:type', function(context) {
+            var tableContainer = $('#search-results');
+            var searchTerm = $('#search-query').val();
+
+            var filter, viewName, rowTemplate;
+            if (context.params['type'] == 'item') {
+                viewName = 'items-by-name',
+                rowTemplate = 'templates/activity-listItems-itemRow.template';
+                filter = searchTerm ? function(doc) { 
+                                            return ((doc.name && (doc.name.toString().toLowerCase().indexOf(searchTerm) > -1 ))
+                                                || (doc.sku && (doc.sku.toString().toLowerCase().indexOf(searchTerm) > -1 ))
+                                                || (doc.barcode && (doc.barcode.toString().toLowerCase().indexOf(searchTerm) > -1 ))
+                                                || (doc.desc && (doc.desc.toString().toLowerCase().indexOf(searchTerm) > -1 ))
+                                            ); }
+                                    : function (doc) { return 1; };
+            }
+
+            context.load(rowTemplate)
+                .then(function(templateContent) {
+                        couchapp.view(viewName, {
+                            include_docs: true,
+                            success: function(data) {
+                                tableContainer.empty();
+                                for (var i in data.rows) {
+                                    var doc = data.rows[i].doc;
+                                    var item_rows = [];
+                                    if (filter(doc)) {
+                                        tableContainer.append(context.template(templateContent, {item: doc}));
+                                    }
+                                }
+                            }
+                        });
+                });
+            })
+
+        this.get('#/edit/:type/:id', function(context) {
+
+        });
+        this.post('#/edit/:thing/:id', function(context) {
 
         });
 
-        this.post('#/edit-item/:id', function(context) {
+        this.get('#/delete/:thing/:id', function(context) {
 
         });
 
@@ -212,4 +257,4 @@
 
     activity.run('#/');
 
-})(jQuery);
+});

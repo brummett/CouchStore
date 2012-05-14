@@ -1,0 +1,18 @@
+<h1>Inventory Items</h1>
+<button id="addItem" type="button" class="btn"><i class="icon-plus"></i> Add item</button>
+<form action="#/search/item" method="post" id="search" class="well form-search">
+    <i class="icon-search"></i><input type="text" id="search-query" class="search-query input-medium" placeholder="Search">
+</form>
+
+<table id="item-list" class="table table-condensed">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>SKU</th>
+        <th>Barcode</th>
+    </tr>
+    </thead>
+
+    <tbody id="search-results">
+    </tbody>
+</table>

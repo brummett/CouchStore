@@ -1,0 +1,9 @@
+<tr>
+    <td><%= item['name'] %></td>
+    <td><%= item['sku']  %></td>
+    <td><%= item['barcode'] %></td>
+    <td>
+        <a href="#/edit/item/<%= item['_id'] %>" class="edit-item btn"><i class="icon-edit"></i> Edit</a>
+        <a href="#/delete/item/<%= item['_id'] %>" class="delete-item btn btn-danger"><i class="icon-trash icon-white"></i> Remove</a>
+    </td>
+</tr>

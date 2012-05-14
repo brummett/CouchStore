@@ -211,10 +211,9 @@ $.couch.app(function(couchapp) {
             var tableContainer = $('#search-results');
             var searchTerm = $('#search-query').val();
 
-            var filter, viewName, rowTemplate;
+            var filter, viewName, showName;
             if (context.params['type'] == 'item') {
                 viewName = 'items-by-name',
-                rowTemplate = 'templates/activity-listItems-itemRow.template';
                 filter = searchTerm ? function(doc) { 
                                             return ((doc.name && (doc.name.toString().toLowerCase().indexOf(searchTerm) > -1 ))
                                                 || (doc.sku && (doc.sku.toString().toLowerCase().indexOf(searchTerm) > -1 ))
@@ -222,25 +221,24 @@ $.couch.app(function(couchapp) {
                                                 || (doc.desc && (doc.desc.toString().toLowerCase().indexOf(searchTerm) > -1 ))
                                             ); }
                                     : function (doc) { return 1; };
+                showName = '_show/listItemRow/';
             }
 
-            context.load(rowTemplate)
-                .then(function(templateContent) {
-                        couchapp.view(viewName, {
-                            include_docs: true,
-                            success: function(data) {
-                                tableContainer.empty();
-                                for (var i in data.rows) {
-                                    var doc = data.rows[i].doc;
-                                    var item_rows = [];
-                                    if (filter(doc)) {
-                                        tableContainer.append(context.template(templateContent, {item: doc}));
-                                    }
-                                }
-                            }
-                        });
-                });
-            })
+            couchapp.view(viewName, {
+                include_docs: true,
+                success: function(data) {
+                    tableContainer.empty();
+                    for (var i in data.rows) {
+                        var doc = data.rows[i].doc;
+                        if (filter(doc)) {
+                            context.load(showName + doc['_id'])
+                                    .then(function(content) {
+                                            tableContainer.append(content);
+                                        });
+                        }
+                    }
+                }
+            });
 
         this.get('#/edit/:type/:id', function(context) {
 

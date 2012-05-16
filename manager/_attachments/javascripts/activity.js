@@ -225,10 +225,11 @@ $.couch.app(function(couchapp) {
             });
         });
 
-        this.get('#/edit/item/:id', function(context) {
+        this.get(/#\/edit\/item\/(.*)/, function(context) {
             var show_q = '_show/editItem';
-            if (context.params['id']) {
-                show_q += '/' + context.params['id'];
+            var item_id = context.params['splat'][0];
+            if (item_id) {
+                show_q += '/' + item_id;
             }
             context.load(show_q)
                     .then(function(content) {
@@ -237,9 +238,9 @@ $.couch.app(function(couchapp) {
                             modal.on('hidden', function() { modal.remove(); window.history.back() });
                         });
         });
-        this.post('#/edit/item/:id', function(context) {
+        this.post(/#\/edit\/item\/(.*)/, function(context) {
             var validationError = 0,
-                this_id = context.params['id'],
+                this_id = context.params['splat'][0],
                 modal = $('.modal');
 
             var markError = function(field, message) {

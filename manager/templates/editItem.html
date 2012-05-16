@@ -1,0 +1,47 @@
+<div id="add-edit-item" class="modal hide fade">
+        <div class="modal-header">
+            <button class="close" data-dismiss="modal">&times;</button>
+            <h3>{{add-edit-title}} Item</h3>
+        </div>
+    <form action="#/edit/item/{{_id}}" method="post" class="form-horizontal">
+        <div class="modal-body">
+                <input type="hidden" id="_id" name="_id" value="{{_id}}">
+                <input type="hidden" id="_rev" name="_rev" value="{{_rev}}">
+
+                <fieldset id="name-field" class="control-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" value="{{name}}">
+                </fieldset>
+
+                <fieldset id="sku-field" class="control-group">
+                    <label for="sku">SKU</label>
+                    <input type="text" id="sku" name="sku" value="{{sku}}">
+                </fieldset>
+
+                <fieldset id="barcode-field" class="control-group">
+                    <label for="barcode">Barcode</label>
+                    <input type="text" id="barcode" name="barcode" value="{{barcode}}">
+                </fieldset>
+
+                <fieldset id="cost-field" class="control-group">
+                    <label for="cost">Cost $</label>
+                    <input type="text" id="cost" name="cost" value="{{cost}}">
+                </fieldset>
+
+                <fieldset id="price-field" class="control-group">
+                    <label for="price">Price $</label>
+                    <input type="text" id="price" name="price" value="{{price}}">
+                </fieldset>
+
+                <fieldset id="description-field" class="control-group">
+                    <label for="description">Description</label>
+                    <textarea name="description" rows="4" cols="40">{{description}}</textarea>
+                </fieldset>
+        </div>
+
+        <div class="modal-footer">
+            <button type="submit" id="submit" class="btn btn-primary">{{add-edit-title}}</button>
+            <button type="button" id="cancel" class="btn" data-dismiss="modal">Cancel</button>
+        </div>
+    </form>
+</div>

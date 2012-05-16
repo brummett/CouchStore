@@ -1,7 +1,10 @@
 <h1>Inventory Items</h1>
-<button id="addItem" type="button" class="btn"><i class="icon-plus"></i> Add item</button>
-<form action="#/search/item" method="post" id="search" class="well form-search">
-    <i class="icon-search"></i><input type="text" id="search-query" class="search-query input-medium" placeholder="Search">
+<a href="#/edit/item/" id="addItem" class="btn"><i class="icon-plus"></i> Add item</a>
+<form action="#/list-items" method="get" id="search" class="well form-search">
+    <i class="icon-search"></i><input type="text" name="search-query" class="search-query input-medium" placeholder="Search" value="<%= searchTerm %>">
+    <% if (searchTerm) { %>
+         <a href="#/list-items">&times;</a>
+     <% } %>
 </form>
 
 <table id="item-list" class="table table-condensed">
@@ -14,5 +17,16 @@
     </thead>
 
     <tbody id="search-results">
+        <% for (var i in items) { %>
+            <tr>
+                <td><%= items[i]['name'] %></td>
+                <td><%= items[i]['sku']  %></td>
+                <td><%= items[i]['barcode'] %></td>
+                <td>
+                    <a href="#/edit/item/<%= items[i]['_id'] %>" class="edit-item btn"><i class="icon-edit"></i> Edit</a>
+                    <a href="#/delete/item/<%= items[i]['_id'] %>" class="delete-item btn btn-danger"><i class="icon-trash icon-white"></i> Remove</a>
+                </td>
+            </tr>
+        <% } %>
     </tbody>
 </table>

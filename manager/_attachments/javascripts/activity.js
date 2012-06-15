@@ -314,41 +314,37 @@ $.couch.app(function(couchapp) {
             var docid = context.params['id'];
             var thing = context.params['thing'];
             couchapp.db.openDoc(docid, { success: function(doc) {
+                if (doc.type != thing) {
+                    showNotification('error', 'Document ' + docid + ' is not a ' + thing);
+                    return false;
+                }
                 $.get(couchapp.db.uri + couchapp.ddoc._id + '/templates/modal-delete-thing.template')
                     .then( function(content) {
                         content = context.template(content,{ id: docid, thing: thing, name: doc.name });
                         var modal = $(content).appendTo(context.$element())
                                        .modal({backdrop: true, keyboard: true, show: true});
-                        modal.on('hidden', function() { modal.remove(); window.history.back() });
+                        modal.on('hidden', function() {
+                                                modal.remove();
+                                                window.history.back(); });
+                        modal.find('#delete-confirm')
+                            .click( function(event) {
+                                modal.modal('hide');
+                                couchapp.db.removeDoc(doc, {
+                                    success: function() {
+                                        showNotification('success', context.params['thing'] + ' removed');
+                                    },
+                                    error: function(status) {
+                                        context.log('delete failed after removeDoc');
+                                        context.log(doc);
+                                        context.log(status);
+                                        showNotification('error', 'Delete failed');
+                                    }
+                                })
+                                event.preventDefault();
+                            });
+
                     });
             }});
-        });
-        // This should really be a del handler, but it's hard to generate a DELETE request...
-        this.get('#/delete-confirmed/:thing/:id', function(context) {
-            couchapp.db.openDoc(context.params['id'], {
-                success: function(doc) {
-                    if (doc.type != context.params['thing']) {
-                        showNotification('error', 'Delete failed: doc id ' + context.params['id'] + ' is not a ' + context.params['thing']);
-                    } else {
-                        couchapp.db.removeDoc(doc, {
-                            success: function() {
-                                showNotification('success', context.params['thing'] + ' removed');
-                            },
-                            error: function(status) {
-                                context.log('delete failed after removeDoc');
-                                context.log(doc);
-                                context.log(status);
-                                showNotification('error', 'Delete failed');
-                            }
-                        });
-                    }
-                },
-                error: function(status) {
-                    context.log('delete failed after openDoc, id' + context.params['id']);
-                    context.log(status);
-                    showNotification('error', 'Delete failed');
-                }
-            });
         });
 
     });

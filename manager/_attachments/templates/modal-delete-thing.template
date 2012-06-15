@@ -7,7 +7,7 @@
         <p>Are you sure you want to delete <%= thing %> <%= name %>?</p>
     </div>
     <div class="modal-footer">
-        <a href="#/delete-confirmed/<%= thing %>/<%= id %>" class="btn btn-danger">Delete</a>
+        <a id="delete-confirm" href="#/delete-confirmed/<%= thing %>/<%= id %>" class="btn btn-danger">Delete</a>
         <button type="button" class="btn" data-dismiss="modal">Cancel</button>
     </div>
 </div>

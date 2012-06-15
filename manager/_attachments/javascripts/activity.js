@@ -235,6 +235,8 @@ $.couch.app(function(couchapp) {
                     .then(function(content) {
                             var modal = $(content).appendTo(context.$element())
                                                     .modal({backdrop: true, keyboard: true, show: true});
+
+                            modal.on('shown', function() { modal.find('input:text:first').focus() });
                             modal.on('hidden', function() { modal.remove(); window.history.back() });
                         });
         });

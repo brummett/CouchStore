@@ -225,6 +225,42 @@ $.couch.app(function(couchapp) {
             });
         });
 
+        this.get('#/list-customers', function(context) {
+            context.log("In list-customers");
+
+            var searchTerm = context.params['search-query'];
+            var showResults = function(data) {
+                var items = [],
+                    shown = {};
+                for (var i in data.rows) {
+                    var doc = data.rows[i].doc;
+                    if (! (doc._id in shown)) {
+                        doc.name = doc.lastname + ', ' + doc.firstname;
+                        items.push(doc);
+                        shown[doc._id] = 1;
+                    }
+                }
+                searchTerm = searchTerm || '';
+                context.render('templates/activity-listCustomers.template', { items: items, searchTerm: searchTerm })
+                        .swap();
+            };
+
+            if (searchTerm) {
+                couchapp.view('customers-by-any-name', {
+                    startkey: searchTerm,
+                    endkey: searchTerm + 'ZZZZZZZZZ',
+                    include_docs: true,
+                    success: showResults
+                });
+            } else {
+                couchapp.view('customers-by-any-name', {
+                    include_docs: true,
+                    success: showResults
+                });
+            }
+        });
+
+
         this.get(/#\/edit\/(.*)\/(.*)/, function(context) {
             var type = context.params['splat'][0];
             var show_q = '_show/edit-' + type;

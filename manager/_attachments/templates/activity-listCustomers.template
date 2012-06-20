@@ -1,0 +1,32 @@
+<h1>Customer List</h1>
+<a href="#/edit/customer/" id="add-customer" class="btn"><i class="icon-plus"></i> Add customer</a>
+<form action="#/list-customers" method="get" id="search" class="well form-search">
+    <i class="icon-search"></i><input type="text" name="search-query" class="search-query input-medium" placeholder="Search" value="<%= searchTerm %>">
+    <% if (searchTerm) { %>
+         <a href="#/list-customers">&times;</a>
+     <% } %>
+</form>
+
+<table id="customer-list" class="table table-condensed">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+    </tr>
+    </thead>
+
+    <tbody id="search-results">
+        <% for (var i in items) { %>
+            <tr>
+                <td><%= items[i]['name'] %></td>
+                <td><%= items[i]['email']  %></td>
+                <td><%= items[i]['phonenumber'] %></td>
+                <td>
+                    <a href="#/edit/customer/<%= items[i]['_id'] %>" class="edit-customer btn"><i class="icon-edit"></i> Edit</a>
+                    <a href="#/delete/customer/<%= items[i]['_id'] %>" class="delete-customer btn btn-danger"><i class="icon-trash icon-white"></i> Remove</a>
+                </td>
+            </tr>
+        <% } %>
+    </tbody>
+</table>

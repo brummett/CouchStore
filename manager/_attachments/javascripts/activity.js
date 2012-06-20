@@ -268,15 +268,15 @@ $.couch.app(function(couchapp) {
             if (item_id) {
                 show_q += '/' + item_id;
             }
-            context.load(show_q)
-                    .then(function(content) {
-                            var modal = $(content).appendTo(context.$element())
-                                                    .modal({backdrop: true, keyboard: true, show: true});
-
-                            modal.on('shown', function() { modal.find('input:text:first').focus() });
-                            modal.on('hidden', function() { modal.remove(); window.history.back() });
-                        });
+            $.get(show_q)
+                .then(function(content) {
+                        var modal = $(content).appendTo(context.$element())
+                                                .modal({backdrop: true, keyboard: true, show: true});
+                        modal.on('shown', function() { modal.find('input:text:first').focus() });
+                        modal.on('hidden', function() { modal.remove(); window.history.back() });
+                    });
         });
+
         this.post(/#\/edit\/(.*)\/(.*)/, function(context) {
             var validationError = 0,
                 type = context.params['splat'][0],

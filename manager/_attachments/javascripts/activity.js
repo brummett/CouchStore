@@ -350,6 +350,9 @@ $.couch.app(function(couchapp) {
                 });
             };
 
+            // Remove any errors from the last time they tried to submit
+            $('fieldset.error span.help-inline', context.$element()).remove();
+
             if (type == 'item') {
                 checkFieldHasValue('sku');
                 checkFieldHasValue('barcode');

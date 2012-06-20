@@ -284,8 +284,9 @@ $.couch.app(function(couchapp) {
                 modal = $('.modal');
 
             var markError = function(field, message) {
-                $('fieldset#' + field + '-field').addClass('error');
-                $('input#' + field).after('<span class="help-inline"><i class="icon-exclamation-sign"></i>&nbsp;'
+                var fieldset = $('fieldset#' + field + '-field');
+                fieldset.addClass('error');
+                $('[name=' + field + ']', fieldset).after('<span class="help-inline label label-important"><i class="icon-exclamation-sign icon-white"></i>&nbsp;'
                                             + message + '</span>');
             };
             var checkFieldHasValue = function(field) {

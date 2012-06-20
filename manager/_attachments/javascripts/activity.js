@@ -343,8 +343,8 @@ $.couch.app(function(couchapp) {
                         modal.modal('hide');
                         showNotification('success', type + ' saved');
                     },
-                    error: function(status) {
-                        showNotification('error', 'Problem saving ' + type);
+                    error: function(status, reason, message) {
+                        showNotification('error', 'Problem saving ' + type + ': ' + message);
                     }
                 });
             };

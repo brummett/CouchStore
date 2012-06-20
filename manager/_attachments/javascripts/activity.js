@@ -260,6 +260,40 @@ $.couch.app(function(couchapp) {
             }
         });
 
+        this.get('#/list-warehouses', function(context) {
+            context.log('In list-warehouses');
+
+            var searchTerm = context.params['search-query'];
+            var showResults = function(data) {
+                var items = [],
+                    shown = {};
+                for (var i in data.rows) {
+                    var doc = data.rows[i].doc;
+                    if (! (doc._id in shown)) {
+                        items.push(doc);
+                        shown[doc._id] = 1;
+                    }
+                }
+                searchTerm = searchTerm || '';
+                context.render('templates/activity-listWarehouses.template', { items: items, searchTerm: searchTerm })
+                        .swap();
+            };
+
+            if (searchTerm) {
+                couchapp.view('warehouses-by-name', {
+                    startkey: searchTerm,
+                    endkey: searchTerm + 'ZZZZZZZZZ',
+                    include_docs: true,
+                    success: showResults
+                });
+            } else {
+                couchapp.view('warehouses-by-name', {
+                    include_docs: true,
+                    success: showResults
+                });
+            }
+        });
+
 
         this.get(/#\/edit\/(.*)\/(.*)/, function(context) {
             var type = context.params['splat'][0];
@@ -298,7 +332,7 @@ $.couch.app(function(couchapp) {
             };
             var checkDuplicateField = function(field, callback) {
                 var value = context.params[field];
-                couchapp.view('items-by-'+field, {
+                couchapp.view(type + 's-by-'+field, {
                     key: value,
                     success: function(data) {
                         if (data.rows.length && data.rows[0].id != this_id) {
@@ -336,6 +370,13 @@ $.couch.app(function(couchapp) {
                     doc['alternatephonenumber'] = context.params['alternatephonenumber'];
                     doc['email'] = context.params['email'];
                     doc['notes'] = context.params['notes'];
+                } else if (type == 'warehouse') {
+                    doc['name'] = context.params['name'];
+                    doc['address'] = context.params['address'];
+                    doc['phonenumber'] = context.params['phonenumber'];
+                    doc['alternatephonenumber'] = context.params['alternatephonenumber'];
+                    doc['email'] = context.params['email'];
+                    doc['notes'] = context.params['notes'];
                 }
                 $.log(doc);
 
@@ -367,7 +408,14 @@ $.couch.app(function(couchapp) {
                 checkFieldHasValue('firstname');
                 checkFieldHasValue('lastname');
                 saveItem(context);
+            } else if (type == 'warehouse') {
+                checkFieldHasValue('name');
+                checkFieldHasValue('address');
+                checkDuplicateField('name',
+                    function() { saveItem(context) }
+                );
             }
+                
         });
 
         this.get('#/delete/:thing/:id', function(context) {

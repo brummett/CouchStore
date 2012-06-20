@@ -1,0 +1,32 @@
+<h1>Warehouse List</h1>
+<a href="#/edit/warehouse/" id="add-warehouse" class="btn"><i class="icon-plus"></i> Add warehouse</a>
+<form action="#/list-warehouses" method="get" id="search" class="well form-search">
+    <i class="icon-search"></i><input type="text" name="search-query" class="search-query input-medium" placeholder="Search" value="<%= searchTerm %>">
+    <% if (searchTerm) { %>
+         <a href="#/list-warehouses">&times;</a>
+     <% } %>
+</form>
+
+<table id="warehouse-list" class="table table-condensed">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+    </tr>
+    </thead>
+
+    <tbody id="search-results">
+        <% for (var i in items) { %>
+            <tr>
+                <td><%= items[i]['name'] %></td>
+                <td><%= items[i]['email']  %></td>
+                <td><%= items[i]['phonenumber'] %></td>
+                <td>
+                    <a href="#/edit/warehouse/<%= items[i]['_id'] %>" class="edit-warehouse btn"><i class="icon-edit"></i> Edit</a>
+                    <a href="#/delete/warehouse/<%= items[i]['_id'] %>" class="delete-warehouse btn btn-danger"><i class="icon-trash icon-white"></i> Remove</a>
+                </td>
+            </tr>
+        <% } %>
+    </tbody>
+</table>

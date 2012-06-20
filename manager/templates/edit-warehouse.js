@@ -1,0 +1,71 @@
+<div id="add-edit-customer" class="modal hide fade">
+        <div class="modal-header">
+            <button class="close" data-dismiss="modal">&times;</button>
+            <h3>{{add-edit-title}} Warehouse</h3>
+        </div>
+    <form action="#/edit/warehouse/{{_id}}" method="post" class="form-horizontal">
+        <div class="modal-body">
+                <input type="hidden" id="_id" name="_id" value="{{_id}}">
+                <input type="hidden" id="_rev" name="_rev" value="{{_rev}}">
+
+                <fieldset id="name-field">
+                    <div class="control-group">
+                        <label class="control-label" for="name">Warehouse name</label>
+                        <div class="controls">
+                            <input type="text" id="name" name="name" value="{{name}}">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset id="address-field">
+                    <div class="control-group">
+                        <label class="control-label" for="address">Address</label>
+                        <div class="controls">
+                            <textarea name="address" rows="4" cols="60">{{address}}</textarea>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset id="phonenumber-field">
+                    <div class="control-group">
+                        <label class="control-label" for="phonenumber">Phone number</label>
+                        <div class="controls">
+                            <input type="text" id="phonenumber" name="phonenumber" value="{{phonenumber}}">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset id="alternate-phonenumber-field">
+                    <div class="control-group">
+                        <label class="control-label" for="alternatephonenumber">Alternate phone</label>
+                        <div class="controls">
+                            <input type="text" id="alternatephonenumber" name="alternamtephonenumber" value="{{alternatephonenumber}}">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset id="email-field">
+                    <div class="control-group">
+                        <label class="control-label" for="email">Email</label>
+                        <div class="controls">
+                            <input type="text" id="email" name="email" value="{{email}}">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset id="notes-field">
+                    <div class="control-group">
+                        <label class="control-label" for="notes">Notes</label>
+                        <div class="controls">
+                            <textarea name="notes" rows="4" cols="60">{{notes}}</textarea>
+                        </div>
+                    </div>
+                </fieldset>
+        </div>
+
+        <div class="modal-footer">
+            <button type="submit" id="submit" class="btn btn-primary">{{add-edit-title}}</button>
+            <button type="button" id="cancel" class="btn" data-dismiss="modal">Cancel</button>
+        </div>
+    </form>
+</div>

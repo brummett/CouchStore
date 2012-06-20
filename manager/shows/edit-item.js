@@ -17,5 +17,5 @@ function(doc, req) {
         data['add-edit-title'] = "Add";
     }
 
-    return Mustache.to_html(ddoc.templates['editItem'], data);
+    return Mustache.to_html(ddoc.templates['edit-item'], data);
 }

@@ -225,9 +225,10 @@ $.couch.app(function(couchapp) {
             });
         });
 
-        this.get(/#\/edit\/item\/(.*)/, function(context) {
-            var show_q = '_show/editItem';
-            var item_id = context.params['splat'][0];
+        this.get(/#\/edit\/(.*)\/(.*)/, function(context) {
+            var type = context.params['splat'][0];
+            var show_q = '_show/edit-' + type;
+            var item_id = context.params['splat'][1];
             if (item_id) {
                 show_q += '/' + item_id;
             }
@@ -240,9 +241,10 @@ $.couch.app(function(couchapp) {
                             modal.on('hidden', function() { modal.remove(); window.history.back() });
                         });
         });
-        this.post(/#\/edit\/item\/(.*)/, function(context) {
+        this.post(/#\/edit\/(.*)\/(.*)/, function(context) {
             var validationError = 0,
-                this_id = context.params['splat'][0],
+                type = context.params['splat'][0],
+                this_id = context.params['splat'][1],
                 modal = $('.modal');
 
             var markError = function(field, message) {
@@ -276,40 +278,56 @@ $.couch.app(function(couchapp) {
                     $.log('not saving because of errors');
                     return false;
                 }
-                var doc = { type: 'item' };
+                var doc = { type: type };
                 if (context.params['_id']) {
                     doc['_id'] = context.params['_id'];
                     doc['_rev'] = context.params['_rev'];
                 }
-                doc['barcode']      = context.params['barcode'];
-                doc['name']         = context.params['name'];
-                doc['sku']          = context.params['sku'];
-                doc['description']  = context.params['description'];
-                doc['cost-cents']   = context.params['cost'] * 100;
-                doc['price-cents']  = context.params['price'] * 100;
+                if (type == 'item') {
+                    doc['barcode']      = context.params['barcode'];
+                    doc['name']         = context.params['name'];
+                    doc['sku']          = context.params['sku'];
+                    doc['description']  = context.params['description'];
+                    doc['cost-cents']   = context.params['cost'] * 100;
+                    doc['price-cents']  = context.params['price'] * 100;
+                } else if (type == 'customer') {
+                    doc['firstname'] = context.params['firstname'];
+                    doc['lastname'] = context.params['lastname'];
+                    doc['address'] = context.params['address'];
+                    doc['istaxable'] = (context.params['istaxable'] == 'on' ? 1 : 0);
+                    doc['phonenumber'] = context.params['phonenumber'];
+                    doc['alternatephonenumber'] = context.params['alternatephonenumber'];
+                    doc['email'] = context.params['email'];
+                    doc['notes'] = context.params['notes'];
+                }
                 $.log(doc);
 
                 couchapp.db.saveDoc(doc, {
                     success: function(data) {
                         modal.modal('hide');
-                        showNotification('success', 'Item saved');
+                        showNotification('success', type + ' saved');
                     },
                     error: function(status) {
-                        showNotification('error', 'Problem saving');
+                        showNotification('error', 'Problem saving ' + type);
                     }
                 });
             };
 
-            checkFieldHasValue('sku');
-            checkFieldHasValue('barcode');
-            checkFieldHasValue('name');
+            if (type == 'item') {
+                checkFieldHasValue('sku');
+                checkFieldHasValue('barcode');
+                checkFieldHasValue('name');
 
-            checkDuplicateField('barcode',
-                function() { checkDuplicateField('sku',
-                    function() { saveItem(context) }
-                )}
-            );
-
+                checkDuplicateField('barcode',
+                    function() { checkDuplicateField('sku',
+                        function() { saveItem(context) }
+                    )}
+                );
+            } else if (type == 'customer') {
+                checkFieldHasValue('firstname');
+                checkFieldHasValue('lastname');
+                saveItem(context);
+            }
         });
 
         this.get('#/delete/:thing/:id', function(context) {
@@ -322,7 +340,10 @@ $.couch.app(function(couchapp) {
                 }
                 $.get(couchapp.db.uri + couchapp.ddoc._id + '/templates/modal-delete-thing.template')
                     .then( function(content) {
-                        content = context.template(content,{ id: docid, thing: thing, name: doc.name });
+                        var name = (doc.type == 'customer'
+                                        ? (doc.firstname + ' ' + doc.lastname)
+                                        : doc.name);
+                        content = context.template(content,{ id: docid, thing: thing, name: name });
                         var modal = $(content).appendTo(context.$element())
                                        .modal({backdrop: true, keyboard: true, show: true});
                         modal.on('hidden', function() {

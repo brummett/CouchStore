@@ -155,6 +155,11 @@ $.couch.app(function(couchapp) {
             },
         });
 
+        function warehouseList (callback) {
+            couchapp.view('warehouses-by-name', {
+                success: function(data) {
+                    
+
 
 //        this.around({ except: /#\/(login|signup)/ }, function(callback) {
 //            var context = this;
@@ -195,6 +200,15 @@ $.couch.app(function(couchapp) {
 
         this.get('#/', function(context) {
             true;
+        });
+
+        this.get('#/receive-shipment', function(context) {
+            context.render('tempaltes/activity-receive-shipment.template', { 
+
+        });
+
+        this.post('#/receive-shipment', function(context) {
+
         });
 
         this.get('#/list-items', function(context) {

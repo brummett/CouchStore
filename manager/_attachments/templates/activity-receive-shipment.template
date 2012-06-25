@@ -1,0 +1,55 @@
+<h1>Receive Shipment</h1>
+<form action="#/receive-shipment" method="post" class="form-forizontal" id="shipment-header">
+    <div class="control-label">
+        <label class="control-label" for="date">Date</label>
+        <div class="controls">
+            <input type="text" name="date" id="date" value="<%= currentDate %>"/>
+        </div>
+    </div>
+
+    <div class="control-label">
+        <label class="control-label" for="order-number">Order number</label>
+        <div class="controls">
+            <input type="text" name="order-number" id="order-number"/>
+        </div>
+    </div>
+
+    <div class="control-label">
+        <label class="control-label" for="shipped-from-vendor">Shipped from vendor</label>
+        <div class="controls">
+            <input type="text" name="shipped-from-vendor" id="shipped-from-vendor"/>
+        </div>
+    </div>
+
+    <div class="control-label">
+        <label class="controls" for="received-to">Received to</label>
+        <select name="received-to" id="received-to">
+            <% for var i in warehouses { %>
+                <option value="<%= warehouses[i].id %>"><%= warehouses[i].key %></option>
+            <% } %>
+        </select>
+    </div>
+
+    <div class="well span3 form-inline">
+        <input type="text" class="input-small" placeholder="barcode"/>
+        <button class="btn btn-small btn-primary" value="Scan"/>
+    </div>
+
+    <input class="btn" type="submit" id="all-done" value="All done"/>
+
+    <div>
+        <table class="table table-striped table-bordered table-condensed">
+            <thead>
+                <tr>    <td></td>
+                        <td>Unit cost</td>
+                        <td>Count</td>
+                        <td>Name</td>
+                        <td>Scan</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</form>
+

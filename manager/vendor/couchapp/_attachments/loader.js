@@ -19,4 +19,5 @@ couchapp_load([
   "vendor/sammy.js/sammy.title.js",
   "vendor/sammy.js/sammy.form.js",
   "vendor/bootstrap/bootstrap.js"
+  "vendor/bootstrap/bootstrap-typeahead.js"
 ]);

@@ -158,8 +158,10 @@ $.couch.app(function(couchapp) {
         function warehouseList (callback) {
             couchapp.view('warehouses-by-name', {
                 success: function(data) {
-                    
-
+                    callback(data.rows);
+                }
+            });
+        }
 
 //        this.around({ except: /#\/(login|signup)/ }, function(callback) {
 //            var context = this;
@@ -203,8 +205,15 @@ $.couch.app(function(couchapp) {
         });
 
         this.get('#/receive-shipment', function(context) {
-            context.render('tempaltes/activity-receive-shipment.template', { 
-
+            warehouseList(function(warehouses) {
+                var now = new Date;
+                var dateStr = now.getFullYear() + '-'
+                                    + (now.getMonth() < 10 ? '0' : '') + now.getMonth() + '-'
+                                    + (now.getDate() < 10 ? '0' : '') + now.getDate();
+                context.render('templates/activity-receive-shipment.template',
+                                 { currentDate: dateStr , warehouses: warehouses })
+                        .swap();
+            });
         });
 
         this.post('#/receive-shipment', function(context) {

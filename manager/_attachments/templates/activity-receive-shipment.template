@@ -1,38 +1,41 @@
 <h1>Receive Shipment</h1>
-<form action="#/receive-shipment" method="post" class="form-forizontal" id="shipment-header">
-    <div class="control-label">
+<form action="#/receive-shipment" method="post" class="form-horizontal" id="shipment-header">
+    <div class="control-group">
         <label class="control-label" for="date">Date</label>
         <div class="controls">
-            <input type="text" name="date" id="date" value="<%= currentDate %>"/>
+            <input type="text" name="date" id="date" class="input-small" value="<%= currentDate %>">
         </div>
     </div>
 
-    <div class="control-label">
+    <div class="control-group">
         <label class="control-label" for="order-number">Order number</label>
         <div class="controls">
-            <input type="text" name="order-number" id="order-number"/>
+            <input type="text" name="order-number" id="order-number" class="input-small">
         </div>
     </div>
 
-    <div class="control-label">
+    <div class="control-group">
         <label class="control-label" for="shipped-from-vendor">Shipped from vendor</label>
         <div class="controls">
-            <input type="text" name="shipped-from-vendor" id="shipped-from-vendor"/>
+            <input type="text" name="shipped-from-vendor" id="shipped-from-vendor" class="input-small">
         </div>
     </div>
 
-    <div class="control-label">
-        <label class="controls" for="received-to">Received to</label>
-        <select name="received-to" id="received-to">
-            <% for var i in warehouses { %>
-                <option value="<%= warehouses[i].id %>"><%= warehouses[i].key %></option>
-            <% } %>
-        </select>
+    <div class="control-group">
+        <label class="control-label" for="received-to">Received to</label>
+        <div class="controls">
+            <select name="received-to" id="received-to">
+                <% for (var i in warehouses) { %>
+                    <option value="<%= warehouses[i].id %>"><%= warehouses[i].key %></option>
+                <% } %>
+            </select>
+        </div>
     </div>
 
-    <div class="well span3 form-inline">
-        <input type="text" class="input-small" placeholder="barcode"/>
-        <button class="btn btn-small btn-primary" value="Scan"/>
+    <div class="well span4">
+        <div class="input-append">
+            <input type="text" size="14" id="barcode" placeholder="barcode"/><button class="btn btn-primary btn-small">Scan</button>
+        </div>
     </div>
 
     <input class="btn" type="submit" id="all-done" value="All done"/>

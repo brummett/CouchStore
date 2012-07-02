@@ -144,7 +144,6 @@ $.couch.app(function(couchapp) {
 
         this.use('Template');
         this.use('Title');
-        this.use('Form');
 
         this.helpers({
             showNav: function() {
@@ -212,11 +211,15 @@ $.couch.app(function(couchapp) {
                                     + (now.getDate() < 10 ? '0' : '') + now.getDate();
                 context.render('templates/activity-receive-shipment.template',
                                  { currentDate: dateStr , warehouses: warehouses })
-                        .swap();
+                        .swap()
+                        .then(function() {
+                            var w = new OrderWidget(couchapp, context);
+                        });
             });
         });
 
         this.post('#/receive-shipment', function(context) {
+            1;
 
         });
 

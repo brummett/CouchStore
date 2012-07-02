@@ -1,0 +1,15 @@
+<tr id="scan-<%= scan %>">
+    <td>
+        <button class="add-item btn btn-mini btn-info"><span class="icon-plus-sign icon-white"></span><button>
+        <button class="remove-item btn btn-mini btn-info"><span class="icon-minus-sign icon-white"></span><button>
+        <button class="delete-item btn btn-mini btn-info"><span class="icon-trash icon-white"></span><button>
+    </td>
+    <td>
+        <div class="input-prepend">
+            <span class="add-on">$</span><input class="unit-cost span2" type="text" value="<%= unitCost %>">
+        </div>
+    </td>
+    <td class="item-count"><%= count %></td>
+    <td class="item-name"><%= name %></td>
+    <td class="item-scan"><%= scan %></td>
+</tr>

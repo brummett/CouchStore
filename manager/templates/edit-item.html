@@ -30,25 +30,31 @@
                     <div class="control-group">
                         <label class="control-label" for="barcode">Barcode</label>
                         <div class="controls">
-                            <input type="text" id="barcode" name="barcode" value="{{barcode}}">
+                            <div class="input-prepend">
+                                <span class="add-on"><i class="icon-barcode"></i></span><input type="text" id="barcode" name="barcode" value="{{barcode}}">
+                            </div>
                         </div>
                     </div>
                 </fieldset>
 
                 <fieldset id="cost-field">
                     <div class="control-group">
-                        <label class="control-label" for="cost">Cost $</label>
+                        <label class="control-label" for="cost">Cost </label>
                         <div class="controls">
-                            <input type="text" id="cost" name="cost" value="{{cost}}">
+                            <div class="input-prepend">
+                                <span class="add-on">$</span><input type="text" id="cost" name="cost" value="{{cost}}">
+                            </div>
                         </div>
                     </div>
                 </fieldset>
 
                 <fieldset id="price-field">
                     <div class="control-group">
-                        <label class="control-label" for="price">Price $</label>
+                        <label class="control-label" for="price">Price </label>
                         <div class="controls">
-                            <input type="text" id="price" name="price" value="{{price}}">
+                            <div class="input-prepend">
+                                <span class="add-on">$</span><input type="text" id="price" name="price" value="{{price}}">
+                            </div>
                         </div>
                     </div>
                 </fieldset>

@@ -64,11 +64,13 @@ function OrderWidget(couchapp, context, orderDoc) {
 
                     couchapp.view('items-by-barcode', {
                         include_docs: true,
+                        key: scan,
                         success: function(data) {
                             if (data.rows.length == 1) {
                                 renderRow(data.rows[0].doc);
                             } else {
                                 couchapp.view('items-by-sku', {
+                                    key: scan,
                                     include_docs: true,
                                     success: function (data) {
                                         if (data.rows.length == 1) {

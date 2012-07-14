@@ -19,9 +19,10 @@ function OrderWidget(couchapp, context, orderDoc) {
     // element from order-form.  It creates a new input if it's not
     // there yet
     this.inputForScan = function(scan) {
-        var input = $('input#scan-' + scan);
+        var input_id = 'scan-'+scan;
+        var input = $('input#'+input_id);
         if (input.length == 0) {
-            input = $('<input type="hidden" value="0">').appendTo(this.orderForm);
+            input = $('<input id="' + input_id + '" type="hidden" value="0">').appendTo(this.orderForm);
         }
         return input;
     };
@@ -96,7 +97,7 @@ function OrderWidget(couchapp, context, orderDoc) {
 
         this.tableRowForScan(scan)
             .then(function(tr) {
-                $('td.item-count').text(count);
+                $('td.item-count',tr).text(count);
             });
     };
 

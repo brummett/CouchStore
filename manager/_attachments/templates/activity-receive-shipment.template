@@ -30,22 +30,22 @@
 
 </form>
 
-<form id="barcode-scan">
-    <div class="well span4">
-        <div class="input-append">
-            <input type="text" size="14" id="barcode" placeholder="barcode"/><button class="btn btn-primary btn-small" id="scan">Scan</button>
+<div class="span4">
+<form class="form-inline" id="barcode-scan">
+        <div class="input-prepend input-append">
+            <span class="add-on"><i class="icon-barcode"></i></span><input type="text" size="14" id="barcode" placeholder="barcode"/><button class="btn btn-primary btn-small" id="scan">Scan</button>
         </div>
-    </div>
 </form>
+</div>
 
 <div>
-    <table class="table table-striped table-bordered table-condensed" id="order-display">
+    <table class="table table-striped table-condensed" id="order-display" style="table-layout: fixed">
         <thead>
-            <tr>    <td></td>
-                    <td>Unit cost</td>
-                    <td>Count</td>
-                    <td>Name</td>
-                    <td>Scan</td>
+            <tr>    <th style="width: 10%"></th>
+                    <th style="width: 15%">Unit cost</th>
+                    <th style="width: 10%">Count</th>
+                    <th>Name</th>
+                    <th>Scan</th>
             </tr>
         </thead>
         <tbody>

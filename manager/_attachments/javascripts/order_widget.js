@@ -9,9 +9,13 @@ function OrderWidget(couchapp, context, orderDoc) {
     this.barcodeScan = $('form#barcode-scan');
     this.orderForm = $('form#order-form');
 
-    var widget = this;
+    var widget = this,
+        barcodeInput = $('input#barcode', this.barcodeScan);
+
     this.barcodeScan.submit(function(e) {
-        widget.addRemoveItem($('input#barcode').val(), 1);
+        widget.addRemoveItem(barcodeInput.val(), 1);
+        barcodeInput.val('');
+        barcodeInput.focus();
         e.preventDefault();
         e.stopPropagation();
     });

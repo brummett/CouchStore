@@ -50,7 +50,6 @@ function OrderWidget(couchapp, context, orderDoc) {
                 .then(function(content) {
 
                     var renderRow = function(item) {
-                        var unitCost = 
                         content = $(context.template(content, { scan: scan,
                                                                 unitCost: centsToDollars(item['cost-cents']),
                                                                 count: 0,

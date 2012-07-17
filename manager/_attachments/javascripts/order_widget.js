@@ -54,10 +54,11 @@ function OrderWidget(couchapp, context, orderDoc) {
             $.get(couchapp.db.uri + couchapp.ddoc._id + '/templates/activity-receive-shipment-item-row.template')
                 .then(function(content) {
 
-                    var renderRow = function(item) {
+                    var renderRow = function(item, is_unknown) {
                         content = $(context.template(content, { scan: scan,
                                                                 unitCost: centsToDollars(item['cost-cents']),
                                                                 count: 0,
+                                                                is_unknown: is_unknown ? true : false,
                                                                 name: item['name'] }));
                         table.append(content);
                         $('button.add-item', content).click( function(e) { widget.addRemoveItem(scan, 1) } );
@@ -81,7 +82,7 @@ function OrderWidget(couchapp, context, orderDoc) {
                                             renderRow(data.rows[0].doc);
                                         } else {
                                             // This is an unknown item
-                                            renderRow({ 'cost-cents': '', name: ''});
+                                            renderRow({ 'cost-cents': '', name: ''}, true);
                                         }
                                     }
                                 });

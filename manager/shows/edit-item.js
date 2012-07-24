@@ -15,6 +15,7 @@ function(doc, req) {
         data['add-edit-title'] = "Edit";
     } else {
         data['add-edit-title'] = "Add";
+        data['barcode'] = req.id;
     }
 
     return Mustache.to_html(ddoc.templates['edit-item'], data);

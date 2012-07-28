@@ -42,7 +42,7 @@ function OrderWidget(couchapp, context, orderDoc) {
     // Given a scan (usually a barcode, return the table-row
     // element for the scan.  It will create a new row if it's
     // not there yet
-    this.tableRowForScan = function(scan) {
+    this.getTableRowForScan = function(scan) {
         var tr      = $('tr#scan-' + scan),
             table   = this.table,
             d       = jQuery.Deferred();
@@ -101,7 +101,7 @@ function OrderWidget(couchapp, context, orderDoc) {
         count += delta;
         input.val(count);
 
-        this.tableRowForScan(scan)
+        this.getTableRowForScan(scan)
             .then(function(tr) {
                 $('td.item-count',tr).text(count);
             });
@@ -110,7 +110,7 @@ function OrderWidget(couchapp, context, orderDoc) {
     this.deleteItem = function(scan) {
         var input = this.inputForScan(scan);
         input.remove();
-        this.tableRowForScan(scan)
+        this.getTableRowForScan(scan)
             .then(function(tr) {
                 tr.animate( { height: '0px' },
                             { duration: 500,

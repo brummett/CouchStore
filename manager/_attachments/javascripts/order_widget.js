@@ -64,6 +64,7 @@ function OrderWidget(couchapp, context, orderDoc) {
                         $('button.add-item', content).click( function(e) { widget.addRemoveItem(scan, 1) } );
                         $('button.remove-item', content).click( function(e) { widget.addRemoveItem(scan, -1) } );
                         $('button.delete-item', content).click( function(e) { widget.deleteItem(scan) } );
+                        $('button.is-unknown', content).click( function(e) { context.editItemModal('item',scan) });
                         d.resolve(content);
                     };
 

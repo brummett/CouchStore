@@ -149,9 +149,35 @@ $.couch.app(function(couchapp) {
             showNav: function() {
                 $('#navbar .logged-in-menu').show();
             },
+
             hideNav: function() {
                 $('#navbar .logged-in-menu').hide();
             },
+
+            editItemModal: function(type, item_id) {
+                var show_q = '_show/edit-' + type,
+                    d = jQuery.Deferred(),
+                    context = this;
+                if (item_id) {
+                    show_q += '/' + item_id;
+                }
+                $.get(show_q)
+                    .then(function(content) {
+                        var content = $(content),
+                            orderTable = $('#order-display'),
+                            modal;
+
+                        modal = content.appendTo(context.$element())
+                                           .modal({backdrop: true, keyboard: true, show: true});
+                        modal.on('shown', function() { modal.find('input:text:first').focus() });
+                        modal.on('hidden',
+                                function() {
+                                    modal.remove();
+                                    d.resolve(modal);
+                                });
+                    });
+                return d;
+            }
         });
 
         function warehouseList (callback) {
@@ -320,21 +346,12 @@ $.couch.app(function(couchapp) {
             }
         });
 
-
         this.get(/#\/edit\/(.*)\/(.*)/, function(context) {
-            var type = context.params['splat'][0];
-            var show_q = '_show/edit-' + type;
-            var item_id = context.params['splat'][1];
-            if (item_id) {
-                show_q += '/' + item_id;
-            }
-            $.get(show_q)
-                .then(function(content) {
-                        var modal = $(content).appendTo(context.$element())
-                                                .modal({backdrop: true, keyboard: true, show: true});
-                        modal.on('shown', function() { modal.find('input:text:first').focus() });
-                        modal.on('hidden', function() { modal.remove(); window.history.back() });
-                    });
+            var type = context.params['splat'][0],
+                item_id = context.params['splat'][1];
+
+            this.editItemModal(type, item_id)
+                .then(function(modal) { window.history.back() });
         });
 
         this.post(/#\/edit\/(.*)\/(.*)/, function(context) {

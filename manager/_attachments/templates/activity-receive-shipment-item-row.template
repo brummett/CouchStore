@@ -13,7 +13,7 @@
     <td class="item-count"><%= count %></td>
     <td class="item-name">
         <% if (is_unknown) { %>
-            <a class="btn btn-warning is-unknown" href="#/edit/item/<%= scan %>"><i class="icon-question-sign icon-white"></i> Unknown</a>
+            <button class="btn btn-warning is-unknown"><i class="icon-question-sign icon-white"></i> Unknown</button>
         <% } else { %>
             <%= name %>
         <% } %>

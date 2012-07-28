@@ -4,7 +4,7 @@
 //    form#order-form
 //
 // As items are scanned in, it adds hidden input elements ot the order-form
-function OrderWidget(couchapp, context, orderDoc) {
+function OrderWidget(couchapp, context, activity, orderDoc) {
     this.table = $('table#order-display');
     this.barcodeScan = $('form#barcode-scan');
     this.orderForm = $('form#order-form');
@@ -38,6 +38,16 @@ function OrderWidget(couchapp, context, orderDoc) {
             return "0.00";
         }
     }
+
+    activity.bind('item-updated', function(context,item) {
+        // called when the add/edit item modal is submitted, so we can update the price/cost
+        widget.getTableRowForScan(item.barcode)
+            .then(function(tr) {
+                tr.find('input.unit-cost').val(centsToDollars(item['cost-cents']));
+                tr.find('td.item-name').text(item.name);
+            });
+    });
+
 
     // Given a scan (usually a barcode, return the table-row
     // element for the scan.  It will create a new row if it's

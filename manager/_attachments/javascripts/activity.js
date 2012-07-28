@@ -239,7 +239,7 @@ $.couch.app(function(couchapp) {
                                  { currentDate: dateStr , warehouses: warehouses })
                         .swap()
                         .then(function() {
-                            var w = new OrderWidget(couchapp, context);
+                            var w = new OrderWidget(couchapp, context, activity);
                         });
             });
         });
@@ -426,6 +426,7 @@ $.couch.app(function(couchapp) {
                 couchapp.db.saveDoc(doc, {
                     success: function(data) {
                         modal.modal('hide');
+                        activity.trigger('item-updated', doc);
                         showNotification('success', type + ' saved');
                     },
                     error: function(status, reason, message) {

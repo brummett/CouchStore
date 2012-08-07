@@ -5,17 +5,23 @@
         <div class="controls">
             <input type="text" name="date" id="date" class="input-small" value="<%= currentDate %>">
         </div>
+    </div>
 
+    <div class="control-group">
         <label class="control-label" for="order-number">Order number</label>
         <div class="controls">
             <input type="text" name="order-number" id="order-number" class="input-small">
         </div>
+    </div>
 
+    <div class="control-group">
         <label class="control-label" for="shipped-from-vendor">Shipped from vendor</label>
         <div class="controls">
             <input type="text" name="shipped-from-vendor" id="shipped-from-vendor" class="input-small">
         </div>
+    </div>
 
+    <div class="control-group">
         <label class="control-label" for="received-to">Received to</label>
         <div class="controls">
             <select name="received-to" id="received-to">
@@ -26,7 +32,7 @@
         </div>
     </div>
 
-    <input class="btn" type="submit" id="all-done" value="All done"/>
+    <button class="btn" type="submit" id="all-done"><i class="icon-ok"></i> All done</button>
 
 </form>
 

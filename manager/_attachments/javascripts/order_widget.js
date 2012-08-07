@@ -12,6 +12,53 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
     var widget = this,
         barcodeInput = $('input#barcode', this.barcodeScan);
 
+    this.orderForm.submit(function(e) {
+        widget.orderForm.find('.error').removeClass('error');
+        widget.orderForm.find('.warning').removeClass('warning');
+        widget.orderForm.find('.help-inline').remove();
+
+        var numErrors = 0;
+        function markError(elt) {
+            numErrors += elt.length;
+            elt.parents('div.control-group')
+                        .addClass('error')
+                        .find('div.controls')
+                        .append('<span class="help-inline">Required</span>');
+        };
+        function required(input) {
+            if (input.val() == undefined
+                || input.val() == null
+                || input.val() == ''
+            ) {
+                markError(input);
+            }
+        };
+        function matches(input, pattern) {
+
+        };
+        function checkUnknownItems(input) {
+
+        };
+        function checkCostsPrices(input) {
+
+        };
+
+        var dateInput = $('input#date', this.orderForm);
+        required(dateInput);
+        matches(dateInput,'');
+        required($('input#order-number', this.orderForm));
+        required($('input#shipped-from-vendor', this.orderForm));
+
+        checkUnknownItems($('button.is-unknown', this.orderForm));
+        checkCostsPrices($('input#scan-*', this.orderForm));
+
+        if (numErrors == 0) {
+            return true;
+        } else {
+            e.preventDefault();
+        }
+    });
+
     this.barcodeScan.submit(function(e) {
         widget.addRemoveItem(barcodeInput.val(), 1);
         barcodeInput.val('');

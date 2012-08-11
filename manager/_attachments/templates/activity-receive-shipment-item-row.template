@@ -11,12 +11,14 @@
         </div>
     </td>
     <td class="item-count"><%= count %></td>
-    <td class="item-name">
+    <td class="item-name control-group">
+        <div class="controls">
         <% if (is_unknown) { %>
             <button class="btn btn-warning is-unknown"><i class="icon-question-sign icon-white"></i> Unknown</button>
         <% } else { %>
             <%= name %>
         <% } %>
+        </div>
     </td>
     <td class="item-scan"><%= scan %></td>
 </tr>

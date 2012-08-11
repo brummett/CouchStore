@@ -13,31 +13,34 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
         barcodeInput = $('input#barcode', this.barcodeScan);
 
     this.orderForm.submit(function(e) {
+        // Clear any prior errors/warnings
         widget.orderForm.find('.error').removeClass('error');
         widget.orderForm.find('.warning').removeClass('warning');
         widget.orderForm.find('.help-inline').remove();
 
         var numErrors = 0;
-        function markError(elt) {
+        function markError(elt, message) {
             numErrors += elt.length;
-            elt.parents('div.control-group')
+            elt.parents('.control-group')
                         .addClass('error')
                         .find('div.controls')
-                        .append('<span class="help-inline">Required</span>');
+                        .append('<span class="help-inline">'+message+'</span>');
         };
         function required(input) {
             if (input.val() == undefined
                 || input.val() == null
                 || input.val() == ''
             ) {
-                markError(input);
+                markError(input, 'Required');
             }
         };
         function matches(input, pattern) {
 
         };
         function checkUnknownItems(input) {
-
+            if (input.length > 0) {
+                markError(input, '<i class="icon-arrow-left"></i> Click to provide details');
+            }
         };
         function checkCostsPrices(input) {
 

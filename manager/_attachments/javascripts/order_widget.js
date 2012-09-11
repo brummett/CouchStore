@@ -57,11 +57,22 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
         checkCostsPrices($('input#scan-*', this.orderForm));
 
         if (numErrors == 0) {
+           widget.copyCostsToForm(); 
             return true;
         } else {
             e.preventDefault();
         }
     });
+
+    // Copy the cost/price info from the line item list into the form for submission
+    this.copyCostsToForm = function() {
+        var widget = this;
+        $('input.unit-cost', widget.table).each(function(idx, input) {
+            var tr = input.closest('tr');
+            widget.orderForm.append('<input id="' + tr.id + '-cost" class="unit-cost" '
+                                    + 'type="hidden" value="' + input.val() + '">');
+        });
+    };
 
     this.barcodeScan.submit(function(e) {
         widget.addRemoveItem(barcodeInput.val(), 1);

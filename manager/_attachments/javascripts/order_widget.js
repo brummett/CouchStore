@@ -90,8 +90,9 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
     this.copyCostsToForm = function() {
         var widget = this;
         $('input.unit-cost', widget.table).each(function(idx, input) {
-            var tr = input.closest('tr');
-            widget.orderForm.append('<input id="' + tr.id + '-cost" class="unit-cost" '
+            input = $(input);
+            var tr = input.parents('tr');
+            widget.orderForm.append('<input name="' + tr.attr('id') + '-cost" class="unit-cost" '
                                     + 'type="hidden" value="' + input.val() + '">');
         });
     };
@@ -111,7 +112,7 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
         var input_id = 'scan-'+scan;
         var input = $('input#'+input_id);
         if (input.length == 0) {
-            input = $('<input id="' + input_id + '" type="hidden" value="0">').appendTo(this.orderForm);
+            input = $('<input id="' + input_id + '" name="' + input_id + '" type="hidden" value="0">').appendTo(this.orderForm);
         }
         return input;
     };

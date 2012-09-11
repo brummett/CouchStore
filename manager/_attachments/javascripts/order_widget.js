@@ -96,13 +96,14 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
         });
     };
 
+    // When a barcode is scanned in
     this.barcodeScan.submit(function(e) {
         widget.addRemoveItem(barcodeInput.val(), 1);
         barcodeInput.val('');
         barcodeInput.focus();
-        e.preventDefault();
-        e.stopPropagation();
+        return false;
     });
+
     // Given a scan (usually a barcode), return the hidden input
     // element from order-form.  It creates a new input if it's not
     // there yet

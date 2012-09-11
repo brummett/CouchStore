@@ -27,16 +27,37 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
                         .find('div.controls')
                         .append('<span class="help-inline">'+message+'</span>');
         };
+
+        // Functions to verify different parts of the form
         function required(input) {
-            if (input.val() == undefined
-                || input.val() == null
+            if (input.val() === undefined
+                || input.val() === null
                 || input.val() == ''
             ) {
                 markError(input, 'Required');
             }
         };
-        function matches(input, pattern) {
-
+        function matches(input, pattern, message) {
+            var value = input.val();
+            if (pattern.test(value)) {
+                return true;
+            } else {
+                markError(input, message);
+                return false;
+            }
+        };
+        function is_date(input) {
+            var value = input.val();
+            var matches = value.match(/(\d{4})-(\d{2})-(\d{2})/);
+            if (matches == undefined || matches.length == 0) {
+                markError(input, 'Not a date');
+            } else if (matches[1] < 1900 || matches[1] > 2100) {
+                markError(input, "'" + matches[1] + "': Not a valid year");
+            } else if (matches[2] < 1 || matches[2] > 12) {
+                markError(input, "'" + matches[2] + "': Not a valid month");
+            } else if (matches[3] < 1 || matches[3] > 31) {
+                markError(input, "'" + matches[3] + "': Not a valid day");
+            }
         };
         function checkUnknownItems(input) {
             if (input.length > 0) {
@@ -44,18 +65,18 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
             }
         };
         function checkCostsPrices(inputs) {
-            inputs.each(required);
-            inputs.each(function(input) { matches(input, '') });
+            inputs.each(function(idx, input) { required($(input)) });
+            inputs.each(function(idx, input) { matches($(input), /\d*\.\d\d/, 'Bad money format') });
         };
 
         var dateInput = $('input#date', this.orderForm);
         required(dateInput);
-        matches(dateInput,'');
+        is_date(dateInput);
         required($('input#order-number', this.orderForm));
         required($('input#shipped-from-vendor', this.orderForm));
 
         checkUnknownItems($('button.is-unknown', this.orderForm));
-        checkCostsPrices($('input#scan-*', this.orderForm));
+        checkCostsPrices($('input.unit-cost', this.table));
 
         if (numErrors == 0) {
            widget.copyCostsToForm(); 

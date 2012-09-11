@@ -232,8 +232,9 @@ $.couch.app(function(couchapp) {
         this.get('#/receive-shipment', function(context) {
             warehouseList(function(warehouses) {
                 var now = new Date;
+                var month = now.getMonth() + 1;
                 var dateStr = now.getFullYear() + '-'
-                                    + (now.getMonth() < 10 ? '0' : '') + now.getMonth() + '-'
+                                    + (month < 10 ? '0' : '') + month + '-'
                                     + (now.getDate() < 10 ? '0' : '') + now.getDate();
                 context.render('templates/activity-receive-shipment.template',
                                  { currentDate: dateStr , warehouses: warehouses })

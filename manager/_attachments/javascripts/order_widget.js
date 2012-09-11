@@ -79,7 +79,7 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
         checkCostsPrices($('input.unit-cost', this.table));
 
         if (numErrors == 0) {
-           widget.copyCostsToForm(); 
+            widget.copyCostsToForm();
             return true;
         } else {
             e.preventDefault();

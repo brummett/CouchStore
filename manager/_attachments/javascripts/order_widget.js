@@ -82,7 +82,7 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
             widget.copyCostsToForm();
             return true;
         } else {
-            e.preventDefault();
+            return false;
         }
     });
 

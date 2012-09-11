@@ -6,18 +6,20 @@
         </div>
     </td>
     <td>
-        <div class="input-prepend">
-            <span class="add-on">$</span><input class="unit-cost input-mini" type="text" value="<%= unitCost %>">
+        <div class="control-group">
+            <div class="input-prepend controls">
+                <span class="add-on">$</span><input class="unit-cost input-mini" type="text" value="<%= unitCost %>">
+            </div>
         </div>
     </td>
     <td class="item-count"><%= count %></td>
     <td class="item-name control-group">
         <div class="controls">
-        <% if (is_unknown) { %>
-            <button class="btn btn-warning is-unknown"><i class="icon-question-sign icon-white"></i> Unknown</button>
-        <% } else { %>
-            <%= name %>
-        <% } %>
+            <% if (is_unknown) { %>
+                <button class="btn btn-warning is-unknown"><i class="icon-question-sign icon-white"></i> Unknown</button>
+            <% } else { %>
+                <%= name %>
+            <% } %>
         </div>
     </td>
     <td class="item-scan"><%= scan %></td>

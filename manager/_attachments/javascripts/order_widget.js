@@ -206,9 +206,11 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
         input.remove();
         this.getTableRowForScan(scan)
             .then(function(tr) {
-                tr.animate( { height: '0px' },
-                            { duration: 500,
-                                complete: function() { tr.remove() } });
+                tr.animate( { height: '0px',
+                              opacity: 0.0 },
+                            500,
+                            function() { tr.remove() }
+                          );
             });
     };
             

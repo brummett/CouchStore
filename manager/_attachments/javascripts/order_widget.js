@@ -17,6 +17,7 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
         widget.orderForm.find('.error').removeClass('error');
         widget.orderForm.find('.warning').removeClass('warning');
         widget.orderForm.find('.help-inline').remove();
+        widget.table.find('.help-inline').remove();
 
         var numErrors = 0;
         function markError(elt, message) {

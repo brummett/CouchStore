@@ -42,8 +42,9 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
                 markError(input, '<i class="icon-arrow-left"></i> Click to provide details');
             }
         };
-        function checkCostsPrices(input) {
-
+        function checkCostsPrices(inputs) {
+            inputs.each(required);
+            inputs.each(function(input) { matches(input, '') });
         };
 
         var dateInput = $('input#date', this.orderForm);

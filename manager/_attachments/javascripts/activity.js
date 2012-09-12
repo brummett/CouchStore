@@ -229,14 +229,19 @@ $.couch.app(function(couchapp) {
             true;
         });
 
-        this.get('#/receive-shipment', function(context) {
+        this.get('#/order/(.*)/(.*)', function(context) {
+            var order_type = context.params['splat'][0],
+                order_number = context.params['splat'][1];
+
             warehouseList(function(warehouses) {
                 var now = new Date;
                 var month = now.getMonth() + 1;
                 var dateStr = now.getFullYear() + '-'
                                     + (month < 10 ? '0' : '') + month + '-'
                                     + (now.getDate() < 10 ? '0' : '') + now.getDate();
-                context.render('templates/activity-receive-shipment.template',
+                var template = 'templates/activity-' + order_type + '.template';
+                
+                context.render(template,
                                  { currentDate: dateStr , warehouses: warehouses })
                         .swap()
                         .then(function() {
@@ -245,12 +250,14 @@ $.couch.app(function(couchapp) {
             });
         });
 
-        this.post('#/receive-shipment', function(context) {
+        this.post('#/order/(.*)/(.*)', function(context) {
             var params = context.params,
                 doc,
                 items = {},
-                item_costs = {};
-            context.log('in receive-shipment');
+                item_costs = {},
+                order_type = params['splat'][0],
+                order_number = params['splat'][1];
+            context.log('in post order type '+order_type+' order number '+order_number);
 
             // Shouldn't have to validate anything, since validation is done by the order widget
             // before the post is made

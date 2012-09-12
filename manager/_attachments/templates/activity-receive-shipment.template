@@ -1,5 +1,5 @@
 <h1>Receive Shipment</h1>
-<form action="#/receive-shipment" method="post" class="form-horizontal" id="order-form">
+<form action="#/order/receive-shipment/" method="post" class="form-horizontal" id="order-form">
     <div class="control-group">
         <label class="control-label" for="date">Date</label>
         <div class="controls">

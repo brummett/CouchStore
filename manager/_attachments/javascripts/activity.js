@@ -246,7 +246,61 @@ $.couch.app(function(couchapp) {
         });
 
         this.post('#/receive-shipment', function(context) {
-            1;
+            var params = context.params,
+                doc,
+                items = {},
+                item_costs = {};
+            context.log('in receive-shipment');
+
+            // Shouldn't have to validate anything, since validation is done by the order widget
+            // before the post is made
+
+            // Look through the params and pick out costs and quantities
+            var prop = '',
+                quantity_re = /scan-(\d+)-quan/,
+                cost_re = /scan-(\d+)-cost/,
+                matches;
+
+            for (prop in params) {
+                matches = quantity_re.exec(prop);
+                if (matches && matches.length) {
+                    items[matches[1]] = parseInt(params[prop]);
+                    continue;
+                }
+                matches = cost_re.exec(prop);
+                if (matches && matches.length) {
+                    item_costs[matches[1]] = parseFloat(params[prop]);
+                    continue;
+                }
+            }
+
+            doc = { type: 'order',
+                    'order-type': 'receive',
+                    items: items,
+                    item_costs: item_costs };
+            doc['_id'] = 'order-' + params['order-number'];
+            if (params['_rev']) {
+                doc['_rev'] = params['_rev'];
+            }
+            // Copy some params to the order doc directly
+            var copy_props =  ['customer-name','customer-id','warehouse-id'],
+                i;
+            for (i = 0; i < copy_props.length; i++) {
+                doc[copy_props[i]] = params[copy_props[i]];
+            }
+
+            $.log(doc);
+            couchapp.db.saveDoc(doc, {
+                success: function(data) {
+                    activity.trigger('order-updated', doc);
+                    showNotification('success', 'Receive order saved');
+                    context.$element().empty();
+                    context.redirect('#/');
+                },
+                error: function(status, reason, message) {
+                    showNotification('error', 'Problem saving receive order: '+message);
+                }
+            });
 
         });
 

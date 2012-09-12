@@ -1,5 +1,7 @@
 function(doc) {
     if (doc.type == 'order') {
-        emit(doc.order_number, null);
+        // order doc IDs start with the string 'order-'
+        var order_number = doc._id.substring(6);
+        emit(order_number, doc['order-type']);
     }
 }

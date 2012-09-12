@@ -12,7 +12,32 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
     var widget = this,
         barcodeInput = $('input#barcode', this.barcodeScan),
         vendorInput = $('input#customer-name', this.orderForm),
-        vendorIdInput = $('input#customer-id', this.orderForm);
+        vendorIdInput = $('input#customer-id', this.orderForm),
+        orderNumberInput = $('input#order-number', this.orderForm),
+        numErrors = 0;
+
+    function markError(elt, message) {
+        numErrors += elt.length;
+        elt.parents('.control-group')
+                    .addClass('error')
+                    .find('div.controls')
+                    .append('<span class="help-inline">'+message+'</span>');
+    };
+
+    // This would normally belong inside the submit() handler along with all the other validation functions
+    // but this one requires a trip to the server to get some data.  Sime the submit needs to succeed or fail
+    // right then (can't wait while we talk to the server), we'll have to handle this a different way
+    orderNumberInput.blur(function(e) {
+        numErrors = 0;
+        couchapp.view('orders-by-order-number', {
+            key: orderNumberInput.val(),
+            success: function(data) {
+                if (data.rows.length > 0) {
+                    markError(orderNumberInput, 'Not Unique');
+                }
+            }
+        })
+    });
 
     var typeaheadProcessor = function(jsonString) {
         var data = jQuery.parseJSON(jsonString).rows,
@@ -48,15 +73,6 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
         widget.orderForm.find('.warning').removeClass('warning');
         widget.orderForm.find('.help-inline').remove();
         widget.table.find('.help-inline').remove();
-
-        var numErrors = 0;
-        function markError(elt, message) {
-            numErrors += elt.length;
-            elt.parents('.control-group')
-                        .addClass('error')
-                        .find('div.controls')
-                        .append('<span class="help-inline">'+message+'</span>');
-        };
 
         // Functions to verify different parts of the form
         function required(input) {
@@ -98,6 +114,18 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
             inputs.each(function(idx, input) { required($(input)) });
             inputs.each(function(idx, input) { matches($(input), /\d*\.\d\d/, 'Bad money format') });
         };
+        // The customerIdInput is filled in by the customerInput's blur handler when
+        // the user has put in a known customer
+        function checkKnownCustomer(input) {
+            var customerIdInput = $(input).siblings('input#customer-id'),
+                containingDiv = input.parents('div.controls').first(),
+                unknownCustomerButton;
+            if (customerIdInput.val() == '') {
+                $('<button class="btn btn-warning is-unknown" type="button"><i class="icon-question-sign icon-white"></i> Unknown</button>')
+                    .click( function(e) { context.editItemModal('customer', $('input#customer-name').val()); return false; })
+                    .appendTo(containingDiv);
+            }
+        };
 
         var dateInput = $('input#date', this.orderForm);
         required(dateInput);
@@ -105,7 +133,11 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
         required($('input#order-number', this.orderForm));
         required($('input#customer-name', this.orderForm));
 
+        checkKnownCustomer( $('input#customer-name'), this.orderForm)
+
+        // Do checkUnknownItems after checkKnownCustomer so the latter can make an 'id-unknown' button if necessary
         checkUnknownItems($('button.is-unknown', this.orderForm));
+
         checkCostsPrices($('input.unit-cost', this.table));
 
         if (numErrors == 0) {

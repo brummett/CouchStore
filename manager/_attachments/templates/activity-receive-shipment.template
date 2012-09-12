@@ -10,14 +10,14 @@
     <div class="control-group">
         <label class="control-label" for="order-number">Order number</label>
         <div class="controls">
-            <input type="text" name="order-number" id="order-number" class="input-small">
+            <input type="text" name="order-number" id="order-number" class="input-small span2">
         </div>
     </div>
 
     <div class="control-group">
         <label class="control-label" for="shipped-from-vendor">Shipped from vendor</label>
         <div class="controls">
-            <input type="text" name="customer-name" id="customer-name" class="input-small span3">
+            <input type="text" name="customer-name" id="customer-name" class="input-small span2">
             <input type="hidden" name="customer-id" id="customer-id">
         </div>
     </div>

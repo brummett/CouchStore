@@ -427,7 +427,7 @@ $.couch.app(function(couchapp) {
                 couchapp.db.saveDoc(doc, {
                     success: function(data) {
                         modal.modal('hide');
-                        activity.trigger('item-updated', doc);
+                        activity.trigger(type + '-updated', doc);
                         showNotification('success', type + ' saved');
                     },
                     error: function(status, reason, message) {

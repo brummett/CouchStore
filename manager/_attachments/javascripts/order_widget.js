@@ -195,6 +195,18 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
                 tr.find('td.item-name').text(item.name);
             });
     });
+    activity.bind('customer-updated', function(context,customer) {
+        // called when the add/edit item modal is submitted, so we can update the customer's name
+        var customerNameInput = $('input#customer-name');
+        customerNameInput.val( customer.firstname.concat(' ', customer.lastname));
+        $('input#customer-id').val(customer['_id']);
+
+        // Remove any error messages/buttons left there
+        customerNameInput.parents('.error').removeClass('error');
+        customerNameInput.siblings('button.is-unknown').remove();
+        customerNameInput.siblings('span.help-inline').remove();
+        numErrors = 0;
+    });
 
 
     // Given a scan (usually a barcode, return the table-row

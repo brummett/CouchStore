@@ -10,7 +10,37 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
     this.orderForm = $('form#order-form');
 
     var widget = this,
-        barcodeInput = $('input#barcode', this.barcodeScan);
+        barcodeInput = $('input#barcode', this.barcodeScan),
+        vendorInput = $('input#customer-name', this.orderForm),
+        vendorIdInput = $('input#customer-id', this.orderForm);
+
+    var typeaheadProcessor = function(jsonString) {
+        var data = jQuery.parseJSON(jsonString).rows,
+            seenIds = {},
+            results = [];
+
+        jQuery.each(data, function(idx, item) {
+            if (! seenIds[item.id]) {
+                results.push(item);
+                seenIds[item.id] = 1;
+            }
+        });
+        return results;
+    };
+
+    vendorInput.typeahead({
+        ajax: {
+            url: '_view/customers-by-any-name',
+            preDispatch: function(query) { vendorIdInput.val(''); return { startkey: '"' + query + '"', endkey: '"' + query+'ZZZZZZ"' } },
+            preProcess: typeaheadProcessor,
+            method: 'get',
+            triggerLength: 2,
+        },
+        itemSelected: function(elt, vendorId, vendorName) { $('input#customer-id').val(vendorId) },
+        display: 'key',
+        val: 'id'
+    });
+
 
     this.orderForm.submit(function(e) {
         // Clear any prior errors/warnings

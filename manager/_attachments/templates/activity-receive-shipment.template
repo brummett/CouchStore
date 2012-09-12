@@ -17,14 +17,15 @@
     <div class="control-group">
         <label class="control-label" for="shipped-from-vendor">Shipped from vendor</label>
         <div class="controls">
-            <input type="text" name="shipped-from-vendor" id="shipped-from-vendor" class="input-small">
+            <input type="text" name="customer-name" id="customer-name" class="input-small span3">
+            <input type="hidden" name="customer-id" id="customer-id">
         </div>
     </div>
 
     <div class="control-group">
-        <label class="control-label" for="received-to">Received to</label>
+        <label class="control-label" for="warehouse-id">Received to</label>
         <div class="controls">
-            <select name="received-to" id="received-to">
+            <select name="warehouse-id" id="warehouse-id">
                 <% for (var i in warehouses) { %>
                     <option value="<%= warehouses[i].id %>"><%= warehouses[i].key %></option>
                 <% } %>

@@ -103,7 +103,7 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
         required(dateInput);
         is_date(dateInput);
         required($('input#order-number', this.orderForm));
-        required($('input#shipped-from-vendor', this.orderForm));
+        required($('input#customer-name', this.orderForm));
 
         checkUnknownItems($('button.is-unknown', this.orderForm));
         checkCostsPrices($('input.unit-cost', this.table));

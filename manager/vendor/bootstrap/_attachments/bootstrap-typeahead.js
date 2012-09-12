@@ -1,55 +1,35 @@
 ﻿//  ----------------------------------------------------------------------------
 //
 //  bootstrap-typeahead.js  
-//  https://github.com/tcrosen/twitter-bootstrap-typeahead
 //
 //  Twitter Bootstrap Typeahead Plugin
-//  v1.2
+//  v1.2.2
+//  https://github.com/tcrosen/twitter-bootstrap-typeahead
 //
-//  Description
-//  ----------
-//  Custom implementation of Twitter's Bootstrap Typeahead
-//  http://twitter.github.com/bootstrap/javascript.html#typeahead
 //
 //  Author
 //  ----------
 //  Terry Rosen
-//  http://github.com/tcrosen/
+//  tcrosen@gmail.com | @rerrify | github.com/tcrosen/
 //
-//  Contributions
+//
+//  Description
 //  ----------
-//  With permission, AJAX logic based on Paul Warelis' AJAX Typeahead
-//  https://github.com/pwarelis/Ajax-Typeahead
+//  Custom implementation of Twitter's Bootstrap Typeahead Plugin
+//  http://twitter.github.com/bootstrap/javascript.html#typeahead
+//
 //
 //  Requirements
 //  ----------
-//  jQuery 1.7.x
-//  Twitter Bootstrap 2.0.x
+//  jQuery 1.7+
+//  Twitter Bootstrap 2.0+
 //
-//  License
-//  ----------
-//  Original Plugin:
-//
-//  Copyright 2012 Twitter, Inc.
-//  
-//  Licensed under the Apache License, Version 2.0 (the "License");
-//  you may not use this file except in compliance with the License.
-//  You may obtain a copy of the License at
-//  
-//  http://www.apache.org/licenses/LICENSE-2.0
-//  
-//  Unless required by applicable law or agreed to in writing, software
-//  distributed under the License is distributed on an "AS IS" BASIS,
-//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//  See the License for the specific language governing permissions and
-//  limitations under the License.
-// 
 //  ----------------------------------------------------------------------------
 
 !
 function ($) {
 
-    "use strict"
+    "use strict";
 
     //------------------------------------------------------------------
     //
@@ -60,12 +40,17 @@ function ($) {
         this.options = $.extend(true, {}, $.fn.typeahead.defaults, options);
         this.$menu = $(this.options.menu).appendTo('body');
         this.shown = false;
-        this.sorter = this.options.sorter || this.sorter;
+
+        // Method overrides    
+        this.eventSupported = this.options.eventSupported || this.eventSupported;
+        this.grepper = this.options.grepper || this.grepper;
         this.highlighter = this.options.highlighter || this.highlighter;
+        this.lookup = this.options.lookup || this.lookup;
         this.matcher = this.options.matcher || this.matcher;
+        this.render = this.options.render || this.render;
         this.select = this.options.select || this.select;
-        this.render = this.options.render || this.render;     
-        this.source = this.options.source || this.source;   
+        this.sorter = this.options.sorter || this.sorter;
+        this.source = this.options.source || this.source;        
                 
         if (!this.source.length) {
             var ajax = this.options.ajax;
@@ -81,12 +66,34 @@ function ($) {
             }
         }
 
-        this.listen();
+        this.listen();        
     }
 
     Typeahead.prototype = {
 
         constructor: Typeahead,
+
+        //=============================================================================================================
+        //
+        //  Utils
+        //
+        //=============================================================================================================
+
+        //------------------------------------------------------------------
+        //
+        //  Check if an event is supported by the browser eg. 'keypress'
+        //  * This was included to handle the "exhaustive deprecation" of jQuery.browser in jQuery 1.8
+        //
+        eventSupported: function(eventName) {         
+            var isSupported = (eventName in this.$element);
+
+            if (!isSupported) {
+              this.$element.setAttribute(eventName, 'return;');
+              isSupported = typeof this.$element[eventName] === 'function';
+            }
+
+            return isSupported;
+        },
 
         //=============================================================================================================
         //
@@ -100,36 +107,38 @@ function ($) {
         //
         ajaxer: function () { 
             var that = this,
-                query = this.$element.val();
+                query = that.$element.val();
             
-            if (query === this.query) {
-                return this;
+            if (query === that.query) {
+                return that;
             }
     
             // Query changed
-            this.query = query;
+            that.query = query;
 
             // Cancel last timer if set
-            if (this.ajax.timerId) {
-                clearTimeout(this.ajax.timerId);
-                this.ajax.timerId = null;
+            if (that.ajax.timerId) {
+                clearTimeout(that.ajax.timerId);
+                that.ajax.timerId = null;
             }
             
-            if (!query || query.length < this.ajax.triggerLength) {
+            if (!query || query.length < that.ajax.triggerLength) {
                 // Cancel the ajax callback if in progress
-                if (this.ajax.xhr) {
-                    this.ajax.xhr.abort();
-                    this.ajax.xhr = null;
-                    this.ajaxToggleLoadClass(false);
+                if (that.ajax.xhr) {
+                    that.ajax.xhr.abort();
+                    that.ajax.xhr = null;
+                    that.ajaxToggleLoadClass(false);
                 }
 
-                return this.shown ? this.hide() : this;
+                return that.shown ? that.hide() : that;
             }
                     
             // Query is good to send, set a timer
-            this.ajax.timerId = setTimeout($.proxy(that.ajaxExecute(query), this), this.ajax.timeout);
-            
-            return this;
+            that.ajax.timerId = setTimeout(function() {
+                $.proxy(that.ajaxExecute(query), that)
+            }, that.ajax.timeout);
+                    
+            return that;
         },
 
         //------------------------------------------------------------------
@@ -143,7 +152,7 @@ function ($) {
             if (this.ajax.xhr) this.ajax.xhr.abort();
             
             var params = this.ajax.preDispatch ? this.ajax.preDispatch(query) : { query : query };
-            var jAjax = (this.ajax.method == "post") ? $.post : $.get;
+            var jAjax = (this.ajax.method === "post") ? $.post : $.get;
             this.ajax.xhr = jAjax(this.ajax.url, params, $.proxy(this.ajaxLookup, this));
             this.ajax.timerId = null;
         },
@@ -153,23 +162,22 @@ function ($) {
         //  Perform a lookup in the AJAX results
         //
         ajaxLookup: function (data) { 
-            var that = this, 
-                items;
+            var items;
             
-            that.ajaxToggleLoadClass(false);
+            this.ajaxToggleLoadClass(false);
 
-            if (!that.ajax.xhr) return;
+            if (!this.ajax.xhr) return;
             
-            if (that.ajax.preProcess) {
-                data = that.ajax.preProcess(data);
+            if (this.ajax.preProcess) {
+                data = this.ajax.preProcess(data);
             }
 
             // Save for selection retreival
-            that.ajax.data = data;
+            this.ajax.data = data;
 
             items = this.grepper(this.ajax.data);
     
-            if (!items.length) {
+            if (!items || !items.length) {
                 return this.shown ? this.hide() : this;
             }
 
@@ -210,10 +218,10 @@ function ($) {
                 if (!that.query) {
                     return that.shown ? that.hide() : that;
                 }
-
-                items = this.grepper(that.source);
-
-                if (!items.length) {
+                
+                items = that.grepper(that.source);
+                
+                if (!items || !items.length) {
                     return that.shown ? that.hide() : that;
                 }
 
@@ -229,14 +237,12 @@ function ($) {
             var that = this,
                 items;
 
-            // Helpful console log for developers who may have accidentally specified an invalid property name
-            if (!data[0].hasOwnProperty(that.options.display)) {                
-                console.log('typeahead.lookup(): source object has no property named "' + that.options.display + '"');
+            if (data && data.length && !data[0].hasOwnProperty(that.options.display)) {                
                 return null;
             } 
 
             items = $.grep(data, function (item) {
-                return that.matcher(item[that.options.display]);
+                return that.matcher(item[that.options.display], item);
             });
 
             return this.sorter(items);                
@@ -274,7 +280,7 @@ function ($) {
             }
 
             return beginswith.concat(caseSensitive, caseInsensitive);
-        },        
+        },       
 
         //=============================================================================================================
         //
@@ -332,7 +338,7 @@ function ($) {
 
             items = $(items).map(function (i, item) {
                 i = $(that.options.item).attr('data-value', item[that.options.val]);
-                i.find('a').html(that.highlighter(item[that.options.display]));
+                i.find('a').html(that.highlighter(item[that.options.display], item));
                 return i[0];
             });
 
@@ -397,8 +403,8 @@ function ($) {
                          .on('keypress', $.proxy(this.keypress, this))
                          .on('keyup', $.proxy(this.keyup, this));
 
-            if ($.browser.webkit || $.browser.msie) {
-                this.$element.on('keydown', $.proxy(this.keypress, this));
+            if (this.eventSupported('keydown')) {
+               this.$element.on('keydown', $.proxy(this.keypress, this));
             }
 
             this.$menu.on('click', $.proxy(this.click, this))
@@ -478,8 +484,10 @@ function ($) {
             e.stopPropagation();
             e.preventDefault();
             setTimeout(function () {
-                that.hide();
-            }, 150);
+                if (!that.$menu.is(':focus')) {
+                  that.hide();
+                }
+            }, 150)
         },
 
         //------------------------------------------------------------------
@@ -519,7 +527,7 @@ function ($) {
             if (typeof option === 'string') {
                 data[option]();
             }
-        })
+        });
     }
 
     //------------------------------------------------------------------

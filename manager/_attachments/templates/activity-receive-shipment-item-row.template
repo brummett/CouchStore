@@ -16,7 +16,7 @@
     <td class="item-name control-group">
         <div class="controls">
             <% if (is_unknown) { %>
-                <button class="btn btn-warning is-unknown"><i class="icon-question-sign icon-white"></i> Unknown</button>
+                <button class="btn btn-warning is-unknown" type="button"><i class="icon-question-sign icon-white"></i> Unknown</button>
             <% } else { %>
                 <%= name %>
             <% } %>

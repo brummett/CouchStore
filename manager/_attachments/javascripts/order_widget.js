@@ -16,6 +16,9 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
         orderNumberInput = $('input#order-number', this.orderForm),
         numErrors = 0;
 
+    // Turn off browser autocomplete for all the form fields
+    $('input[type=text]').attr('autocomplete', 'off');
+
     function markError(elt, message) {
         numErrors += elt.length;
         elt.parents('.control-group')
@@ -23,7 +26,16 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
                     .find('div.controls')
                     .append('<span class="help-inline">'+message+'</span>');
     };
+    function clearError(elt) {
+        numErrors -= elt.length;
+        if (numErrors < 0) { numErrors = 0; }
 
+        elt.parents('.control-group')
+            .removeClass('error')
+            .find('div.controls span.help-inline')
+            .remove();
+        elt.siblings('button.is-unknown').remove();
+    };
     // This would normally belong inside the submit() handler along with all the other validation functions
     // but this one requires a trip to the server to get some data.  Sime the submit needs to succeed or fail
     // right then (can't wait while we talk to the server), we'll have to handle this a different way
@@ -33,12 +45,15 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
             key: orderNumberInput.val(),
             success: function(data) {
                 if (data.rows.length > 0) {
-                    markError(orderNumberInput, 'Not Unique');
+                    markError(orderNumberInput, 'Duplicate Order Number');
+                } else {
+                    clearError(orderNumberInput);
                 }
             }
         })
     });
 
+    // Type ahead code for the customer/vendor field
     var typeaheadProcessor = function(jsonString) {
         var data = jQuery.parseJSON(jsonString).rows,
             seenIds = {},
@@ -61,7 +76,10 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
             method: 'get',
             triggerLength: 2,
         },
-        itemSelected: function(elt, vendorId, vendorName) { $('input#customer-id').val(vendorId) },
+        itemSelected: function(elt, vendorId, vendorName) {
+                            $('input#customer-id').val(vendorId);
+                            clearError($('input#customer-name'));
+                        },
         display: 'key',
         val: 'id'
     });
@@ -114,8 +132,8 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
             inputs.each(function(idx, input) { required($(input)) });
             inputs.each(function(idx, input) { matches($(input), /\d*\.\d\d/, 'Bad money format') });
         };
-        // The customerIdInput is filled in by the customerInput's blur handler when
-        // the user has put in a known customer
+        // The customerIdInput is filled in by the itemSelected handler of the customer/vendor input
+        // when the user has put in a known customer
         function checkKnownCustomer(input) {
             var customerIdInput = $(input).siblings('input#customer-id'),
                 containingDiv = input.parents('div.controls').first(),

@@ -19,16 +19,24 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
     // Turn off browser autocomplete for all the form fields
     $('input[type=text]').attr('autocomplete', 'off');
 
+    function hasError(elt) {
+        if ( elt.parents('.control-group').hasClass('error') ) {
+            return elt.siblings('span.help-inline').text();
+        } else {
+            return false;
+        }
+    };
     function markError(elt, message) {
         numErrors += elt.length;
-        elt.parents('.control-group')
-                    .addClass('error')
-                    .find('div.controls')
-                    .append('<span class="help-inline">'+message+'</span>');
+        if (! hasError(elt)) {
+            elt.parents('.control-group')
+                .addClass('error')
+                .find('div.controls')
+                .append('<span class="help-inline">'+message+'</span>');
+        }
     };
     function clearError(elt) {
         numErrors -= elt.length;
-        if (numErrors < 0) { numErrors = 0; }
 
         elt.parents('.control-group')
             .removeClass('error')
@@ -40,7 +48,6 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
     // but this one requires a trip to the server to get some data.  Sime the submit needs to succeed or fail
     // right then (can't wait while we talk to the server), we'll have to handle this a different way
     orderNumberInput.blur(function(e) {
-        numErrors = 0;
         couchapp.view('orders-by-order-number', {
             key: orderNumberInput.val(),
             success: function(data) {
@@ -87,10 +94,19 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
 
     this.orderForm.submit(function(e) {
         // Clear any prior errors/warnings
+        var orderNumberError = hasError($('input#order-number'));
+
         widget.orderForm.find('.error').removeClass('error');
         widget.orderForm.find('.warning').removeClass('warning');
         widget.orderForm.find('.help-inline').remove();
         widget.table.find('.help-inline').remove();
+
+        if (orderNumberError) {
+            numErrors = 1;
+            markError($('input#order-number'), orderNumberError);
+        } else {
+            numErrors = 0;
+        }
 
         // Functions to verify different parts of the form
         function required(input) {

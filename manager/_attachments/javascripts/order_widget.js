@@ -168,10 +168,10 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
     });
 
     // Given a scan (usually a barcode), return the hidden input
-    // element from order-form.  It creates a new input if it's not
-    // there yet
+    // element from order-form that stores the quantity.  It creates a new
+    // input if it's not there yet
     this.inputForScan = function(scan) {
-        var input_id = 'scan-'+scan;
+        var input_id = 'scan-'+scan+'-quan';
         var input = $('input#'+input_id);
         if (input.length == 0) {
             input = $('<input id="' + input_id + '" name="' + input_id + '" type="hidden" value="0">').appendTo(this.orderForm);

@@ -154,7 +154,7 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
             var customerIdInput = $(input).siblings('input#customer-id'),
                 containingDiv = input.parents('div.controls').first(),
                 unknownCustomerButton;
-            if (customerIdInput.val() == '') {
+            if ($(input).val() != '' && customerIdInput.val() == '' && $(input).siblings('button.is-unknown').length == 0) {
                 $('<button class="btn btn-warning is-unknown" type="button"><i class="icon-question-sign icon-white"></i> Unknown</button>')
                     .click( function(e) { context.editItemModal('customer', $('input#customer-name').val()); return false; })
                     .appendTo(containingDiv);

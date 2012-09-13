@@ -1,0 +1,62 @@
+<h1>Record Sale</h1>
+<form action="#/order/record-sale/" method="post" class="form-horizontal" id="order-form">
+    <div class="control-group">
+        <label class="control-label" for="date">Date</label>
+        <div class="controls">
+            <input type="date" name="date" id="date" class="input-small" value="<%= currentDate %>">
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="order-number">Order number</label>
+        <div class="controls">
+            <input type="text" name="order-number" id="order-number" class="input-small span2">
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="warehouse-id">Shipped From</label>
+        <div class="controls">
+            <select name="warehouse-id" id="warehouse-id">
+                <% for (var i in warehouses) { %>
+                    <option value="<%= warehouses[i].id %>"><%= warehouses[i].key %></option>
+                <% } %>
+            </select>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="customer-name">Customer</label>
+        <div class="controls">
+            <input type="text" name="customer-name" id="customer-name" class="input-small span2">
+            <input type="hidden" name="customer-id" id="customer-id">
+        </div>
+    </div>
+
+    <button class="btn" type="submit" id="all-done"><i class="icon-ok"></i> All done</button>
+
+</form>
+
+<div class="span4">
+<form class="form-inline" id="barcode-scan">
+        <div class="input-prepend input-append">
+            <span class="add-on"><i class="icon-barcode"></i></span><input type="text" size="14" id="barcode" placeholder="barcode"/><button class="btn btn-primary btn-small" id="scan">Scan</button>
+        </div>
+</form>
+</div>
+
+<div>
+    <table class="table table-striped table-condensed" id="order-display" style="table-layout: fixed">
+        <thead>
+            <tr>    <th style="width: 10%"></th>
+                    <th style="width: 15%">Unit price</th>
+                    <th style="width: 10%">Count</th>
+                    <th>Name</th>
+                    <th>Scan</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+

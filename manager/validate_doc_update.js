@@ -20,7 +20,7 @@ function(newDoc, savedDoc, userCtx) {
             require('warehouse-id');
     
             // An order must have either an 'items', 'unfileld-items' or both
-            if ((! 'items' in newDoc) || ('unfilled-items' in newDoc)) {
+            if ((! 'items' in newDoc) || ! ('unfilled-items' in newDoc)) {
                 throw({ forbidden: "Orders must have either an 'items' or 'unfilled-items' field"});
             }
     
@@ -37,19 +37,23 @@ function(newDoc, savedDoc, userCtx) {
                     }
                     // And also appear in the costs list
                     if (! ( barcode in newDoc['item-costs'])) {
-                        throw({ forbidden: 'Barcode ' + key + ' appears in the quantity list but not the item-costs list'});
+                        throw({ forbidden: 'Barcode ' + barcode + ' appears in the quantity list but not the item-costs list'});
                     }
                 }
             }
     
-            for (key in newDoc['item-costs']) {
+            for (barcode in newDoc['item-costs']) {
                 // item-costs must be an integer (cents)
-                if (Math.round(newDoc['item-costs'][key]) != newDoc['item-costs'][key]) {
-                    throw({ forbidden: 'Cost for barcode ' + key + ' must be an integer number of cents'});
+                if (Math.round(newDoc['item-costs'][barcode]) != newDoc['item-costs'][barcode]) {
+                    throw({ forbidden: 'Cost for barcode ' + barcode + ' must be an integer number of cents'});
                 }
                 // and also appear in the quantity list
-                if (! ( key in newDoc.items) && ! ( key in newDoc['unfilled-items'])) {
-                    throw({ forbidden: 'Barcode ' + key + ' appears in the cost list but not the quantity list'});
+                if ( ( ('items' in newDoc) && (! (barcode in newDoc['items'])) )
+                        &&
+                      ( ! (barcode in newDoc['unfilled-items']))
+                ) {
+log(newDoc);
+                    throw({ forbidden: 'Barcode ' + barcode + ' appears in the cost list but not the quantity list'});
                 }
             }
         },

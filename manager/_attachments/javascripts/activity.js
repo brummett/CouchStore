@@ -184,6 +184,8 @@ $.couch.app(function(couchapp) {
             // This updates the price/cost of all items in the order
             updateOrdersItems: function(orderDoc) {
                 var cost_price_key = orderDoc['order-type'] == 'receive' ? 'cost-cents' : 'price-cents',
+                    items_to_update = {},
+                    barcode,
                     d = $.Deferred();
 
                 if ('_rev' in orderDoc) {
@@ -191,8 +193,18 @@ $.couch.app(function(couchapp) {
                     d.resolve();
                 } else {
                     // Go through the items list and update the cost/price of them
+                    if ('items' in orderDoc) {
+                        $.each(orderDoc['items'], function(barcode, quan) {
+                            items_to_update[barcode] = quan;
+                        });
+                    }
+                    if ('unfilled-items' in orderDoc) {
+                        $.each(orderDoc['unfilled-items'], function(barcode, quan) {
+                            items_to_update[barcode] = quan;
+                        });
+                    }
                     couchapp.view('items-by-barcode', {
-                        keys: Object.keys(orderDoc.items),
+                        keys: Object.keys(items_to_update),
                         include_docs: true,
                         success: function(data) {
                             var i = 0,
@@ -325,41 +337,55 @@ $.couch.app(function(couchapp) {
 
         this.post('#/order/(.*)/(.*)', function(context) {
             var params = context.params,
-                orderDoc,
+                orderDoc = {},
                 items = {},
                 item_costs = {},
                 order_type = params['splat'][0],
-                order_number = params['splat'][1];
-            context.log('in post order type '+order_type+' order number '+order_number);
+                order_number = params['splat'][1] || params['order-number'];
+            $.log('in post order type '+order_type+' order number '+order_number);
 
             // Shouldn't have to validate anything, since validation is done by the order widget
             // before the post is made
 
             // Look through the params and pick out costs and quantities
-            var prop = '',
-                matches;
 
-            for (prop in params) {
-                matches = /scan-(\d+)-quan/.exec(prop);
-                if (matches && matches.length) {
-                    items[matches[1]] = parseInt(params[prop]);
-                    continue;
+            (function() {
+                var prop = '',
+                    matches;
+                for (prop in params) {
+                    matches = /scan-(\d+)-quan/.exec(prop);
+                    if (matches && matches.length) {
+                        items[matches[1]] = parseInt(params[prop]);
+                        continue;
+                    }
+                    matches = /scan-(\d+)-cost/.exec(prop);
+                    if (matches && matches.length) {
+                        item_costs[matches[1]] = Math.round(parseFloat(params[prop]) * 100);
+                        continue;
+                    }
                 }
-                matches = /scan-(\d+)-cost/.exec(prop);
-                if (matches && matches.length) {
-                    item_costs[matches[1]] = Math.round(parseFloat(params[prop]) * 100);
-                    continue;
-                }
+            })();
+
+            orderDoc._id = 'order-' + params['order-number'];
+            orderDoc.type = 'order';
+            orderDoc['item-costs'] = item_costs;
+
+            if (order_type == 'receive-shipment') {
+                orderDoc['order-type'] = 'receive';
+                orderDoc.items = items;
+            } else if (order_type == 'record-sale') {
+                doc_id = 'order-' + params['order-number'];
+                orderDoc['order-type'] = 'sale';
+                orderDoc['unfilled-items'] = items;
+            } else {
+                showNotification('error', 'Unknown type of order: '+order_type);
+                return;
             }
 
-            orderDoc = { type: 'order',
-                    'order-type': 'receive',
-                    items: items,
-                    'item-costs': item_costs };
-            orderDoc['_id'] = 'order-' + params['order-number'];
             if (params['_rev']) {
                 orderDoc['_rev'] = params['_rev'];
             }
+
             // Copy some params to the order doc directly
             var copy_props =  ['customer-name','customer-id','warehouse-id'],
                 i;
@@ -373,12 +399,13 @@ $.couch.app(function(couchapp) {
                     context.saveOrder(orderDoc)
                         .then(
                             function() {
-                                context.showNotification('success', 'Order saved!');
+                                context.showNotification('success', 'Order ' + order_number + ' saved!');
                                 activity.trigger('order-updated', orderDoc);
                                 context.$element().empty();
                                 context.redirect('#/');
                             },
                             function(status, reason, message) {
+                                $.log('Problem saving order '+ orderDoc._id +"\nmessage: " + message + "\nstatus: " + status + "\nreason: "+reason);
                                 context.showNotification('error' , 'Problem saving order ' + orderDoc._id + ': ' + message);
                             }
                         );

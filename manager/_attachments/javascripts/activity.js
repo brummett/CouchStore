@@ -530,12 +530,14 @@ $.couch.app(function(couchapp) {
                     doc['_rev'] = context.params['_rev'];
                 }
                 if (type == 'item') {
+                    var cost  = context.params['cost'] ? parseFloat(context.params['cost']) : 0
+                        price = context.params['price'] ? parseFloat(context.params['price']) : 0
                     doc['barcode']      = context.params['barcode'];
                     doc['name']         = context.params['name'];
                     doc['sku']          = context.params['sku'];
                     doc['description']  = context.params['description'];
-                    doc['cost-cents']   = Math.round(context.params['cost'] * 100);
-                    doc['price-cents']  = Math.round(context.params['price'] * 100);
+                    doc['cost-cents']   = Math.round(cost * 100);
+                    doc['price-cents']  = Math.round(price * 100);
                 } else if (type == 'customer') {
                     doc['firstname'] = context.params['firstname'];
                     doc['lastname'] = context.params['lastname'];

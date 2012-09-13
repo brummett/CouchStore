@@ -179,7 +179,77 @@ $.couch.app(function(couchapp) {
                                 });
                     });
                 return d;
+            },
+
+            // This updates the price/cost of all items in the order
+            updateOrdersItems: function(orderDoc) {
+                var cost_price_key = orderDoc['order-type'] == 'receive' ? 'cost-cents' : 'price-cents',
+                    d = $.Deferred();
+
+                if ('_rev' in orderDoc) {
+                    // Don't update item costs/prices when editing an exiting order
+                    d.resolve();
+                } else {
+                    // Go through the items list and update the cost/price of them
+                    couchapp.view('items-by-barcode', {
+                        keys: Object.keys(orderDoc.items),
+                        include_docs: true,
+                        success: function(data) {
+                            var i = 0,
+                                itemDoc,
+                                barcode,
+                                whenComplete = 'resolve',
+                                waitingOn = data.rows.length;
+
+                            // After processing an item below, they call done()
+                            function done(success) {
+                                if (! success) {
+                                    // A single failure means don't save the order
+                                    whenComplete = 'reject';
+                                }
+                                if (--waitingOn == 0) {
+                                    d[whenComplete]();
+                                }
+                            }
+                            for (i = 0; i < data.rows.length; i++) {
+                                itemDoc = data.rows[i].doc;
+                                barcode = itemDoc.barcode;
+                                (function(i, newCost, itemDoc) {
+                                    if ((newCost != 0) && (newCost != itemDoc[cost_price_key])) {
+                                    // The incoming order has a different cost/price
+                                        orderDoc[cost_price_key] = newCost;
+                                        couchapp.db.saveDoc(itemDoc, {
+                                            success: function() {
+                                                done(true);
+                                            },
+                                            error: function(status, reason, message) {
+                                                context.showNotification('error', 'Problem updating ' + cost_price_key + ' for item ' + itemDoc.desc + ': ' + message);
+                                                done(false);
+                                            }
+                                        });
+                                    } else {
+                                        done(true);
+                                    }
+                                })(i, orderDoc['item-costs'][barcode], itemDoc);
+                            }
+                        }
+                    });
+                }
+                return d;
+            },
+
+            saveOrder: function(orderDoc) {
+                var d = $.Deferred();
+                couchapp.db.saveDoc(orderDoc, {
+                    success: function() {
+                        d.resolve()
+                    },
+                    error: function(status, reason, message) {
+                        d.reject(status, reason, message);
+                    }
+                });
             }
+
         });
 
         function warehouseList (callback) {
@@ -254,7 +324,7 @@ $.couch.app(function(couchapp) {
 
         this.post('#/order/(.*)/(.*)', function(context) {
             var params = context.params,
-                doc,
+                orderDoc,
                 items = {},
                 item_costs = {},
                 order_type = params['splat'][0],
@@ -281,33 +351,33 @@ $.couch.app(function(couchapp) {
                 }
             }
 
-            doc = { type: 'order',
+            orderDoc = { type: 'order',
                     'order-type': 'receive',
                     items: items,
-                    item_costs: item_costs };
-            doc['_id'] = 'order-' + params['order-number'];
+                    'item-costs': item_costs };
+            orderDoc['_id'] = 'order-' + params['order-number'];
             if (params['_rev']) {
-                doc['_rev'] = params['_rev'];
+                orderDoc['_rev'] = params['_rev'];
             }
             // Copy some params to the order doc directly
             var copy_props =  ['customer-name','customer-id','warehouse-id'],
                 i;
             for (i = 0; i < copy_props.length; i++) {
-                doc[copy_props[i]] = params[copy_props[i]];
+                orderDoc[copy_props[i]] = params[copy_props[i]];
             }
 
-            $.log(doc);
-            couchapp.db.saveDoc(doc, {
-                success: function(data) {
-                    activity.trigger('order-updated', doc);
-                    showNotification('success', 'Receive order saved');
+            $.log(orderDoc);
+            context.updateOrdersItems(orderDoc)
+                .then( function() {
+                    context.saveOrder(orderDoc)
+                }).done( function() {
+                    context.showNotification('success', 'Order saved!');
+                    activity.trigger('order-updated', orderDoc);
                     context.$element().empty();
                     context.redirect('#/');
-                },
-                error: function(status, reason, message) {
-                    showNotification('error', 'Problem saving receive order: '+message);
-                }
-            });
+                }).fail( function(status, reason, message) {
+                    context.showNotification('error' , 'Problem saving order ' + orderDoc._id + ': ' + message);
+                });
 
         });
 

@@ -15,7 +15,7 @@
     </div>
 
     <div class="control-group">
-        <label class="control-label" for="shipped-from-vendor">Shipped from vendor</label>
+        <label class="control-label" for="customer-name">Shipped from vendor</label>
         <div class="controls">
             <input type="text" name="customer-name" id="customer-name" class="input-small span2">
             <input type="hidden" name="customer-id" id="customer-id">

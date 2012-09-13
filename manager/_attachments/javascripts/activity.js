@@ -464,8 +464,8 @@ $.couch.app(function(couchapp) {
                     doc['name']         = context.params['name'];
                     doc['sku']          = context.params['sku'];
                     doc['description']  = context.params['description'];
-                    doc['cost-cents']   = context.params['cost'] * 100;
-                    doc['price-cents']  = context.params['price'] * 100;
+                    doc['cost-cents']   = Math.round(context.params['cost'] * 100);
+                    doc['price-cents']  = Math.round(context.params['price'] * 100);
                 } else if (type == 'customer') {
                     doc['firstname'] = context.params['firstname'];
                     doc['lastname'] = context.params['lastname'];

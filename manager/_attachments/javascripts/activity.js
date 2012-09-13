@@ -340,6 +340,7 @@ $.couch.app(function(couchapp) {
                 orderDoc = {},
                 items = {},
                 item_costs = {},
+                next_url = '',
                 order_type = params['splat'][0],
                 order_number = params['splat'][1] || params['order-number'];
             $.log('in post order type '+order_type+' order number '+order_number);
@@ -373,10 +374,11 @@ $.couch.app(function(couchapp) {
             if (order_type == 'receive-shipment') {
                 orderDoc['order-type'] = 'receive';
                 orderDoc.items = items;
+                next_url = '#/';   // Go back to the start page
             } else if (order_type == 'record-sale') {
-                doc_id = 'order-' + params['order-number'];
                 orderDoc['order-type'] = 'sale';
                 orderDoc['unfilled-items'] = items;
+                next_url = context.path;  // stay at the same URL
             } else {
                 showNotification('error', 'Unknown type of order: '+order_type);
                 return;
@@ -402,7 +404,7 @@ $.couch.app(function(couchapp) {
                                 context.showNotification('success', 'Order ' + order_number + ' saved!');
                                 activity.trigger('order-updated', orderDoc);
                                 context.$element().empty();
-                                context.redirect('#/');
+                                context.redirect(next_url);
                             },
                             function(status, reason, message) {
                                 $.log('Problem saving order '+ orderDoc._id +"\nmessage: " + message + "\nstatus: " + status + "\nreason: "+reason);

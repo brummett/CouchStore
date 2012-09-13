@@ -276,7 +276,7 @@ $.couch.app(function(couchapp) {
                 }
                 matches = /scan-(\d+)-cost/.exec(prop);
                 if (matches && matches.length) {
-                    item_costs[matches[1]] = parseFloat(params[prop]);
+                    item_costs[matches[1]] = Math.round(parseFloat(params[prop]) * 100);
                     continue;
                 }
             }

@@ -235,7 +235,7 @@ $.couch.app(function(couchapp) {
                         }
                     });
                 }
-                return d;
+                return d.promise();
             },
 
             saveOrder: function(orderDoc) {
@@ -248,6 +248,7 @@ $.couch.app(function(couchapp) {
                         d.reject(status, reason, message);
                     }
                 });
+                return d.promise();
             }
 
         });
@@ -370,13 +371,17 @@ $.couch.app(function(couchapp) {
             context.updateOrdersItems(orderDoc)
                 .then( function() {
                     context.saveOrder(orderDoc)
-                }).done( function() {
-                    context.showNotification('success', 'Order saved!');
-                    activity.trigger('order-updated', orderDoc);
-                    context.$element().empty();
-                    context.redirect('#/');
-                }).fail( function(status, reason, message) {
-                    context.showNotification('error' , 'Problem saving order ' + orderDoc._id + ': ' + message);
+                        .then(
+                            function() {
+                                context.showNotification('success', 'Order saved!');
+                                activity.trigger('order-updated', orderDoc);
+                                context.$element().empty();
+                                context.redirect('#/');
+                            },
+                            function(status, reason, message) {
+                                context.showNotification('error' , 'Problem saving order ' + orderDoc._id + ': ' + message);
+                            }
+                        );
                 });
 
         });

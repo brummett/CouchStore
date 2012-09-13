@@ -266,17 +266,15 @@ $.couch.app(function(couchapp) {
 
             // Look through the params and pick out costs and quantities
             var prop = '',
-                quantity_re = /scan-(\d+)-quan/,
-                cost_re = /scan-(\d+)-cost/,
                 matches;
 
             for (prop in params) {
-                matches = quantity_re.exec(prop);
+                matches = /scan-(\d+)-quan/.exec(prop);
                 if (matches && matches.length) {
                     items[matches[1]] = parseInt(params[prop]);
                     continue;
                 }
-                matches = cost_re.exec(prop);
+                matches = /scan-(\d+)-cost/.exec(prop);
                 if (matches && matches.length) {
                     item_costs[matches[1]] = parseFloat(params[prop]);
                     continue;

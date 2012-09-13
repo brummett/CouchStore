@@ -20,7 +20,7 @@ function(newDoc, savedDoc, userCtx) {
             require('warehouse-id');
     
             // An order must have either an 'items', 'unfileld-items' or both
-            if ((! 'items' in newDoc) || ! ('unfilled-items' in newDoc)) {
+            if (!( 'items' in newDoc) && ! ('unfilled-items' in newDoc)) {
                 throw({ forbidden: "Orders must have either an 'items' or 'unfilled-items' field"});
             }
     
@@ -52,7 +52,6 @@ function(newDoc, savedDoc, userCtx) {
                         &&
                       ( ! (barcode in newDoc['unfilled-items']))
                 ) {
-log(newDoc);
                     throw({ forbidden: 'Barcode ' + barcode + ' appears in the cost list but not the quantity list'});
                 }
             }

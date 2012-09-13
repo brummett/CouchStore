@@ -146,6 +146,8 @@ $.couch.app(function(couchapp) {
         this.use('Title');
 
         this.helpers({
+            showNotification: showNotification,
+
             showNav: function() {
                 $('#navbar .logged-in-menu').show();
             },

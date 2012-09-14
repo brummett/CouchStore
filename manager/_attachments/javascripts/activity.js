@@ -349,14 +349,14 @@ $.couch.app(function(couchapp) {
             // before the post is made
 
             // Look through the params and pick out costs and quantities
-
-            (function() {
+            // side-effect is to set items and item_costs
+            function extract_items(fixup) {
                 var prop = '',
                     matches;
                 for (prop in params) {
                     matches = /scan-(\d+)-quan/.exec(prop);
                     if (matches && matches.length) {
-                        items[matches[1]] = parseInt(params[prop]);
+                        items[matches[1]] = fixup(parseInt(params[prop]));
                         continue;
                     }
                     matches = /scan-(\d+)-cost/.exec(prop);
@@ -365,24 +365,26 @@ $.couch.app(function(couchapp) {
                         continue;
                     }
                 }
-            })();
-
-            orderDoc._id = 'order-' + params['order-number'];
-            orderDoc.type = 'order';
-            orderDoc['item-costs'] = item_costs;
+            };
 
             if (order_type == 'receive-shipment') {
                 orderDoc['order-type'] = 'receive';
+                extract_items( function(n) { return n });  // receive items are positive
                 orderDoc.items = items;
                 next_url = '#/';   // Go back to the start page
             } else if (order_type == 'record-sale') {
                 orderDoc['order-type'] = 'sale';
+                extract_items( function(n) { return 0 - n });  // sale items are negative
                 orderDoc['unfilled-items'] = items;
                 next_url = context.path;  // stay at the same URL
             } else {
                 showNotification('error', 'Unknown type of order: '+order_type);
                 return;
             }
+
+            orderDoc._id = 'order-' + params['order-number'];
+            orderDoc.type = 'order';
+            orderDoc['item-costs'] = item_costs;
 
             if (params['_rev']) {
                 orderDoc['_rev'] = params['_rev'];

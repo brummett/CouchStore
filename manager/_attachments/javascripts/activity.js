@@ -181,6 +181,10 @@ $.couch.app(function(couchapp) {
                 return d;
             },
 
+            errorModal: function(message) {
+
+            },
+
             // This updates the price/cost of all items in the order
             updateOrdersItems: function(orderDoc) {
                 var cost_price_key = orderDoc['order-type'] == 'receive' ? 'cost-cents' : 'price-cents',

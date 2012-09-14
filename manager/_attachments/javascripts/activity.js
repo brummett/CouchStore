@@ -447,6 +447,23 @@ $.couch.app(function(couchapp) {
 
         });
 
+        this.get('#/data/:type/', function(context) {
+            var search  = context.params['search-query'] || '';
+                type    = context.params['type'],
+                view    = type + '-by-any',
+                list_q  = '_list/' + type + '/' + view;
+
+            if (search) {
+                list_q += '?search-query=' + encodeURIComponent(search);
+            }
+
+            // we'd rather use couchapp.list, but it only supports getting JSON data :(
+            $.get(list_q)
+                .then(function(content) {
+                    context.$element().html(content);
+                });
+        });
+
         this.get('#/list-items', function(context) {
             context.log("In list-items");
 

@@ -4,10 +4,10 @@
         <h3>Delete</h3>
     </div>
     <div class="modal-body">
-        <p>Are you sure you want to delete <%= thing %> <%= name %>?</p>
+        <p>Are you sure you want to delete {{type}} {{name}}</p>
     </div>
     <div class="modal-footer">
-        <a id="delete-confirm" href="#/delete-confirmed/<%= thing %>/<%= id %>" class="btn btn-danger">Delete</a>
+        <a id="delete-confirm" href="#/delete-confirmed/{{thing}}/{{id}}" class="btn btn-danger">Delete</a>
         <button type="button" class="btn" data-dismiss="modal">Cancel</button>
     </div>
 </div>

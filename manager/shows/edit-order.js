@@ -18,7 +18,7 @@ function(doc, req) {
         data.title = 'Edit ' +  doc['order-type'] + ' order';
         data.date = doc.date;
         data.orderNumber = doc._id.substr(6);  // order docs start with the text 'order-'
-        data.customer = doc['customer-name'];
+        data.customerName = doc['customer-name'];
         data.customerId = doc['customer-id'];
         data.warehouseName = doc['warehouse-name'];
         data.warehouseId = doc['warehouse-id'];

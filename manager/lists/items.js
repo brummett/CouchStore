@@ -34,7 +34,7 @@ function(head,req) {
         var shown = {}
             data = {
                 itemType: itemType,
-                showAddButton: itemType == 'orders',  // Add orders in other parts of the app
+                showAddButton: itemType != 'orders',  // Add orders in other parts of the app
                 items: [],
                 headers: headers[itemType],
                 path: '#/data/' + itemType + '/',

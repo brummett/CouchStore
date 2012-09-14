@@ -327,7 +327,11 @@ $.couch.app(function(couchapp) {
             
         });
 
-        this.get('#/order/(.*)/(.*)', function(context) {
+        this.get('#/edit/order/(.*)', function(context) {
+        });
+
+
+        this.get('#/create/order/(.*)/(.*)', function(context) {
             var order_type = context.params['splat'][0],
                 order_number = context.params['splat'][1];
 

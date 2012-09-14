@@ -8,7 +8,7 @@ function(head,req) {
         singular = '';
 
     itemType = itemType.substr(0, itemType.indexOf('-')); // get the type up to the first '-'
-    singular = itemType.substr(0, itemType.indexOf('s')); // singular word used to construct the 'edit' URL
+    singular = itemType.substr(0, itemType.lastIndexOf('s')); // singular word used to construct the 'edit' URL
     var matches = search
                 ? function(key) { return key.toString.toLowerCase.indexOf(search) > -1; }
                 : function(key) { return 1; };
@@ -32,6 +32,7 @@ function(head,req) {
     provides('html', function() {
         var shown = {}
             data = {
+                itemType: itemType,
                 items: [],
                 headers: headers[itemType],
                 path: '#/data/' + itemType + '/',

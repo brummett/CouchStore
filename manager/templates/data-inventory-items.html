@@ -1,5 +1,5 @@
-<h2>Inventory Items</h2>
-<a href="{{edit}}" id="addItem" class="btn"><i class="icon-plus"></i> Add item</a>
+<h2>{{itemType}}</h2>
+<a href="{{edit}}" id="addItem" class="btn"><i class="icon-plus"></i> Add {{itemType}}</a>
 <form action="{{path}}" method="get" id="search" class="well form-search">
     <i class="icon-search"></i><input type="text" name="search-query" class="search-query input-medium" placeholder="Search" value="{{search-query}}">
     {{#search-query}} <a href="{{path}}">&times;</a> {{/search-query}}

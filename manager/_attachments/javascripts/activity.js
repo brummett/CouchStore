@@ -451,7 +451,7 @@ $.couch.app(function(couchapp) {
             var search  = context.params['search-query'] || '';
                 type    = context.params['type'],
                 view    = type + '-by-any',
-                list_q  = '_list/' + type + '/' + view;
+                list_q  = '_list/items/' + view;
 
             if (search) {
                 list_q += '?search-query=' + encodeURIComponent(search);
@@ -460,8 +460,12 @@ $.couch.app(function(couchapp) {
             // we'd rather use couchapp.list, but it only supports getting JSON data :(
             $.get(list_q)
                 .then(function(content) {
-                    context.$element().html(content);
-                });
+                        context.$element().html(content);
+                    },
+                    function(result) {
+                        showNotification('error', 'Error getting data for '+type+ ': ' + $.parseJSON(result.responseText).reason);
+                    }
+                );
         });
 
         this.get('#/list-items', function(context) {

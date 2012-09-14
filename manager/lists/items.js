@@ -13,11 +13,27 @@ function(head,req) {
                 ? function(key) { return key.toString.toLowerCase.indexOf(search) > -1; }
                 : function(key) { return 1; };
                     
+    var headers = { items: [ 'Name', 'Sku','Barcode' ],
+                    customers: ['Name', 'Email','Phone'],
+                    warehouses: ['Name','Email','Phone']
+                   };
+    var template = ddoc.templates['data-inventory-items'];
+
+    // Fixup the template for the proeper fields
+    // Mustache dosen't seem to allow rendering of nested arrays
+    var replacement = '<td>',
+        i = 0;
+    for (i = 0; i < headers[itemType].length; i++) {
+        replacement += '{{' + headers[itemType][i].toLowerCase() + '}}</td><td>';
+    }
+    replacement += '</td>';
+    template = template.replace('**FIELDS**', replacement);
 
     provides('html', function() {
         var shown = {}
             data = {
                 items: [],
+                headers: headers[itemType],
                 path: '#/data/' + itemType + '/',
                 edit: '#/edit/' + singular + '/',
                 delete: '#/delete/' + singular + '/'
@@ -31,7 +47,7 @@ function(head,req) {
         }
 
         data['search-query'] = search;
-        return Mustache.to_html(ddoc.templates['data-inventory-items'], data);
+        return Mustache.to_html(template, data);
     });
 
 }

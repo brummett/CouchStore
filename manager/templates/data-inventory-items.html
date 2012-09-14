@@ -8,18 +8,16 @@
 <table id="item-list" class="table table-condensed">
     <thead>
     <tr>
-        <th>Name</th>
-        <th>SKU</th>
-        <th>Barcode</th>
+        {{#headers}}
+            <th>{{.}}</th>
+        {{/headers}}
     </tr>
     </thead>
 
     <tbody id="search-results">
         {{#items}}
             <tr>
-                <td>{{name}}</td>
-                <td>{{sku}}</td>
-                <td>{{barcode}}</td>
+                **FIELDS**
                 <td>
                     <a href="{{edit}}{{_id}}" class="edit-item btn"><i class="icon-edit"></i> Edit</a>
                     <a href="{{delete}}{{_id}}" class="delete-item btn btn-danger"><i class="icon-trash icon-white"></i> Remove</a>

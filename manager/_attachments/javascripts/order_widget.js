@@ -9,7 +9,6 @@
 //      couchapp: the couchapp object
 //      context: the Sammy.js context object
 //      activity: the Sammy.js app object
-//      order_number: If working on an existing order, it's order number
 //      has_picklist: true if there are filled and unfilled item tables in the DOM
 //      allow_unknown: true if line items can be unknown, false if it should show an error dialog for unknown items
 //      allow_delete: true if the order item lines should include a delete button
@@ -29,6 +28,13 @@ function OrderWidget(params) {
         vendorIdInput = $('input#customer-id', orderForm),
         orderNumberInput = $('input#order-number', orderForm),
         numErrors = 0;
+
+    // Connect any already-existing item rows' button callbacks
+    $('tr.line-item').each(function(idx, elt) {
+        var elt = $(elt),
+            barcode = elt.attr('id').substr(5); // Their IDs start with 'scan-'
+        wireUpEditButtons(elt, barcode);
+    });
 
     // Turn off browser autocomplete for all the form fields
     $('input[type=text]').attr('autocomplete', 'off');
@@ -282,10 +288,7 @@ function OrderWidget(params) {
                                                                 is_unknown: is_unknown ? true : false,
                                                                 name: item['name'] }));
                         orderTable.append(content);
-                        $('button.add-item', content).click( function(e) { addRemoveItem(scan, 1) } );
-                        $('button.remove-item', content).click( function(e) { addRemoveItem(scan, -1) } );
-                        $('button.delete-item', content).click( function(e) { deleteItem(scan) } );
-                        $('button.is-unknown', content).click( function(e) { context.editItemModal('item',scan) });
+                        wireUpEditButtons(content, scan);
                         d.resolve(content);
                     };
 
@@ -316,6 +319,13 @@ function OrderWidget(params) {
                 });
         }
         return d.promise();
+    };
+
+    function wireUpEditButtons(content, scan) {
+        $('button.add-item', content).click( function(e) { addRemoveItem(scan, 1) } );
+        $('button.remove-item', content).click( function(e) { addRemoveItem(scan, -1) } );
+        $('button.delete-item', content).click( function(e) { deleteItem(scan) } );
+        $('button.is-unknown', content).click( function(e) { context.editItemModal('item',scan) });
     };
 
     function addRemoveItem(scan, delta) {

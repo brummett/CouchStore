@@ -209,6 +209,7 @@ $.couch.app(function(couchapp) {
                     barcodes.push($(tr).attr('id').substr(5));   // Their IDs start with 'scan-'
                 });
 
+                var d = $.Deferred();
                 couchapp.view('items-by-barcode', {
                                 keys: barcodes,
                                 include_docs: true,
@@ -219,8 +220,10 @@ $.couch.app(function(couchapp) {
                                         var td = $('tr.line-item#scan-' + data.rows[i].key + ' td.item-name');
                                         td.text(data.rows[i].doc.name);
                                     }
+                                    d.resolve(true);
                                 }
                         });
+                return d.promise();
             },
 
             // This updates the price/cost of all items in the order
@@ -385,7 +388,13 @@ $.couch.app(function(couchapp) {
                         }
                     });
                     getWarehouseList().then( function(warehouseList) { context.fixupOrderWarehouseSelect(warehouseList, d.promise()) } );
-                    context.fixupOrderItemNames();
+                    context.fixupOrderItemNames()
+                        .then(function() {
+                            OrderWidget({   couchapp: couchapp,
+                                            context: context,
+                                            activity: activity
+                                        });
+                        });
                 });
         });
 
@@ -413,8 +422,6 @@ $.couch.app(function(couchapp) {
                             OrderWidget({   couchapp: couchapp,
                                             context: context,
                                             activity: activity,
-                                            order_number: order_number,
-                                            has_picklist: order_type == 'fill-pick-list',
                                             allow_unknown: order_type != 'fill-pick-list',
                                             allow_delete: order_type != 'fill_pick_list',
                                         });

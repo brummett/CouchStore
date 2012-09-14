@@ -4,17 +4,47 @@
 //    form#order-form
 //
 // As items are scanned in, it adds hidden input elements ot the order-form
-function OrderWidget(couchapp, context, activity, orderDoc) {
+//
+// Configuration params allowed:
+//      couchapp: the couchapp object
+//      context: the Sammy.js context object
+//      activity: the Sammy.js app object
+//      order_number: If working on an existing order, it's order number
+//      has_picklist: true if there are filled and unfilled item tables in the DOM
+//      allow_unknown: true if line items can be unknown, false if it should show an error dialog for unknown items
+//      allow_delete: true if the order item lines should include a delete button
+function OrderWidget(params) {
     this.table = $('table#order-display');
     this.barcodeScan = $('form#barcode-scan');
     this.orderForm = $('form#order-form');
 
     var widget = this,
+        couchapp = params.couchapp,
+        context = params.context,
+        activity = params.activity,
         barcodeInput = $('input#barcode', this.barcodeScan),
         vendorInput = $('input#customer-name', this.orderForm),
         vendorIdInput = $('input#customer-id', this.orderForm),
         orderNumberInput = $('input#order-number', this.orderForm),
         numErrors = 0;
+
+    if (params.is_picklist) {
+        this.filled = $('table#filled-display');
+    }
+    this.allow_unknown = params.allow_unknown;
+    this.allow_delete = params.allow_delete;
+
+    if (params.orderNumber) {
+        couchapp.db.openDoc('order-' + params.orderNumber, {
+            success: function(doc) {
+                widget.orderDoc = doc;
+                widget.initFromDoc(doc);
+            },
+            error: function(status, reason, message) {
+                context.showNotification('Could not find data for order orderNumber');
+            }
+        });
+    }
 
     // Turn off browser autocomplete for all the form fields
     $('input[type=text]').attr('autocomplete', 'off');
@@ -247,12 +277,16 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
     // element for the scan.  It will create a new row if it's
     // not there yet
     this.getTableRowForScan = function(scan) {
-        var tr      = $('tr#scan-' + scan),
+        var tr      = $('tr#scan-' + scan, this.table),
             table   = this.table,
             d       = jQuery.Deferred();
 
         if (tr.length) {
             d.resolve(tr);
+
+        } else if (this.has_picklist) {
+            this.context.errorModal(scan + ' is not part of the order');
+            d.reject();
 
         } else {
             $.get(couchapp.db.uri + couchapp.ddoc._id + '/templates/activity-receive-shipment-item-row.template')
@@ -262,6 +296,7 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
                         content = $(context.template(content, { scan: scan,
                                                                 unitCost: centsToDollars(item['cost-cents']),
                                                                 count: 0,
+                                                                allow_delete: widget.allow_delete,
                                                                 is_unknown: is_unknown ? true : false,
                                                                 name: item['name'] }));
                         table.append(content);
@@ -285,9 +320,11 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
                                     success: function (data) {
                                         if (data.rows.length == 1) {
                                             renderRow(data.rows[0].doc);
-                                        } else {
+                                        } else if (widget.allow_unknown) {
                                             // This is an unknown item
                                             renderRow({ 'cost-cents': '', name: ''}, true);
+                                        } else {
+                                            context.errorModal(scan + ' is an unknown barcode or sku');
                                         }
                                     }
                                 });
@@ -296,7 +333,7 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
                     });
                 });
         }
-        return d;
+        return d.promise();
     };
 
     this.addRemoveItem = function(scan, delta) {
@@ -323,7 +360,17 @@ function OrderWidget(couchapp, context, activity, orderDoc) {
                           );
             });
     };
-            
-        
-    
+
+    this.initFromDoc = function(doc) {
+        var barcode = '';
+
+        if (doc.type == 'receive') {
+            for (barcode in doc.type['items']) {
+                this.addRemoveItem(barcode, 1);
+            }
+
+        } else if (doc.type == 'sale') {
+        }
+    };
+
 }

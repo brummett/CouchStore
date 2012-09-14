@@ -347,7 +347,14 @@ $.couch.app(function(couchapp) {
                                             orderSources: orderSources })
                         .swap()
                         .then(function() {
-                            var w = new OrderWidget(couchapp, context, activity);
+                            var w = new OrderWidget({   couchapp: couchapp,
+                                                        context: context,
+                                                        activity: activity,
+                                                        order_number: order_number,
+                                                        has_picklist: order_type == 'fill-pick-list',
+                                                        allow_unknown: order_type != 'fill-pick-list',
+                                                        allow_delete: order_type != 'fill_pick_list',
+                                                    });
                         });
             });
         });

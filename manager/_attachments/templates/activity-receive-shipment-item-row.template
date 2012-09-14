@@ -2,7 +2,9 @@
     <td><div>
         <button class="add-item btn btn-mini btn-info"><i class="icon-plus-sign icon-white"></i></button>
         <button class="remove-item btn btn-mini btn-info"><i class="icon-minus-sign icon-white"></i></button>
-        <button class="delete-item btn btn-mini btn-danger"><i class="icon-trash icon-white"></i></button>
+        <% if (allow_delete) { %>
+            <button class="delete-item btn btn-mini btn-danger"><i class="icon-trash icon-white"></i></button>
+        <% } %>
         </div>
     </td>
     <td>

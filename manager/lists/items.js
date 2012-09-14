@@ -17,7 +17,7 @@ function(head,req) {
                     customers: ['Name', 'Email','Phone'],
                     warehouses: ['Name','Email','Phone']
                    };
-    var template = ddoc.templates['data-inventory-items'];
+    var template = ddoc.templates['data-lister'];
 
     // Fixup the template for the proeper fields
     // Mustache dosen't seem to allow rendering of nested arrays

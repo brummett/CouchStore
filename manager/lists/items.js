@@ -2,7 +2,7 @@
 // Use with the items-by-any view
 function(head,req) {
     var ddoc = this,
-        search = req.query['search-query'],
+        search = req.query['search-query'] && req.query['search-query'].toLowerCase(),
         Mustache = require('vendor/couchapp/lib/mustache'),
         itemType = req.path[req.path.length-1],
         singular = '';
@@ -10,12 +10,13 @@ function(head,req) {
     itemType = itemType.substr(0, itemType.indexOf('-')); // get the type up to the first '-'
     singular = itemType.substr(0, itemType.lastIndexOf('s')); // singular word used to construct the 'edit' URL
     var matches = search
-                ? function(key) { return key.toString.toLowerCase.indexOf(search) > -1; }
+                ? function(key) { return key && (key.toString().toLowerCase().indexOf(search) > -1); }
                 : function(key) { return 1; };
                     
     var headers = { items: [ 'Name', 'Sku','Barcode' ],
                     customers: ['Name', 'Email','Phone'],
-                    warehouses: ['Name','Email','Phone']
+                    warehouses: ['Name','Email','Phone'],
+                    orders: ['Order-Number', 'Customer-Name', 'Order-Type', 'Unfilled-Items', 'Shipped-Items'],
                    };
     var template = ddoc.templates['data-lister'];
 
@@ -33,6 +34,7 @@ function(head,req) {
         var shown = {}
             data = {
                 itemType: itemType,
+                showAddButton: itemType == 'orders',  // Add orders in other parts of the app
                 items: [],
                 headers: headers[itemType],
                 path: '#/data/' + itemType + '/',

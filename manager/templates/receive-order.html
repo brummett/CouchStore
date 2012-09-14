@@ -1,0 +1,71 @@
+<h1>{{title}}</h1>
+<form action="{{action}}" method="post" class="form-horizontal" id="order-form">
+    <div class="control-group">
+        <label class="control-label" for="date">Date</label>
+        <div class="controls">
+            <input type="date" name="date" id="date" class="input-small" value="{{date}}">
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="order-number">Order number</label>
+        <div class="controls">
+            <input  type="text"
+                    value="{{orderNumber}}"
+                    name="order-number"
+                    id="order-number"
+                    readonly="true"
+                    class="input-small span2{{#orderNumber}} uneditable-input{{/orderNumber}}">
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="customer-name">Shipped from vendor</label>
+        <div class="controls">
+            <input type="text" value="{{customerName}}" name="customer-name" id="customer-name" class="input-small span2">
+            <input type="hidden" value="{{customerId}}" name="customer-id" id="customer-id">
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="warehouse-id">Received to</label>
+        <div class="controls">
+            <select name="warehouse-id" id="warehouse-id">
+            </select>
+        </div>
+    </div>
+
+    {{#items}}
+        <input type="hidden" name="scan-{{barcode}}-quan" id="scan-{{barcode}}-quan" value="{{quantity}}">
+        <input type="hidden" name="scan-{{barcode}}-cost" id="scan-{{barcode}}-cost" value="{{cost}}">
+    {{/items}}
+
+    <button class="btn" type="submit" id="all-done"><i class="icon-ok"></i> All done</button>
+
+</form>
+
+<div class="span4">
+<form class="form-inline" id="barcode-scan">
+        <div class="input-prepend input-append">
+            <span class="add-on"><i class="icon-barcode"></i></span><input type="text" size="14" id="barcode" placeholder="barcode"/><button class="btn btn-primary btn-small" id="s+can">Scan</button>
+        </div>
+</form>
+</div>
+
+<div>
+    <table class="table table-striped table-condensed" id="order-display" style="table-layout: fixed">
+        <thead>
+            <tr>    <th style="width: 10%"></th>
+                    <th style="width: 15%">Unit cost</th>
+                    <th style="width: 10%">Count</th>
+                    <th>Name</th>
+                    <th>Scan</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#items}}
+                {{> order-item-row}}
+            {{/items}}
+        </tbody>
+    </table>
+</div>

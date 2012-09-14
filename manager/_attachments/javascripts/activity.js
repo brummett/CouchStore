@@ -185,6 +185,44 @@ $.couch.app(function(couchapp) {
 
             },
 
+            fixupOrderWarehouseSelect: function(warehouseList, selectedWarehouseId) {
+                // The order show functions don't have access to all the warehouse docs, and
+                // the select input is empty.  After we get the order's HTML, we need to fill
+                // in the warehouse select
+                var html = '',
+                    warehouseSelect = $('select#warehouse-id');
+                $.each(warehouseList, function(idx, warehouse) {
+                    html += '<option value="' + warehouse.id + '">' + warehouse.key + '</option>';
+                });
+                warehouseSelect.append(html);
+                selectedWarehouseId.done(function(warehouseId) {
+                    warehouseSelect.val(warehouseId);
+                });
+            },
+
+            fixupOrderItemNames: function() {
+                // The order show functions don't have access to all the item docs, so
+                // we need to go through all the item table rows and fill in names for them
+                var trs = $('tr.line-item');
+                var barcodes = [];
+                trs.each(function(idx, tr) {
+                    barcodes.push($(tr).attr('id').substr(5));   // Their IDs start with 'scan-'
+                });
+
+                couchapp.view('items-by-barcode', {
+                                keys: barcodes,
+                                include_docs: true,
+                                success: function(data) {
+                                    var tr, i, row;
+                                    for ( i = 0; i < data.rows.length; i++) {
+                                        // Find the tr for this barcode, and the name td inside that
+                                        var td = $('tr.line-item#scan-' + data.rows[i].key + ' td.item-name');
+                                        td.text(data.rows[i].doc.name);
+                                    }
+                                }
+                        });
+            },
+
             // This updates the price/cost of all items in the order
             updateOrdersItems: function(orderDoc) {
                 var cost_price_key = orderDoc['order-type'] == 'receive' ? 'cost-cents' : 'price-cents',
@@ -328,6 +366,27 @@ $.couch.app(function(couchapp) {
         });
 
         this.get('#/edit/order/(.*)', function(context) {
+            var order_id = context.params['splat'][0],
+                show_q = '_show/edit-order';
+
+            if (order_id) {
+                show_q += '/' + order_id;
+            }
+
+            $.get(show_q)
+                .then(function(content) {
+                    context.$element().html(content);
+
+                    // We still need to fixup the warehouse and item names
+                    var d = $.Deferred();
+                    couchapp.db.openDoc(order_id, {
+                        success: function(doc) {
+                            d.resolve(doc['warehouse-id']);
+                        }
+                    });
+                    getWarehouseList().then( function(warehouseList) { context.fixupOrderWarehouseSelect(warehouseList, d.promise()) } );
+                    context.fixupOrderItemNames();
+                });
         });
 
 

@@ -324,10 +324,14 @@ $.couch.app(function(couchapp) {
                 var dateStr = now.getFullYear() + '-'
                                     + (month < 10 ? '0' : '') + month + '-'
                                     + (now.getDate() < 10 ? '0' : '') + now.getDate();
-                var template = 'templates/activity-' + order_type + '.template';
+                var template = 'templates/activity-' + order_type + '.template',
+                    shipServiceLevels = ['standard','expedited','overnight'],  // these should really be data in the DB
+                    orderSources = ['web','amazon','phone','ebay','buy.com'];
                 
-                context.render(template,
-                                 { currentDate: dateStr , warehouses: warehouses })
+                context.render(template, {  currentDate: dateStr,
+                                            warehouses: warehouses,
+                                            shipServiceLevels: shipServiceLevels,
+                                            orderSources: orderSources })
                         .swap()
                         .then(function() {
                             var w = new OrderWidget(couchapp, context, activity);
@@ -391,10 +395,16 @@ $.couch.app(function(couchapp) {
             }
 
             // Copy some params to the order doc directly
-            var copy_props =  ['customer-name','customer-id','warehouse-id'],
+            var copy_props =  ['date','customer-name','customer-id','warehouse-id','ship-service-level','order-source'],
                 i;
             for (i = 0; i < copy_props.length; i++) {
-                orderDoc[copy_props[i]] = params[copy_props[i]];
+                if (copy_props[i] in params) {
+                    orderDoc[copy_props[i]] = params[copy_props[i]];
+                }
+            }
+
+            if ('shipping-charge' in params) {
+                orderDoc['shipping-charge'] = Math.round(parseFloat(params['shipping-charge']) * 100);
             }
 
             $.log(orderDoc);

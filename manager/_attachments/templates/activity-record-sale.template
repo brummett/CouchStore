@@ -33,6 +33,37 @@
         </div>
     </div>
 
+    <div class="control-group">
+       <label class="control-label" for="warehouse-id">Shipping service level</label>
+        <div class="controls">
+            <select name="shipping-service-level" id="shipping-service-level">
+                <% for (var i in shipServiceLevels) { %>
+                    <option value="<%= shipServiceLevels[i] %>"><%= shipServiceLevels[i] %></option>
+                <% } %>
+            </select>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="customer-name">Shipping charge</label>
+        <div class="controls">
+            <div class="input-prepend">
+                <span class="add-on">$</span><input type="text" name="shipping-charge" id="shipping-charge" class="input-small">
+            </div>
+        </div>
+    </div>
+
+    <div class="control-group">
+       <label class="control-label" for="warehouse-id">Order source</label>
+        <div class="controls">
+            <select name="order-source" id="order-source">
+                <% for (var i in orderSources) { %>
+                    <option value="<%= orderSources[i] %>"><%= orderSources[i] %></option>
+                <% } %>
+            </select>
+        </div>
+    </div>
+
     <button class="btn" type="submit" id="all-done"><i class="icon-ok"></i> All done</button>
 
 </form>

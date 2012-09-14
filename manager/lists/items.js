@@ -4,9 +4,11 @@ function(head,req) {
     var ddoc = this,
         search = req.query['search-query'],
         Mustache = require('vendor/couchapp/lib/mustache'),
-        itemType = req.path[req.path.length-1];
+        itemType = req.path[req.path.length-1],
+        singular = '';
 
     itemType = itemType.substr(0, itemType.indexOf('-')); // get the type up to the first '-'
+    singular = itemType.substr(0, itemType.indexOf('s')); // singular word used to construct the 'edit' URL
     var matches = search
                 ? function(key) { return key.toString.toLowerCase.indexOf(search) > -1; }
                 : function(key) { return 1; };
@@ -17,6 +19,8 @@ function(head,req) {
             data = {
                 items: [],
                 path: '#/data/' + itemType + '/',
+                edit: '#/edit/' + singular + '/',
+                delete: '#/delete/' + singular + '/'
             };
         while (row = getRow()) {
             if (! shown[row.id] && matches(row.key)) {

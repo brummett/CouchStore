@@ -269,12 +269,17 @@ $.couch.app(function(couchapp) {
 
         });
 
-        function warehouseList (callback) {
+        function getWarehouseList () {
+            var d = $.Deferred();
             couchapp.view('warehouses-by-name', {
                 success: function(data) {
-                    callback(data.rows);
-                }
+                    d.resolve(data.rows);
+                },
+                error: function() {
+                    d.reject();
+                },
             });
+            return d.promise();
         }
 
 //        this.around({ except: /#\/(login|signup)/ }, function(callback) {
@@ -322,7 +327,7 @@ $.couch.app(function(couchapp) {
             var order_type = context.params['splat'][0],
                 order_number = context.params['splat'][1];
 
-            warehouseList(function(warehouses) {
+            getWarehouseList().then( function(warehouses) {
                 var now = new Date;
                 var month = now.getMonth() + 1;
                 var dateStr = now.getFullYear() + '-'

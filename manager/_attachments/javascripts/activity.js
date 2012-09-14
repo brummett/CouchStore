@@ -323,6 +323,10 @@ $.couch.app(function(couchapp) {
             true;
         });
 
+        this.get('#/pick-list/', function(context) {
+            
+        });
+
         this.get('#/order/(.*)/(.*)', function(context) {
             var order_type = context.params['splat'][0],
                 order_number = context.params['splat'][1];

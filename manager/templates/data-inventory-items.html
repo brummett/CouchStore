@@ -1,0 +1,31 @@
+<h2>Inventory Items</h2>
+<a href="{{edit}}" id="addItem" class="btn"><i class="icon-plus"></i> Add item</a>
+<form action="{{path}}" method="get" id="search" class="well form-search">
+    <i class="icon-search"></i><input type="text" name="search-query" class="search-query input-medium" placeholder="Search" value="{{search-query}}">
+    {{#search-query}} <a href="{{path}}">&times;</a> {{/search-query}}
+</form>
+
+<table id="item-list" class="table table-condensed">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>SKU</th>
+        <th>Barcode</th>
+    </tr>
+    </thead>
+
+    <tbody id="search-results">
+        {{#items}}
+            <tr>
+                <td>{{name}}</td>
+                <td>{{sku}}</td>
+                <td>{{barcode}}</td>
+                <td>
+                    <a href="{{edit}}{{_id}}" class="edit-item btn"><i class="icon-edit"></i> Edit</a>
+                    <a href="{{delete}}{{_id}}" class="delete-item btn btn-danger"><i class="icon-trash icon-white"></i> Remove</a>
+                </td>
+            </tr>
+        {{/items}}
+    </tbody>
+</table>
+

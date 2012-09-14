@@ -14,37 +14,21 @@
 //      allow_unknown: true if line items can be unknown, false if it should show an error dialog for unknown items
 //      allow_delete: true if the order item lines should include a delete button
 function OrderWidget(params) {
-    this.table = $('table#order-display');
-    this.barcodeScan = $('form#barcode-scan');
-    this.orderForm = $('form#order-form');
 
-    var widget = this,
+    var orderTable = $('table#order-display'),
+        barcodeScan = $('form#barcode-scan'),
+        orderForm = $('form#order-form'),
         couchapp = params.couchapp,
         context = params.context,
         activity = params.activity,
-        barcodeInput = $('input#barcode', this.barcodeScan),
-        vendorInput = $('input#customer-name', this.orderForm),
-        vendorIdInput = $('input#customer-id', this.orderForm),
-        orderNumberInput = $('input#order-number', this.orderForm),
+        allow_unknown = ('allow_unknown' in params) ? params.allow_unknown : true,
+        allow_delete = ('allow_delete' in params) ? params.allow_delete : true,
+        has_picklist = false,
+        barcodeInput = $('input#barcode', barcodeScan),
+        vendorInput = $('input#customer-name', orderForm),
+        vendorIdInput = $('input#customer-id', orderForm),
+        orderNumberInput = $('input#order-number', orderForm),
         numErrors = 0;
-
-    if (params.is_picklist) {
-        this.filled = $('table#filled-display');
-    }
-    this.allow_unknown = params.allow_unknown;
-    this.allow_delete = params.allow_delete;
-
-    if (params.orderNumber) {
-        couchapp.db.openDoc('order-' + params.orderNumber, {
-            success: function(doc) {
-                widget.orderDoc = doc;
-                widget.initFromDoc(doc);
-            },
-            error: function(status, reason, message) {
-                context.showNotification('Could not find data for order orderNumber');
-            }
-        });
-    }
 
     // Turn off browser autocomplete for all the form fields
     $('input[type=text]').attr('autocomplete', 'off');
@@ -122,14 +106,14 @@ function OrderWidget(params) {
     });
 
 
-    this.orderForm.submit(function(e) {
+    orderForm.submit(function(e) {
         // Clear any prior errors/warnings
         var orderNumberError = hasError($('input#order-number'));
 
-        widget.orderForm.find('.error').removeClass('error');
-        widget.orderForm.find('.warning').removeClass('warning');
-        widget.orderForm.find('.help-inline').remove();
-        widget.table.find('.help-inline').remove();
+        orderForm.find('.error').removeClass('error');
+        orderForm.find('.warning').removeClass('warning');
+        orderForm.find('.help-inline').remove();
+        orderTable.find('.help-inline').remove();
 
         if (orderNumberError) {
             numErrors = 1;
@@ -191,21 +175,21 @@ function OrderWidget(params) {
             }
         };
 
-        var dateInput = $('input#date', this.orderForm);
+        var dateInput = $('input#date', orderForm);
         required(dateInput);
         is_date(dateInput);
-        required($('input#order-number', this.orderForm));
-        required($('input#customer-name', this.orderForm));
+        required($('input#order-number', orderForm));
+        required($('input#customer-name', orderForm));
 
-        checkKnownCustomer( $('input#customer-name'), this.orderForm)
+        checkKnownCustomer( $('input#customer-name'), orderForm)
 
         // Do checkUnknownItems after checkKnownCustomer so the latter can make an 'id-unknown' button if necessary
-        checkUnknownItems($('button.is-unknown', this.orderForm));
+        checkUnknownItems($('button.is-unknown', orderForm));
 
-        checkCostsPrices($('input.unit-cost', this.table));
+        checkCostsPrices($('input.unit-cost', orderTable));
 
         if (numErrors == 0) {
-            widget.copyCostsToForm();
+            copyCostsToForm();
             return true;
         } else {
             return false;
@@ -213,19 +197,18 @@ function OrderWidget(params) {
     });
 
     // Copy the cost/price info from the line item list into the form for submission
-    this.copyCostsToForm = function() {
-        var widget = this;
-        $('input.unit-cost', widget.table).each(function(idx, input) {
+    function copyCostsToForm() {
+        $('input.unit-cost', orderTable).each(function(idx, input) {
             input = $(input);
             var tr = input.parents('tr');
-            widget.orderForm.append('<input name="' + tr.attr('id') + '-cost" class="unit-cost" '
+            orderForm.append('<input name="' + tr.attr('id') + '-cost" class="unit-cost" '
                                     + 'type="hidden" value="' + input.val() + '">');
         });
     };
 
     // When a barcode is scanned in
-    this.barcodeScan.submit(function(e) {
-        widget.addRemoveItem(barcodeInput.val(), 1);
+    barcodeScan.submit(function(e) {
+        addRemoveItem(barcodeInput.val(), 1);
         barcodeInput.val('');
         barcodeInput.focus();
         return false;
@@ -234,11 +217,11 @@ function OrderWidget(params) {
     // Given a scan (usually a barcode), return the hidden input
     // element from order-form that stores the quantity.  It creates a new
     // input if it's not there yet
-    this.inputForScan = function(scan) {
+    function inputForScan(scan) {
         var input_id = 'scan-'+scan+'-quan';
         var input = $('input#'+input_id);
         if (input.length == 0) {
-            input = $('<input id="' + input_id + '" name="' + input_id + '" type="hidden" value="0">').appendTo(this.orderForm);
+            input = $('<input id="' + input_id + '" name="' + input_id + '" type="hidden" value="0">').appendTo(orderForm);
         }
         return input;
     };
@@ -253,7 +236,7 @@ function OrderWidget(params) {
 
     activity.bind('item-updated', function(context,item) {
         // called when the add/edit item modal is submitted, so we can update the price/cost
-        widget.getTableRowForScan(item.barcode)
+        getTableRowForScan(item.barcode)
             .then(function(tr) {
                 tr.find('input.unit-cost').val(centsToDollars(item['cost-cents']));
                 tr.find('td.item-name').text(item.name);
@@ -276,16 +259,15 @@ function OrderWidget(params) {
     // Given a scan (usually a barcode, return the table-row
     // element for the scan.  It will create a new row if it's
     // not there yet
-    this.getTableRowForScan = function(scan) {
-        var tr      = $('tr#scan-' + scan, this.table),
-            table   = this.table,
+    getTableRowForScan = function(scan) {
+        var tr      = $('tr#scan-' + scan, orderTable),
             d       = jQuery.Deferred();
 
         if (tr.length) {
             d.resolve(tr);
 
-        } else if (this.has_picklist) {
-            this.context.errorModal(scan + ' is not part of the order');
+        } else if (has_picklist) {
+            context.errorModal(scan + ' is not part of the order');
             d.reject();
 
         } else {
@@ -296,13 +278,13 @@ function OrderWidget(params) {
                         content = $(context.template(content, { scan: scan,
                                                                 unitCost: centsToDollars(item['cost-cents']),
                                                                 count: 0,
-                                                                allow_delete: widget.allow_delete,
+                                                                allow_delete: allow_delete,
                                                                 is_unknown: is_unknown ? true : false,
                                                                 name: item['name'] }));
-                        table.append(content);
-                        $('button.add-item', content).click( function(e) { widget.addRemoveItem(scan, 1) } );
-                        $('button.remove-item', content).click( function(e) { widget.addRemoveItem(scan, -1) } );
-                        $('button.delete-item', content).click( function(e) { widget.deleteItem(scan) } );
+                        orderTable.append(content);
+                        $('button.add-item', content).click( function(e) { addRemoveItem(scan, 1) } );
+                        $('button.remove-item', content).click( function(e) { addRemoveItem(scan, -1) } );
+                        $('button.delete-item', content).click( function(e) { deleteItem(scan) } );
                         $('button.is-unknown', content).click( function(e) { context.editItemModal('item',scan) });
                         d.resolve(content);
                     };
@@ -320,7 +302,7 @@ function OrderWidget(params) {
                                     success: function (data) {
                                         if (data.rows.length == 1) {
                                             renderRow(data.rows[0].doc);
-                                        } else if (widget.allow_unknown) {
+                                        } else if (allow_unknown) {
                                             // This is an unknown item
                                             renderRow({ 'cost-cents': '', name: ''}, true);
                                         } else {
@@ -336,22 +318,22 @@ function OrderWidget(params) {
         return d.promise();
     };
 
-    this.addRemoveItem = function(scan, delta) {
-        var input = this.inputForScan(scan);
+    function addRemoveItem(scan, delta) {
+        var input = inputForScan(scan);
             count = parseInt(input.val());
         count += delta;
         input.val(count);
 
-        this.getTableRowForScan(scan)
+        getTableRowForScan(scan)
             .then(function(tr) {
                 $('td.item-count',tr).text(count);
             });
     };
 
-    this.deleteItem = function(scan) {
-        var input = this.inputForScan(scan);
+    function deleteItem(scan) {
+        var input = inputForScan(scan);
         input.remove();
-        this.getTableRowForScan(scan)
+        getTableRowForScan(scan)
             .then(function(tr) {
                 tr.animate( { height: '0px',
                               opacity: 0.0 },
@@ -361,12 +343,12 @@ function OrderWidget(params) {
             });
     };
 
-    this.initFromDoc = function(doc) {
+    function initFromDoc(doc) {
         var barcode = '';
 
         if (doc.type == 'receive') {
             for (barcode in doc.type['items']) {
-                this.addRemoveItem(barcode, 1);
+                addRemoveItem(barcode, 1);
             }
 
         } else if (doc.type == 'sale') {

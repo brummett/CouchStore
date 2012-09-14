@@ -22,6 +22,7 @@ function(doc, req) {
         data.customerId = doc['customer-id'];
         data.warehouseName = doc['warehouse-name'];
         data.warehouseId = doc['warehouse-id'];
+        data._rev = doc._rev;
         data.items = [];
         for (i in doc.items) {
             data.items.push({ barcode: i, quantity: doc.items[i], cost: ((doc['item-costs'][i]/100).toFixed(2)) });

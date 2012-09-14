@@ -40,6 +40,9 @@
         <input type="hidden" name="scan-{{barcode}}-cost" id="scan-{{barcode}}-cost" value="{{cost}}">
     {{/items}}
 
+    {{#_rev}}
+        <input type="hidden" name="_rev" id="_rev" value="{{_rev}}">
+    {{/_rev}}
     <button class="btn" type="submit" id="all-done"><i class="icon-ok"></i> All done</button>
 
 </form>

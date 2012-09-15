@@ -24,8 +24,8 @@ function OrderWidget(params) {
         allow_delete = ('allow_delete' in params) ? params.allow_delete : true,
         has_picklist = false,
         barcodeInput = $('input#barcode', barcodeScan),
-        vendorInput = $('input#customer-name', orderForm),
-        vendorIdInput = $('input#customer-id', orderForm),
+        customerInput = $('input#customer-name', orderForm),
+        customerIdInput = $('input#customer-id', orderForm),
         orderNumberInput = $('input#order-number', orderForm),
         numErrors = 0;
 
@@ -95,16 +95,16 @@ function OrderWidget(params) {
         return results;
     };
 
-    vendorInput.typeahead({
+    customerInput.typeahead({
         ajax: {
             url: '_view/customers-by-any-name',
-            preDispatch: function(query) { vendorIdInput.val(''); return { startkey: '"' + query + '"', endkey: '"' + query+'ZZZZZZ"' } },
+            preDispatch: function(query) { customerIdInput.val(''); return { startkey: '"' + query + '"', endkey: '"' + query+'ZZZZZZ"' } },
             preProcess: typeaheadProcessor,
             method: 'get',
             triggerLength: 2,
         },
-        itemSelected: function(elt, vendorId, vendorName) {
-                            $('input#customer-id').val(vendorId);
+        itemSelected: function(elt, customerId, customerName) {
+                            $('input#customer-id').val(customerId);
                             clearError($('input#customer-name'));
                         },
         display: 'key',

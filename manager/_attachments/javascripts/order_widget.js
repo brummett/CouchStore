@@ -27,6 +27,7 @@ function OrderWidget(params) {
         customerInput = $('input#customer-name', orderForm),
         customerIdInput = $('input#customer-id', orderForm),
         orderNumberInput = $('input#order-number', orderForm),
+        orderType = orderForm.attr('data-order-type'),
         numErrors = 0;
 
     // Connect any already-existing item rows' button callbacks
@@ -240,11 +241,19 @@ function OrderWidget(params) {
         }
     }
 
+    function getCostFromItem(item) {
+        if (orderType == 'receive') {
+            return item['cost-cents'];
+        } else {
+            return item['price-cents'];
+        }
+    }
+
     activity.bind('item-updated', function(context,item) {
         // called when the add/edit item modal is submitted, so we can update the price/cost
         getTableRowForScan(item.barcode)
             .then(function(tr) {
-                tr.find('input.unit-cost').val(centsToDollars(item['cost-cents']));
+                tr.find('input.unit-cost').val(centsToDollars(getCostFromItem(item)));
                 tr.find('td.item-name').text(item.name);
             });
     });
@@ -282,7 +291,7 @@ function OrderWidget(params) {
 
                     var renderRow = function(item, is_unknown) {
                         content = $(context.template(content, { scan: scan,
-                                                                unitCost: centsToDollars(item['cost-cents']),
+                                                                unitCost: centsToDollars(getCostFromItem(item)),
                                                                 count: 0,
                                                                 allow_delete: allow_delete,
                                                                 is_unknown: is_unknown ? true : false,

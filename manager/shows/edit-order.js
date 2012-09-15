@@ -16,7 +16,8 @@ function(doc, req) {
             };
         }
 
-        templateName = doc['order-type'] + '-order';
+        data.orderType = doc['order-type'];
+        templateName = data.orderType+ '-order';
 
         data.action = '#/order/' + doc['order-type'] + '/';
         data.title = 'Edit ' +  doc['order-type'] + ' order';
@@ -48,7 +49,8 @@ function(doc, req) {
             };
         }
 
-        templateName = req.query.type + '-order';
+        data.orderType = req.query.type;
+        templateName = data.orderType + '-order';
 
         data.action = '#/order/' + req.query.type + '/';
         data.title = 'New ' +req.query.type + ' order';

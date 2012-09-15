@@ -11,10 +11,12 @@
         <label class="control-label" for="order-number">Order number</label>
         <div class="controls">
             <input  type="text"
-                    value="{{orderNumber}}"
+                    {{#orderNumber}}
+                        value="{{orderNumber}}"
+                        readonly="true"
+                    {{/orderNumber}}
                     name="order-number"
                     id="order-number"
-                    readonly="true"
                     class="input-small span2{{#orderNumber}} uneditable-input{{/orderNumber}}">
         </div>
     </div>

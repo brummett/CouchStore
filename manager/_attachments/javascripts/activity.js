@@ -201,6 +201,16 @@ $.couch.app(function(couchapp) {
                     });
             },
 
+            fixupOrderDate: function() {
+                var now = new Date,
+                    month = now.getMonth() + 1,
+                    dateStr = now.getFullYear() + '-'
+                                    + (month < 10 ? '0' : '') + month + '-'
+                                    + (now.getDate() < 10 ? '0' : '') + now.getDate();
+                $('input#date').val(dateStr);
+            },
+ 
+
             fixupOrderItemNames: function() {
                 // The order show functions don't have access to all the item docs, so
                 // we need to go through all the item table rows and fill in names for them
@@ -400,9 +410,25 @@ $.couch.app(function(couchapp) {
         });
 
 
-        this.get('#/create/order/(.*)/(.*)', function(context) {
-            var order_type = context.params['splat'][0],
-                order_number = context.params['splat'][1];
+        this.get('#/create/order/:order_type', function(context) {
+            var show_q = '_show/edit-order/?type=' + context.params.order_type;
+
+            $.get(show_q)
+                .then(function(content) {
+                    context.$element().html(content);
+
+                    // Still need to supply today's date and fix up the warehouse select
+                    getWarehouseList().then( context.fixupOrderWarehouseSelect );
+                    context.fixupOrderDate();
+                    OrderWidget({   couchapp: couchapp,
+                                    context: context,
+                                    activity: activity
+                                });
+                });
+                    
+        });
+        this.get('#/old-create/order/(.*)/', function(context) {
+            var order_type = context.params['splat'][0];
 
             getWarehouseList().then( function(warehouses) {
                 var now = new Date;
@@ -462,12 +488,12 @@ $.couch.app(function(couchapp) {
                 }
             };
 
-            if (order_type == 'receive-shipment') {
+            if (order_type == 'receive') {
                 orderDoc['order-type'] = 'receive';
                 extract_items( function(n) { return n });  // receive items are positive
                 orderDoc.items = items;
                 next_url = '#/';   // Go back to the start page
-            } else if (order_type == 'record-sale') {
+            } else if (order_type == 'sale') {
                 orderDoc['order-type'] = 'sale';
                 extract_items( function(n) { return 0 - n });  // sale items are negative
                 orderDoc['unfilled-items'] = items;

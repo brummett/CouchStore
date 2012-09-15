@@ -29,7 +29,16 @@ function(doc, req) {
         }
         
     } else {
-        data.title = 'Receive Shipment';
+        if (! req.query.type) {
+            return {
+                code: 403,
+                json: { reason: 'Must supply an order type for a new order' },
+            };
+        }
+
+        templateName = req.query.type + '-order';
+
+        data.title = 'New ' +req.query.type + ' order';
         data.date = '';
         data.orderNumber = '';
         data.customer = '';
@@ -40,7 +49,7 @@ function(doc, req) {
         data.costs = [];
     }
 
-    data.action = '#/order/receive-shipment/';
+    data.action = '#/order/' + req.query.type + '/';
     data.allowDelete = true;
 
     return Mustache.to_html(ddoc.templates[templateName], data, ddoc.templates.partials['edit-order']);

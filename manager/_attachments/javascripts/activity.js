@@ -195,9 +195,10 @@ $.couch.app(function(couchapp) {
                     html += '<option value="' + warehouse.id + '">' + warehouse.key + '</option>';
                 });
                 warehouseSelect.append(html);
-                selectedWarehouseId.done(function(warehouseId) {
-                    warehouseSelect.val(warehouseId);
-                });
+                selectedWarehouseId && selectedWarehouseId.done(
+                    function(warehouseId) {
+                        warehouseSelect.val(warehouseId);
+                    });
             },
 
             fixupOrderItemNames: function() {

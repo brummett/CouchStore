@@ -427,34 +427,6 @@ $.couch.app(function(couchapp) {
                 });
                     
         });
-        this.get('#/old-create/order/(.*)/', function(context) {
-            var order_type = context.params['splat'][0];
-
-            getWarehouseList().then( function(warehouses) {
-                var now = new Date;
-                var month = now.getMonth() + 1;
-                var dateStr = now.getFullYear() + '-'
-                                    + (month < 10 ? '0' : '') + month + '-'
-                                    + (now.getDate() < 10 ? '0' : '') + now.getDate();
-                var template = 'templates/activity-' + order_type + '.template',
-                    shipServiceLevels = ['standard','expedited','overnight'],  // these should really be data in the DB
-                    orderSources = ['web','amazon','phone','ebay','buy.com'];
-                
-                context.render(template, {  currentDate: dateStr,
-                                            warehouses: warehouses,
-                                            shipServiceLevels: shipServiceLevels,
-                                            orderSources: orderSources })
-                        .swap()
-                        .then(function() {
-                            OrderWidget({   couchapp: couchapp,
-                                            context: context,
-                                            activity: activity,
-                                            allow_unknown: order_type != 'fill-pick-list',
-                                            allow_delete: order_type != 'fill_pick_list',
-                                        });
-                        });
-            });
-        });
 
         this.post('#/order/(.*)/(.*)', function(context) {
             var params = context.params,

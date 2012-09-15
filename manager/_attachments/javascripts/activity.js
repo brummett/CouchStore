@@ -285,7 +285,7 @@ $.couch.app(function(couchapp) {
                                 (function(i, newCost, itemDoc) {
                                     if ((newCost != 0) && (newCost != itemDoc[cost_price_key])) {
                                     // The incoming order has a different cost/price
-                                        orderDoc[cost_price_key] = newCost;
+                                        itemDoc[cost_price_key] = newCost;
                                         couchapp.db.saveDoc(itemDoc, {
                                             success: function() {
                                                 done(true);

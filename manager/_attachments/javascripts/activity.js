@@ -512,7 +512,7 @@ $.couch.app(function(couchapp) {
             }
 
             // Copy some params to the order doc directly
-            var copy_props =  ['date','customer-name','customer-id','warehouse-id','ship-service-level','order-source'],
+            var copy_props =  ['date','customer-name','customer-id','warehouse-id','shipping-service-level','order-source'],
                 i;
             for (i = 0; i < copy_props.length; i++) {
                 if (copy_props[i] in params) {

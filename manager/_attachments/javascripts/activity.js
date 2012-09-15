@@ -372,7 +372,7 @@ $.couch.app(function(couchapp) {
         });
 
         this.get('#/', function(context) {
-            true;
+            context.$element().empty();
         });
 
         this.get('#/pick-list/', function(context) {

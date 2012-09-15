@@ -191,7 +191,7 @@ function OrderWidget(params) {
         checkKnownCustomer( $('input#customer-name'), orderForm)
 
         // Do checkUnknownItems after checkKnownCustomer so the latter can make an 'id-unknown' button if necessary
-        checkUnknownItems($('button.is-unknown', orderForm));
+        checkUnknownItems($('button.is-unknown', context.$element()));
 
         checkCostsPrices($('input.unit-cost', orderTable));
 

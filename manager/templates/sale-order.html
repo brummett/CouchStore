@@ -1,16 +1,23 @@
-<h1>Record Sale</h1>
-<form action="#/order/record-sale/" method="post" class="form-horizontal" id="order-form">
+<h1>{{title}}</h1>
+<form action="{{action}}" method="post" class="form-horizontal" id="order-form">
     <div class="control-group">
         <label class="control-label" for="date">Date</label>
         <div class="controls">
-            <input type="date" name="date" id="date" class="input-small" value="<%= currentDate %>">
+            <input type="date" name="date" id="date" class="input-small" value="{{date}}">
         </div>
     </div>
 
     <div class="control-group">
         <label class="control-label" for="order-number">Order number</label>
         <div class="controls">
-            <input type="text" name="order-number" id="order-number" class="input-small span2">
+            <input type="text"
+                   {{#orderNumber}}
+                        value="{{orderNumber}}"
+                        readonly="true"
+                    {{/orderNumber}}
+                    name="order-number"
+                    id="order-number"
+                    class="input-small span2{{#orderNumber}} uneditable-input{{/orderNumber}}">
         </div>
     </div>
 
@@ -18,9 +25,6 @@
         <label class="control-label" for="warehouse-id">Shipped From</label>
         <div class="controls">
             <select name="warehouse-id" id="warehouse-id">
-                <% for (var i in warehouses) { %>
-                    <option value="<%= warehouses[i].id %>"><%= warehouses[i].key %></option>
-                <% } %>
             </select>
         </div>
     </div>
@@ -28,42 +32,50 @@
     <div class="control-group">
         <label class="control-label" for="customer-name">Customer</label>
         <div class="controls">
-            <input type="text" name="customer-name" id="customer-name" class="input-small span2">
-            <input type="hidden" name="customer-id" id="customer-id">
+            <input type="text" value="{{customerName}}" name="customer-name" id="customer-name" class="input-small span2">
+            <input type="hidden" value="{{customerId}}" name="customer-id" id="customer-id">
         </div>
     </div>
 
     <div class="control-group">
-       <label class="control-label" for="warehouse-id">Shipping service level</label>
+       <label class="control-label" for="shipping-service-level">Shipping service level</label>
         <div class="controls">
             <select name="shipping-service-level" id="shipping-service-level">
-                <% for (var i in shipServiceLevels) { %>
-                    <option value="<%= shipServiceLevels[i] %>"><%= shipServiceLevels[i] %></option>
-                <% } %>
+                {{#shipServiceLevels}}
+                    <option value="{{.}}">{{.}}</option>
+                {{/shipServiceLevels}}
             </select>
         </div>
     </div>
 
     <div class="control-group">
-        <label class="control-label" for="customer-name">Shipping charge</label>
+        <label class="control-label" for="shipping-charge">Shipping charge</label>
         <div class="controls">
             <div class="input-prepend">
-                <span class="add-on">$</span><input type="text" name="shipping-charge" id="shipping-charge" class="input-small">
+                <span class="add-on">$</span><input type="text" value="{{shippingCharge}}" name="shipping-charge" id="shipping-charge" class="input-small">
             </div>
         </div>
     </div>
 
     <div class="control-group">
-       <label class="control-label" for="warehouse-id">Order source</label>
+       <label class="control-label" for="order-source">Order source</label>
         <div class="controls">
             <select name="order-source" id="order-source">
-                <% for (var i in orderSources) { %>
-                    <option value="<%= orderSources[i] %>"><%= orderSources[i] %></option>
-                <% } %>
+                {{#orderSources}}
+                    <option value="{{.}}">{{.}}</option>
+                {{/orderSources}}
             </select>
         </div>
     </div>
 
+    {{#items}}
+        <input type="hidden" name="scan-{{barcode}}-quan" id="scan-{{barcode}}-quan" value="{{quantity}}">
+        <input type="hidden" name="scan-{{barcode}}-cost" id="scan-{{barcode}}-cost" value="{{cost}}">
+    {{/items}}
+
+    {{#_rev}}
+        <input type="hidden" name="_rev" id="_rev" value="{{_rev}}">
+    {{/_rev}}
     <button class="btn" type="submit" id="all-done"><i class="icon-ok"></i> All done</button>
 
 </form>
@@ -87,6 +99,9 @@
             </tr>
         </thead>
         <tbody>
+            {{#items}}
+                {{> order-item-row}}
+            {{/items}}
         </tbody>
     </table>
 </div>

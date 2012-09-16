@@ -5,8 +5,8 @@ function(doc, req) {
         templateName = '',
         i = 0,
         itemKey = '',
-        shipServiceLevels = [ 'standard', 'expedited', 'overnight'],
-        orderSources = [ 'web', 'amazon','phone','ebay','buy.com'];
+        shipServiceLevels = [ {id: 'standard'} ,{id:  'expedited'}, {id: 'overnight'}],
+        orderSources = [ {id: 'web'}, {id: 'amazon'},{id: 'phone'},{id: 'ebay'},{id: 'buy.com'}];
 
     if (doc) {
         if ( doc.type != 'order' ) {
@@ -28,6 +28,21 @@ function(doc, req) {
         data.warehouseName = doc['warehouse-name'];
         data.warehouseId = doc['warehouse-id'];
         data._rev = doc._rev;
+
+        // Set the right ship service level
+        for (i = 0; i < shipServiceLevels.length; i++) {
+            if (shipServiceLevels[i]['id'] == doc['shipping-service-level']) {
+                shipServiceLevels[i]['selected'] = 'selected';
+                break;
+            }
+        }
+        // set the right order source
+        for (i = 0; i < orderSources; i++) {
+            if (orderSources[i]['id'] == doc['order-source']) {
+                orderSources[i]['selected'] = 'selected';
+                break;
+            }
+        }
 
         if (doc['order-type'] == 'receive') {
             itemKey = 'items';

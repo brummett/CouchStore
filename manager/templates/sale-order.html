@@ -42,7 +42,7 @@
         <div class="controls">
             <select name="shipping-service-level" id="shipping-service-level">
                 {{#shipServiceLevels}}
-                    <option value="{{.}}">{{.}}</option>
+                    <option value="{{id}}"{{#selected}} selected="selected"{{/selected}}>{{id}}</option>
                 {{/shipServiceLevels}}
             </select>
         </div>
@@ -62,7 +62,7 @@
         <div class="controls">
             <select name="order-source" id="order-source">
                 {{#orderSources}}
-                    <option value="{{.}}">{{.}}</option>
+                    <option value="{{id}}"{{#selected}} selected="selected"{{/selected}}>{{id}}</option>
                 {{/orderSources}}
             </select>
         </div>

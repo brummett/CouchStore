@@ -1,0 +1,48 @@
+<h1>Fill Pick List</h1>
+<form method="post" class="form-horizontal">
+    <div class="control-group">
+        <label class="control-label" for="order-number">Order number</label>
+        <div class="controls">
+            <input type="text" name="order-number" id="order-number" class="input-small span2">
+        </div>
+    </div>
+
+    <div class="control-group">
+        <div class="controls">
+            <select name="select-order-number" id="select-order-number">
+                <option value=''></option>
+                {{#orders}}
+                    <option value={{id}}>{{value}}</option>
+                {{/orders}}
+            </select>
+        </div>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Select</button>
+
+    <script type="text/javascript">
+        (function() {
+            var orderNumberInput = $('input#order-number'),
+                selectInput = $('select#select-order-number');
+
+            selectInput.change(function() {
+                var orderId = selectInput.val();
+                orderNumberInput.val(orderId.substr(6));
+                return true;
+            });
+
+            function textChosen(elt, orderId, string) {
+                orderNumberInput.val(orderId.substr(6));  // Display just the raw order number in the text entry box
+                selectInput.val(orderId);
+            }
+
+            orderNumberInput.typeahead({
+                source: {{typeaheadSource}},
+                itemSelected: textChosen,
+                display: 'value',
+                val: 'id'
+            });
+        })();
+    </script>
+
+</form>

@@ -376,7 +376,20 @@ $.couch.app(function(couchapp) {
         });
 
         this.get('#/pick-list/', function(context) {
-            
+            if (! ('order-number' in context.params)) {
+                var list_q = '_list/picklist-order-picker/picklist-order-picker';
+                $.get(list_q, function(content) {
+                    context.$element().html(content);
+                    // The loaded page has scripts we need to start up
+                    context.$element().find('script').each( function(i) {
+                        eval($(this).text());
+                    });
+                });
+            }
+        });
+
+        this.post('#/pick-list/:order-number', function(context) {
+
         });
 
         this.get('#/edit/order/(.*)', function(context) {

@@ -25,8 +25,6 @@ function(doc, req) {
         data.orderNumber = doc._id.substr(6);  // order docs start with the text 'order-'
         data.customerName = doc['customer-name'];
         data.customerId = doc['customer-id'];
-        data.warehouseName = doc['warehouse-name'];
-        data.warehouseId = doc['warehouse-id'];
         data._rev = doc._rev;
 
         // Set the right ship service level
@@ -73,8 +71,6 @@ function(doc, req) {
         data.orderNumber = '';
         data.customer = '';
         data.customerId = '';
-        data.warehouseName = '';
-        data.warehouseId = '';
         data.items = [];
         data.costs = [];
     }

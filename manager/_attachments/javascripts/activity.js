@@ -306,8 +306,8 @@ $.couch.app(function(couchapp) {
                 return d.promise();
             },
 
-            saveOrder: function(orderDoc) {
-                var d = $.Deferred();
+            saveOrder: function(orderDoc, d) {
+                d = d || $.Deferred();
                 couchapp.db.saveDoc(orderDoc, {
                     success: function() {
                         d.resolve()
@@ -497,21 +497,30 @@ $.couch.app(function(couchapp) {
             }
 
             $.log(orderDoc);
+
+            // Find out what the warehouse's name is given its ID
+            var whenDone = $.Deferred();
+            whenDone.done(
+                function() {
+                    context.showNotification('success', 'Order ' + order_number + ' saved!');
+                    activity.trigger('order-updated', orderDoc);
+                    context.$element().empty();
+                    context.redirect(next_url);
+                });
+            whenDone.fail(
+               function(status, reason, message) {
+                    $.log('Problem saving order '+ orderDoc._id +"\nmessage: " + message + "\nstatus: " + status + "\nreason: "+reason);
+                    context.showNotification('error' , 'Problem saving order ' + orderDoc._id + ': ' + message);
+                });
+ 
             context.updateOrdersItems(orderDoc)
                 .then( function() {
-                    context.saveOrder(orderDoc)
-                        .then(
-                            function() {
-                                context.showNotification('success', 'Order ' + order_number + ' saved!');
-                                activity.trigger('order-updated', orderDoc);
-                                context.$element().empty();
-                                context.redirect(next_url);
-                            },
-                            function(status, reason, message) {
-                                $.log('Problem saving order '+ orderDoc._id +"\nmessage: " + message + "\nstatus: " + status + "\nreason: "+reason);
-                                context.showNotification('error' , 'Problem saving order ' + orderDoc._id + ': ' + message);
-                            }
-                        );
+                    couchapp.db.openDoc(orderDoc['warehouse-id'], {
+                        success: function(warehouseDoc) {
+                            orderDoc['warehouse-name'] = warehouseDoc.name;
+                            context.saveOrder(orderDoc, whenDone);
+                        }
+                    });
                 });
 
         });

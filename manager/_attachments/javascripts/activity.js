@@ -181,8 +181,14 @@ $.couch.app(function(couchapp) {
                 return d.promise;
             },
 
-            errorModal: function(message) {
-
+            errorModal: function(title, message) {
+                var d = $.Deferred();
+                var modal = $.mustache(couchapp.ddoc.templates['error-modal'],
+                                            { title: 'Barcode', message: message });
+                modal = $(modal).appendTo(this.$element())
+                                .modal({backdrop: true, keyboard: true, show: true});
+                modal.on('hidden', function() { modal.remove(); d.resolve(true) });
+                return d.promise();
             },
 
             fixupOrderWarehouseSelect: function(warehouseList, selectedWarehouseId) {

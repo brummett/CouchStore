@@ -1,5 +1,5 @@
 <h1>Fill Pick List</h1>
-<form method="post" class="form-horizontal">
+<form method="post" action="#/pick-list/" class="form-horizontal">
     <div class="control-group">
         <label class="control-label" for="order-number">Order number</label>
         <div class="controls">
@@ -24,6 +24,8 @@
         (function() {
             var orderNumberInput = $('input#order-number'),
                 selectInput = $('select#select-order-number');
+
+            orderNumberInput.attr('autocomplete','off');
 
             selectInput.change(function() {
                 var orderId = selectInput.val();

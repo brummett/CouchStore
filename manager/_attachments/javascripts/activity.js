@@ -376,19 +376,38 @@ $.couch.app(function(couchapp) {
         });
 
         this.get('#/pick-list/', function(context) {
-            if (! ('order-number' in context.params)) {
-                var list_q = '_list/picklist-order-picker/picklist-order-picker';
-                $.get(list_q, function(content) {
-                    context.$element().html(content);
-                    // The loaded page has scripts we need to start up
-                    context.$element().find('script').each( function(i) {
-                        eval($(this).text());
-                    });
+            var list_q = '_list/picklist-order-picker/picklist-order-picker';
+            $.get(list_q, function(content) {
+                context.$element().html(content);
+                // The loaded page has scripts we need to start up
+                context.$element().find('script').each( function(i) {
+                    eval($(this).text());
                 });
-            }
+            });
         });
 
-        this.post('#/pick-list/:order-number', function(context) {
+        this.post('#/pick-list/', function(context) {
+            var orderId = context.params['order-number'];
+            
+            couchapp.db.openDoc('order-' + orderId, {
+                success: function(doc) {
+                    if (! ('unfilled-items' in doc)) {
+                        showNotification('error', orderId + ' has no unfilled items');
+                    } else {
+                        $.get('_show/pick-list/order-' + orderId)
+                            .done(function(content) {
+                                context.$element().html(content);
+                            })
+                            .fail(function(resp,  status, reason, e1, e2, e3) {
+                                message = $.parseJSON(resp.responseText).reason;
+                                showNotification('error', 'Could not generate pick list for order ' + orderId + ': ' + message);
+                            });
+                    }
+                },
+                error: function(status, reason, message, e1, e2, e3) {
+                    showNotification('error', 'Could not load order ' + orderId + ': '+message);
+                }
+            });
 
         });
 

@@ -11,7 +11,6 @@ function(head,req) {
             data.orders.push({ id: row.id, value: row.value});
         }
         data.typeaheadSource = JSON.stringify(data.orders);
-log('typeaheadSource: ' + data.typeaheadSource);
 
         return Mustache.to_html(ddoc.templates['picklist-order-picker'], data);
     });

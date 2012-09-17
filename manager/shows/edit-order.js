@@ -81,5 +81,3 @@ function(doc, req) {
 
     return Mustache.to_html(ddoc.templates[templateName], data, ddoc.templates.partials['edit-order']);
 }
-        
-        

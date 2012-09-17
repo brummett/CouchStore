@@ -178,7 +178,7 @@ $.couch.app(function(couchapp) {
                                     d.resolve(modal);
                                 });
                     });
-                return d;
+                return d.promise;
             },
 
             errorModal: function(message) {

@@ -403,6 +403,11 @@ $.couch.app(function(couchapp) {
                         $.get('_show/pick-list/order-' + orderId)
                             .done(function(content) {
                                 context.$element().html(content);
+                                PicklistWidget({
+                                    couchapp: couchapp,
+                                    context: context,
+                                    activity: activity
+                                });
                             })
                             .fail(function(resp,  status, reason, e1, e2, e3) {
                                 message = $.parseJSON(resp.responseText).reason;

@@ -20,5 +20,6 @@ couchapp_load([
   "vendor/sammy.js/sammy.form.js",
   "vendor/bootstrap/bootstrap.js",
   "vendor/bootstrap/bootstrap-typeahead.js",
-  "javascripts/order_widget.js"
+  "javascripts/order_widget.js",
+  "javascripts/picklist_widget.js"
 ]);

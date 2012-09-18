@@ -23,8 +23,8 @@ function PicklistWidget(params) {
         context = params.context,
         activity = params.activity,
         orderNumberInput = $('input#order-number', orderForm),
-        unfilledManager = new ItemManager(unfilledTable),
-        shippingManager = new ItemManager(shippingTable);
+        unfilledManager = new ItemManager({ table: unfilledTable} ),
+        shippingManager = new ItemManager({ table: shippingTable, should_manage_quantities: true} );
 
     // Turn off browser autocomplete for all the form fields
     $('input[type=text]').attr('autocomplete', 'off');
@@ -81,13 +81,19 @@ function PicklistWidget(params) {
     function inputForScan(scan) {
         var input_id = 'scan-'+scan+'-quan';
         var input = $('input#'+input_id);
+        if (! input.length) {
+            // No input for this items yet. create one
+            input = $('<input type="hidden" name="' + input_id + '" id="' + input_id + '" data-barcode="' + scan + '" value="0">');
+            input.appendTo(orderForm);
+        }
         return input;
     };
 
 
     // Object to manage the shipping and unfilled table data
-    function ItemManager(table) {
-        this.table = table;
+    function ItemManager(opts) {
+        this.table = opts.table;
+        this.should_manage_quantities = opts.should_manage_quantities;
     }
     ItemManager.prototype.hasBarcode = function(barcode) {
         return this.trForBarcode(barcode).length > 0;
@@ -101,7 +107,7 @@ function PicklistWidget(params) {
         if (quantity === undefined) {
             return parseInt(td.text());
         } else {
-            inputForScan(barcode).val(quantity);
+            if (this.should_manage_quantities) inputForScan(barcode).val(quantity);
             td.text(quantity);
         }
     }

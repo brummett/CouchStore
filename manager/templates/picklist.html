@@ -51,9 +51,9 @@
         </div>
     </div>
 
-    {{#unfilled-items}}
-        <input type="hidden" id="scan-{{barcode}}-quan" data-barcode="{{barcode}}" value="{{quantity}}">
-    {{/unfilled-items}}
+    {{#shipping-items}}
+        <input type="hidden" name="scan-{{barcode}}-quan" id="scan-{{barcode}}-quan" data-barcode="{{barcode}}" value="{{quantity}}">
+    {{/shipping-items}}
 
     {{#_rev}}
         <input type="hidden" name="_rev" id="_rev" value="{{_rev}}">

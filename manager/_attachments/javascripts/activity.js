@@ -428,6 +428,55 @@ $.couch.app(function(couchapp) {
             }
         });
 
+        // Called to edit a previously defined shipment
+        this.get('#/shipment/:order-id/:shipment-id', function(context) {
+
+        });
+
+        // called when a picklist form is submitted to define a shipment
+        this.post('#/shipment/', function(context) {
+            var orderId = 'order-' + context.params['order-number'];
+            couchapp.db.openDoc(orderId, {
+                success: function(doc) {
+                    var items = {},
+                        prop,
+                        matches;
+                    // Go through the params and look for quantities
+                    for (prop in context.params) {
+                        matches = /scan-(\d+)-quan/.exec(prop);
+                        if (matches && matches.length) {
+                            items[matches[1]] = parseInt(context.params[prop]);
+                            continue;
+                        }
+                    }
+                    doc.shipments = doc.shipments || [];
+                    doc.items = doc.items || {};
+                    doc.shipments.push({ date: context.params['date'], items: items });
+
+                    // deduct these items from the unshipped items total
+                    for (prop in items) {
+                        doc['unfilled-items'][prop] += items[prop];   // unfilled-items counts are negative
+                        doc['items'][prop] = doc['items'][prop] || 0;
+                        doc['items'][prop] -= items[prop];
+                    }
+
+                    // Now save the updated doc
+                    couchapp.db.saveDoc(doc, {
+                        success: function(data) {
+                            showNotification('success', 'Shipment saved');
+                            context.redirect('#/pick-list/');
+                        },
+                        error: function(status, reason, message) {
+                            showNotification('error', 'Could not save shipment: ' + message);
+                        }
+                    });
+                },
+                error: function() {
+                    showNotification('error', 'There is no order with order-number ' + context.params['order-number']);
+                }
+            });
+        });
+
         // Presents a form to the user to edit an already existing order
         this.get('#/edit/order/(.*)', function(context) {
             var order_id = context.params['splat'][0],

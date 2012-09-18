@@ -34,10 +34,23 @@ function(doc, req) {
 
         data.shippingCharge = doc['shipping-charge'] ? (parseInt(doc['shipping-charge']) / 100).toFixed(2) : '0.00';
 
-        data.items = [];
-        for (i in doc['items']) {
-            data.items.push({ barcode: i, quantity: Math.abs(doc['items'][i])});
+        // Items already part of this shipment
+        data.shippingItems = [];
+        if ('shipment' in req.query) {
+            var shipment = req.query.shipment;
+            if (doc['shipments'][shipment]) {
+                for (i in doc['shipments']) {
+                    data.shippingItems.push({ barcode: i, quantity: Math.abs(doc['items'][i])});
+                }
+            } else {
+                return {
+                    code: 404,
+                    json: { reason: 'Order ' + orderNumber + ' has no order ' + shipment }
+                };
+            }
         }
+
+        // Items still not yet shipped
         data['unfilled-items'] = [];
         for (i in doc['unfilled-items']) {
             data['unfilled-items'].push({ barcode: i, quantity: Math.abs(doc['unfilled-items'][i])});

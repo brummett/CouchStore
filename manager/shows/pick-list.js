@@ -20,7 +20,7 @@ function(doc, req) {
             };
         }
 
-        data.action = '#/order/' + doc['order-type'] + '/';
+        data.action = '#/shipment/'
         data.title = 'Fill pick list';
 
         data.orderType = doc['order-type'];

@@ -381,47 +381,54 @@ $.couch.app(function(couchapp) {
             context.$element().empty();
         });
 
+        // When called without an order-number, it presents a list of sale orders with unshipped items
+        // to the user to pick from.  The form re-get()s this same URL with the order-number as a
+        // param.
         this.get('#/pick-list/', function(context) {
-            var list_q = '_list/picklist-order-picker/picklist-order-picker';
-            $.get(list_q, function(content) {
-                context.$element().html(content);
-                // The loaded page has scripts we need to start up
-                context.$element().find('script').each( function(i) {
-                    eval($(this).text());
+            if (! ('order-number' in context.params)) {
+                // No order-number, show the list of orders to pick from
+
+                var list_q = '_list/picklist-order-picker/picklist-order-picker';
+                $.get(list_q, function(content) {
+                    context.$element().html(content);
+                    // The loaded page has scripts we need to start up
+                    context.$element().find('script').each( function(i) {
+                        eval($(this).text());
+                    });
                 });
-            });
-        });
-
-        this.post('#/pick-list/', function(context) {
-            var orderId = context.params['order-number'];
+            } else {
+                // Presents a sale order to the user and allows them to select unshipped items to send
+                // out in this shipment
+                var orderId = context.params['order-number'];
             
-            couchapp.db.openDoc('order-' + orderId, {
-                success: function(doc) {
-                    if (! ('unfilled-items' in doc)) {
-                        showNotification('error', orderId + ' has no unfilled items');
-                    } else {
-                        $.get('_show/pick-list/order-' + orderId)
-                            .done(function(content) {
-                                context.$element().html(content);
-                                PicklistWidget({
-                                    couchapp: couchapp,
-                                    context: context,
-                                    activity: activity
+                couchapp.db.openDoc('order-' + orderId, {
+                    success: function(doc) {
+                        if (! ('unfilled-items' in doc)) {
+                            showNotification('error', orderId + ' has no unfilled items');
+                        } else {
+                            $.get('_show/pick-list/order-' + orderId)
+                                .done(function(content) {
+                                    context.$element().html(content);
+                                    PicklistWidget({
+                                        couchapp: couchapp,
+                                        context: context,
+                                        activity: activity
+                                    });
+                                })
+                                .fail(function(resp,  status, reason) {
+                                    message = $.parseJSON(resp.responseText).reason;
+                                    showNotification('error', 'Could not generate pick list for order ' + orderId + ': ' + message);
                                 });
-                            })
-                            .fail(function(resp,  status, reason, e1, e2, e3) {
-                                message = $.parseJSON(resp.responseText).reason;
-                                showNotification('error', 'Could not generate pick list for order ' + orderId + ': ' + message);
-                            });
+                        }
+                    },
+                    error: function(status, reason, message) {
+                        showNotification('error', 'Could not load order ' + orderId + ': '+message);
                     }
-                },
-                error: function(status, reason, message, e1, e2, e3) {
-                    showNotification('error', 'Could not load order ' + orderId + ': '+message);
-                }
-            });
-
+                });
+            }
         });
 
+        // Presents a form to the user to edit an already existing order
         this.get('#/edit/order/(.*)', function(context) {
             var order_id = context.params['splat'][0],
                 show_q = '_show/edit-order';
@@ -453,6 +460,9 @@ $.couch.app(function(couchapp) {
         });
 
 
+        // This presents a form to the user to create some kind of order
+        // order_type is either receive or sale
+        // The form posts to #/order/receive below VVV
         this.get('#/create/order/:order_type', function(context) {
             var show_q = '_show/edit-order/?type=' + context.params.order_type;
 
@@ -471,6 +481,8 @@ $.couch.app(function(couchapp) {
                     
         });
 
+        // Called when the user submits an order to the system
+        // order_type is receive or sale
         this.post('#/order/(.*)/(.*)', function(context) {
             var params = context.params,
                 orderDoc = {},

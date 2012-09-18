@@ -399,14 +399,15 @@ $.couch.app(function(couchapp) {
             } else {
                 // Presents a sale order to the user and allows them to select unshipped items to send
                 // out in this shipment
-                var orderId = context.params['order-number'];
+                var orderNumber = context.params['order-number'],
+                    orderId = 'order-' + orderNumber;
             
-                couchapp.db.openDoc('order-' + orderId, {
+                couchapp.db.openDoc(orderId, {
                     success: function(doc) {
                         if (! ('unfilled-items' in doc)) {
-                            showNotification('error', orderId + ' has no unfilled items');
+                            showNotification('error', orderNumber + ' has no unfilled items');
                         } else {
-                            $.get('_show/pick-list/order-' + orderId)
+                            $.get('_show/pick-list/' + orderId)
                                 .done(function(content) {
                                     context.$element().html(content);
                                     PicklistWidget({
@@ -417,12 +418,12 @@ $.couch.app(function(couchapp) {
                                 })
                                 .fail(function(resp,  status, reason) {
                                     message = $.parseJSON(resp.responseText).reason;
-                                    showNotification('error', 'Could not generate pick list for order ' + orderId + ': ' + message);
+                                    showNotification('error', 'Could not generate pick list for order ' + orderNumber + ': ' + message);
                                 });
                         }
                     },
                     error: function(status, reason, message) {
-                        showNotification('error', 'Could not load order ' + orderId + ': '+message);
+                        showNotification('error', 'Could not load order ' + orderNumber + ': '+message);
                     }
                 });
             }

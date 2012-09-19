@@ -12,7 +12,7 @@
             <select id="select-order-number">
                 <option value=''></option>
                 {{#orders}}
-                    <option value={{id}}>{{value}}</option>
+                    <option value={{id}} class="alert-info">{{#isBackordered}}Backordered: {{/isBackordered}}{{message}}</option>
                 {{/orders}}
             </select>
         </div>

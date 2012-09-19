@@ -40,7 +40,9 @@ function(doc, req) {
             var shipment = req.query.shipment;
             if (doc['shipments'][shipment]) {
                 for (i in doc['shipments']) {
-                    data.shippingItems.push({ barcode: i, quantity: Math.abs(doc['items'][i])});
+                    if (doc['items'][i] != 0 ) {
+                        data.shippingItems.push({ barcode: i, quantity: Math.abs(doc['items'][i])});
+                    }
                 }
             } else {
                 return {
@@ -53,7 +55,9 @@ function(doc, req) {
         // Items still not yet shipped
         data['unfilled-items'] = [];
         for (i in doc['unfilled-items']) {
-            data['unfilled-items'].push({ barcode: i, quantity: Math.abs(doc['unfilled-items'][i])});
+            if (doc['unfilled-items'][i] != 0) {
+                data['unfilled-items'].push({ barcode: i, quantity: Math.abs(doc['unfilled-items'][i])});
+            }
         }
         
     } else {

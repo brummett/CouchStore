@@ -16,6 +16,8 @@ function(newDoc, savedDoc, userCtx) {
             require('item-costs');
             require('customer-name');
             require('customer-id');
+            require('date');
+            require('warehouse-name');
             require('warehouse-id');
             require('items');
     

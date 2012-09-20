@@ -1,7 +1,5 @@
 function(newDoc, savedDoc, userCtx) {
 
-    if (newDoc._deleted) return;
-
     function require(field, message) {
         message = message || 'Document must have a ' + field + ' field.';
         if (newDoc[field] == undefined) throw({ forbidden: message});
@@ -107,6 +105,10 @@ function(newDoc, savedDoc, userCtx) {
     };
 
         
+    enforce(userCtx.name, 'You must be logged in to make changes');
+
+    if (newDoc._deleted) return;
+
     require('type');
     validators[newDoc.type]();
 }

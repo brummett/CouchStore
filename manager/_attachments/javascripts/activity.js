@@ -403,31 +403,20 @@ $.couch.app(function(couchapp) {
                 var orderNumber = context.params['order-number'],
                     orderId = 'order-' + orderNumber;
             
-                couchapp.db.openDoc(orderId, {
-                    success: function(doc) {
-                        if (! ('unfilled-items' in doc)) {
-                            showNotification('error', orderNumber + ' has no unfilled items');
-                        } else {
-                            $.get('_show/shipment/' + orderId)
-                                .done(function(content) {
-                                    context.$element().html(content);
-                                    context.fixupOrderDate();
-                                    ShipmentWidget({
-                                        couchapp: couchapp,
-                                        context: context,
-                                        activity: activity
-                                    });
-                                })
-                                .fail(function(resp,  status, reason) {
-                                    message = $.parseJSON(resp.responseText).reason;
-                                    showNotification('error', 'Could not generate shipment for order ' + orderNumber + ': ' + message);
-                                });
-                        }
-                    },
-                    error: function(status, reason, message) {
-                        showNotification('error', 'Could not load order ' + orderNumber + ': '+message);
-                    }
-                });
+                $.get('_show/shipment/' + orderId)
+                    .done(function(content) {
+                        context.$element().html(content);
+                        context.fixupOrderDate();
+                        ShipmentWidget({
+                            couchapp: couchapp,
+                            context: context,
+                            activity: activity
+                        });
+                    })
+                    .fail(function(resp,  status, reason) {
+                        message = $.parseJSON(resp.responseText).reason;
+                        showNotification('error', 'Could not generate shipment for order ' + orderNumber + ': ' + message);
+                    });
             }
         });
 

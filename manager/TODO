@@ -8,9 +8,6 @@ Sort the orders in the fill-ick-list dropdown by priority.  Remove the blank at 
 
 Make a page to transfer items from one warehouse to another
 
-Include the item names in the order.  That'll make rendering the order pages easier and
-we can remove the fixupOrderItemNames
-
 check for order's valid shipments info in validate_doc_update
 
 Refactor the shipment-order-picker to use objects instead of already formatted strings

@@ -20,6 +20,7 @@ function(newDoc, savedDoc, userCtx) {
             require('warehouse-name');
             require('warehouse-id');
             require('items');
+            require('item-names');
     
             for (barcode in newDoc.items) {
                 // quantities must be non-zero
@@ -30,6 +31,11 @@ function(newDoc, savedDoc, userCtx) {
                 if (! ( barcode in newDoc['item-costs'])) {
                     throw({ forbidden: 'Barcode ' + barcode + ' appears in the quantity list but not the item-costs list'});
                 }
+                // And also in the names list
+                if (! (barcode in newDoc['item-names'])) {
+                    throw({ forbidden: 'Barcode ' + barcode + ' appears in the quantity list but not the item-names list'});
+                }
+
             }
     
             for (barcode in newDoc['item-costs']) {
@@ -39,10 +45,16 @@ function(newDoc, savedDoc, userCtx) {
                 }
                 // and also appear in the quantity list
                 if (! (barcode in newDoc.items) ) {
-                    throw({ forbidden: 'Barcode ' + barcode + ' appears in the cost list but not the quantity list'});
+                    throw({ forbidden: 'Barcode ' + barcode + ' appears in the item-costs list but not the quantity list'});
                 }
             }
 
+            for (barcode in newDoc['item-names']) {
+                // must appear in the items list
+                if (! (barcode in newDoc['items'])) {
+                    throw({ forbidden: 'Barcode ' + barcode + ' appears in the item-names list but not the quantity list'});
+                }
+            }
         },
 
         item: function() {

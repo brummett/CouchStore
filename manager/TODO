@@ -2,6 +2,10 @@ After filling a picklist, generate a box ID and show the user
 
 Sort the orders in the fill-ick-list dropdown by priority.  Remove the blank at the top of the select list
 
+Make a page to start + edit + commit a physical inventory
+
+make a page to confirm a shipment and enter a tracking number.  Request the actual shipping cost?
+
 Make a page to transfer items from one warehouse to another
 
 Refactor the shipment-order-picker to use objects instead of already formatted strings
@@ -13,3 +17,5 @@ When submitting an order, and the order has an unknown item, make that row red
 Make the notification div floating
 
 When making a shipment, when the unfilled count goes to 0, dim the row
+
+An item lister page with edit+delete for shipments

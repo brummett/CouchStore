@@ -21,7 +21,7 @@ function(doc, req) {
         }
 
         data.action = '#/shipment/'
-        data.title = 'Fill pick list';
+        data.title = 'Create shipment';
 
         data.orderType = doc['order-type'];
 
@@ -40,6 +40,7 @@ function(doc, req) {
             var shipment = req.query.shipment;
             if (doc['shipments'][shipment]) {
                 // An already existing shipment
+                data.title = 'Edit shipment';
                 data.date = doc['shipments']['date'];
 
                 for (i in doc['shipments']) {
@@ -71,11 +72,11 @@ function(doc, req) {
             };
         }
 
-        templateName = 'picklist-order-picker';
+        templateName = 'shipment-order-picker';
 
     }
 
-    return Mustache.to_html(ddoc.templates['picklist'], data, ddoc.templates.partials['edit-order']);
+    return Mustache.to_html(ddoc.templates['shipment'], data, ddoc.templates.partials['edit-order']);
 }
         
         

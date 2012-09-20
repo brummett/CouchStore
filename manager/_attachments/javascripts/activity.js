@@ -384,11 +384,11 @@ $.couch.app(function(couchapp) {
         // When called without an order-number, it presents a list of sale orders with unshipped items
         // to the user to pick from.  The form re-get()s this same URL with the order-number as a
         // param.
-        this.get('#/pick-list/', function(context) {
+        this.get('#/shipment/', function(context) {
             if (! ('order-number' in context.params)) {
                 // No order-number, show the list of orders to pick from
 
-                var list_q = '_list/picklist-order-picker/picklist-order-picker';
+                var list_q = '_list/shipment-order-picker/shipment-order-picker';
                 $.get(list_q, function(content) {
                     context.$element().html(content);
                     // The loaded page has scripts we need to start up
@@ -408,11 +408,11 @@ $.couch.app(function(couchapp) {
                         if (! ('unfilled-items' in doc)) {
                             showNotification('error', orderNumber + ' has no unfilled items');
                         } else {
-                            $.get('_show/pick-list/' + orderId)
+                            $.get('_show/shipment/' + orderId)
                                 .done(function(content) {
                                     context.$element().html(content);
                                     context.fixupOrderDate();
-                                    PicklistWidget({
+                                    ShipmentWidget({
                                         couchapp: couchapp,
                                         context: context,
                                         activity: activity
@@ -420,7 +420,7 @@ $.couch.app(function(couchapp) {
                                 })
                                 .fail(function(resp,  status, reason) {
                                     message = $.parseJSON(resp.responseText).reason;
-                                    showNotification('error', 'Could not generate pick list for order ' + orderNumber + ': ' + message);
+                                    showNotification('error', 'Could not generate shipment for order ' + orderNumber + ': ' + message);
                                 });
                         }
                     },
@@ -436,7 +436,7 @@ $.couch.app(function(couchapp) {
 
         });
 
-        // called when a picklist form is submitted to define a shipment
+        // called when a shipment form is submitted to define a shipment
         this.post('#/shipment/', function(context) {
             var orderId = 'order-' + context.params['order-number'];
             couchapp.db.openDoc(orderId, {
@@ -467,7 +467,7 @@ $.couch.app(function(couchapp) {
                     couchapp.db.saveDoc(doc, {
                         success: function(data) {
                             showNotification('success', 'Shipment saved');
-                            context.redirect('#/pick-list/');
+                            context.redirect('#/shipment/');
                         },
                         error: function(status, reason, message) {
                             showNotification('error', 'Could not save shipment: ' + message);

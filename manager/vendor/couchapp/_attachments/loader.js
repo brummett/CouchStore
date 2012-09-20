@@ -21,5 +21,5 @@ couchapp_load([
   "vendor/bootstrap/bootstrap.js",
   "vendor/bootstrap/bootstrap-typeahead.js",
   "javascripts/order_widget.js",
-  "javascripts/picklist_widget.js"
+  "javascripts/shipment_widget.js"
 ]);

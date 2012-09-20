@@ -9,7 +9,6 @@
 //      couchapp: the couchapp object
 //      context: the Sammy.js context object
 //      activity: the Sammy.js app object
-//      has_picklist: true if there are filled and unfilled item tables in the DOM
 //      allow_unknown: true if line items can be unknown, false if it should show an error dialog for unknown items
 //      allow_delete: true if the order item lines should include a delete button
 function OrderWidget(params) {
@@ -22,7 +21,6 @@ function OrderWidget(params) {
         activity = params.activity,
         allow_unknown = ('allow_unknown' in params) ? params.allow_unknown : true,
         allow_delete = ('allow_delete' in params) ? params.allow_delete : true,
-        has_picklist = false,
         barcodeInput = $('input#barcode', barcodeScan),
         customerInput = $('input#customer-name', orderForm),
         customerIdInput = $('input#customer-id', orderForm),
@@ -280,10 +278,6 @@ function OrderWidget(params) {
 
         if (tr.length) {
             d.resolve(tr);
-
-        } else if (has_picklist) {
-            context.errorModal(scan + ' is not part of the order');
-            d.reject();
 
         } else {
             $.get(couchapp.db.uri + couchapp.ddoc._id + '/templates/activity-receive-shipment-item-row.template')

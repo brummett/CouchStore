@@ -1,5 +1,5 @@
-// generates data used by the picklist order picker typeahead
-// use with the unfilled-items-by-ordernumber view and include_docs=true
+// generates data used by the shipment order picker typeahead
+// use with the shipment-order-picker view
 function(head,req) {
     var ddoc = this,
         Mustache = require('vendor/couchapp/lib/mustache'),
@@ -14,7 +14,7 @@ function(head,req) {
         }
         data.typeaheadSource = JSON.stringify(typeaheadData);
 
-        return Mustache.to_html(ddoc.templates['picklist-order-picker'], data);
+        return Mustache.to_html(ddoc.templates['shipment-order-picker'], data);
     });
 
 }

@@ -1,4 +1,4 @@
-function(newDoc, savedDoc, userCtx) {
+function(newDoc, oldDoc, userCtx) {
 
     function require(field, message) {
         message = message || 'Document must have a ' + field + ' field.';
@@ -7,6 +7,11 @@ function(newDoc, savedDoc, userCtx) {
 
     function enforce(bool, message) {
         if (!bool) throw({ forbidden: message});
+    }
+
+    function unchanged(field) {
+        if (oldDoc && toJSON(oldDoc[field]) != toJSON(newDoc[field]))
+            throw({ forbidden: "Field can't be changed: "+field });
     }
 
     var validators = {
@@ -23,6 +28,8 @@ function(newDoc, savedDoc, userCtx) {
             require('items');
             require('item-names');
     
+            unchanged('date');
+
             for (barcode in newDoc.items) {
                 // quantities must be non-zero
                 if (! newDoc.items[barcode]) {

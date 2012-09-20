@@ -20,3 +20,5 @@ Make a check-box on the 'make a sale' page that would immediately mark the items
 When submitting an order, and the order has an unknown item, make that row red
 
 Make the notification div floating
+
+When making a shipment, when the unfilled count goes to 0, dim the row

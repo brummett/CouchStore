@@ -1,7 +1,5 @@
 Make the date of an existing order unchangeable via validate-doc-update
 
-make the date in the fill-pick-list/make-shipment page today's date, not the order's date
-
 After filling a picklist, generate a box ID and show the user
 
 Sort the orders in the fill-ick-list dropdown by priority

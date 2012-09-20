@@ -24,7 +24,7 @@ function(doc, req) {
         data.title = 'Fill pick list';
 
         data.orderType = doc['order-type'];
-        data.date = doc.date;
+
         data.orderNumber = doc._id.substr(6);  // order docs start with the text 'order-'
         data.warehouseName = doc['warehouse-name'];
         data.customerName = doc['customer-name'];
@@ -39,6 +39,9 @@ function(doc, req) {
         if ('shipment' in req.query) {
             var shipment = req.query.shipment;
             if (doc['shipments'][shipment]) {
+                // An already existing shipment
+                data.date = doc['shipments']['date'];
+
                 for (i in doc['shipments']) {
                     if (doc['items'][i] != 0 ) {
                         data.shippingItems.push({ barcode: i, quantity: Math.abs(doc['items'][i])});

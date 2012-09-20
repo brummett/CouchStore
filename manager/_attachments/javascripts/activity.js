@@ -392,6 +392,7 @@ $.couch.app(function(couchapp) {
                 $.get(list_q, function(content) {
                     context.$element().html(content);
                     // The loaded page has scripts we need to start up
+                    // that match the test box and select list
                     context.$element().find('script').each( function(i) {
                         eval($(this).text());
                     });
@@ -410,6 +411,7 @@ $.couch.app(function(couchapp) {
                             $.get('_show/pick-list/' + orderId)
                                 .done(function(content) {
                                     context.$element().html(content);
+                                    context.fixupOrderDate();
                                     PicklistWidget({
                                         couchapp: couchapp,
                                         context: context,

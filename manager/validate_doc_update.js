@@ -10,35 +10,23 @@ function(newDoc, savedDoc, userCtx) {
     var validators = {
         order: function() {
             var barcode,
-                itemKey,
-                ckeckKeys = {};
+                i;
 
             require('order-type');
             require('item-costs');
             require('customer-name');
             require('customer-id');
             require('warehouse-id');
+            require('items');
     
-            // An order must have either an 'items', 'unfileld-items' or both
-            if (!( 'items' in newDoc) && ! ('unfilled-items' in newDoc)) {
-                throw({ forbidden: "Orders must have either an 'items' or 'unfilled-items' field"});
-            }
-    
-            checkKeys = { 'items': 1 };
-            if (newDoc.type == 'sale') {
-                // For sale orders, also check unfilled-items
-                checkKeys['unfilled-items'] = 1;
-            }
-            for (itemKey in checkKeys) {
-                for (barcode in newDoc[itemKey]) {
-                    // quantities must be non-zero
-                    if (! newDoc[itemKey][barcode]) {
-                        throw({ forbidden: 'Quantity for barcode ' + barcode + ' must be non-zero'});
-                    }
-                    // And also appear in the costs list
-                    if (! ( barcode in newDoc['item-costs'])) {
-                        throw({ forbidden: 'Barcode ' + barcode + ' appears in the quantity list but not the item-costs list'});
-                    }
+            for (barcode in newDoc.items) {
+                // quantities must be non-zero
+                if (! newDoc.items[barcode]) {
+                    throw({ forbidden: 'Quantity for barcode ' + barcode + ' must be non-zero'});
+                }
+                // And also appear in the costs list
+                if (! ( barcode in newDoc['item-costs'])) {
+                    throw({ forbidden: 'Barcode ' + barcode + ' appears in the quantity list but not the item-costs list'});
                 }
             }
     
@@ -48,13 +36,11 @@ function(newDoc, savedDoc, userCtx) {
                     throw({ forbidden: 'Cost for barcode ' + barcode + ' must be an integer number of cents'});
                 }
                 // and also appear in the quantity list
-                if ( ( ('items' in newDoc) && (! (barcode in newDoc['items'])) )
-                        &&
-                      ( ! (barcode in newDoc['unfilled-items']))
-                ) {
+                if (! (barcode in newDoc.items) ) {
                     throw({ forbidden: 'Barcode ' + barcode + ' appears in the cost list but not the quantity list'});
                 }
             }
+
         },
 
         item: function() {

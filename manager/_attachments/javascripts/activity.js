@@ -260,11 +260,6 @@ $.couch.app(function(couchapp) {
                             items_to_update[barcode] = quan;
                         });
                     }
-                    if ('unfilled-items' in orderDoc) {
-                        $.each(orderDoc['unfilled-items'], function(barcode, quan) {
-                            items_to_update[barcode] = quan;
-                        });
-                    }
                     couchapp.view('items-by-barcode', {
                         keys: Object.keys(items_to_update),
                         include_docs: true,
@@ -445,13 +440,6 @@ $.couch.app(function(couchapp) {
                     doc.items = doc.items || {};
                     doc.shipments.push({ date: context.params['date'], items: items });
 
-                    // deduct these items from the unshipped items total
-                    for (prop in items) {
-                        doc['unfilled-items'][prop] += items[prop];   // unfilled-items counts are negative
-                        doc['items'][prop] = doc['items'][prop] || 0;
-                        doc['items'][prop] -= items[prop];
-                    }
-
                     // Now save the updated doc
                     couchapp.db.saveDoc(doc, {
                         success: function(data) {
@@ -556,15 +544,14 @@ $.couch.app(function(couchapp) {
                 }
             };
 
+            orderDoc.items = items;
             if (order_type == 'receive') {
                 orderDoc['order-type'] = 'receive';
                 extract_items( function(n) { return n });  // receive items are positive
-                orderDoc.items = items;
                 next_url = '#/';   // Go back to the start page
             } else if (order_type == 'sale') {
                 orderDoc['order-type'] = 'sale';
                 extract_items( function(n) { return 0 - n });  // sale items are negative
-                orderDoc['unfilled-items'] = items;
                 next_url = context.path;  // stay at the same URL
             } else {
                 showNotification('error', 'Unknown type of order: '+order_type);

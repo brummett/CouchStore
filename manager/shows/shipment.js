@@ -2,21 +2,17 @@ function(doc, req) {
     var ddoc = this,
         Mustache = require('vendor/couchapp/lib/mustache'),
         data = {},
+        unfilledItems = {},
         templateName = '',
         i = 0,
-        itemKey = '';
+        thisShipment,
+        barcode = '';
 
     if (doc) {
         if ( doc.type != 'order' ) {
             return {
                 code: 403,
                 json: { reason: 'Document is a '+doc.type+', expected an order' }
-            };
-        }
-        if ( ! ( 'unfilled-items' in doc)) {
-            return {
-                code: 403,
-                json: { reason: 'Order has no unfilled items' }
             };
         }
 
@@ -34,40 +30,54 @@ function(doc, req) {
 
         data.shippingCharge = doc['shipping-charge'] ? (parseInt(doc['shipping-charge']) / 100).toFixed(2) : '0.00';
 
+        // How many items we ultimately need to ship out
+        unfilledItems = {};
+        for (barcode in doc.items) {
+            unfilledItems[barcode] = Math.abs(doc.items[barcode]);
+        }
+        // Deduct items already shipped
+        if ('shipments' in doc) {
+            for (i = 0; i < doc.shipments.length; i++) {
+                for (barcode in doc.shipments[i].items) {
+                    unfilledItems[barcode] -= doc.shipments[i].items[barcode];
+                }
+            }
+        }
+        // Only include non-zero items to avoid cluttering up the interface
+        data.unfilledItems = [];
+        for (barcode in unfilledItems) {
+            if (unfilledItems[barcode] != 0) {
+                data.unfilledItems.push({ barcode: barcode, quantity: unfilledItems[barcode] });
+            }
+        }
+
         // Items already part of this shipment
         data.shippingItems = [];
         if ('shipment' in req.query) {
             var shipment = req.query.shipment;
-            if (doc['shipments'][shipment]) {
+            if (doc.shipments[shipment]) {
+                thisShipment = doc.shipments[shipment];
                 // An already existing shipment
                 data.title = 'Edit shipment';
-                data.date = doc['shipments']['date'];
+                data.date = thisShipment.date;
 
-                for (i in doc['shipments']) {
-                    if (doc['items'][i] != 0 ) {
-                        data.shippingItems.push({ barcode: i, quantity: Math.abs(doc['items'][i])});
+                for (barcode in thisShipment.items) {
+                    if (thisShipment.items[barcode] != 0 ) {
+                        data.shippingItems.push({ barcode: i, quantity: Math.abs(thisShipment[barcode]) });
                     }
                 }
             } else {
                 return {
                     code: 404,
-                    json: { reason: 'Order ' + orderNumber + ' has no order ' + shipment }
+                    json: { reason: 'Order ' + orderNumber + ' has no shipment ' + shipment }
                 };
             }
         }
 
-        // Items still not yet shipped
-        data['unfilled-items'] = [];
-        for (i in doc['unfilled-items']) {
-            if (doc['unfilled-items'][i] != 0) {
-                data['unfilled-items'].push({ barcode: i, quantity: Math.abs(doc['unfilled-items'][i])});
-            }
-        }
-        
     } else {
         if (! req.query.type) {
             return {
-                code: 403,
+                code: 404,
                 json: { reason: 'Unknown order number' }
             };
         }

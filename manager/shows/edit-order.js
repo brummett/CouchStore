@@ -4,7 +4,6 @@ function(doc, req) {
         data = {},
         templateName = '',
         i = 0,
-        itemKey = '',
         shipServiceLevels = [ {id: 'standard'} ,{id:  'expedited'}, {id: 'overnight'}],
         orderSources = [ {id: 'web'}, {id: 'amazon'},{id: 'phone'},{id: 'ebay'},{id: 'buy.com'}];
 
@@ -42,16 +41,9 @@ function(doc, req) {
             }
         }
 
-        if (doc['order-type'] == 'receive') {
-            itemKey = 'items';
-        } else if (doc['order-type'] == 'sale') {
-            itemKey = 'unfilled-items';
-        } else {
-            itemKey = 'items';
-        }
         data.items = [];
-        for (i in doc[itemKey]) {
-            data.items.push({ barcode: i, quantity: Math.abs(doc[itemKey][i]), cost: ((doc['item-costs'][i]/100).toFixed(2)) });
+        for (i in doc.items) {
+            data.items.push({ barcode: i, quantity: Math.abs(doc.items[i]), cost: ((doc['item-costs'][i]/100).toFixed(2)) });
         }
         
     } else {

@@ -517,6 +517,7 @@ $.couch.app(function(couchapp) {
                 orderDoc = {},
                 items = {},
                 item_costs = {},
+                item_names = {},
                 next_url = '',
                 order_type = params['splat'][0],
                 order_number = params['splat'][1] || params['order-number'];
@@ -541,6 +542,11 @@ $.couch.app(function(couchapp) {
                         item_costs[matches[1]] = Math.round(parseFloat(params[prop]) * 100);
                         continue;
                     }
+                    matches = /scan-(.*?)-name/.exec(prop);
+                    if (matches && matches.length) {
+                        item_names[matches[1]] = params[prop];
+                        continue;
+                    }
                 }
             };
 
@@ -561,6 +567,7 @@ $.couch.app(function(couchapp) {
             orderDoc._id = 'order-' + params['order-number'];
             orderDoc.type = 'order';
             orderDoc['item-costs'] = item_costs;
+            orderDoc['item-names'] = item_names;
 
             if (params['_rev']) {
                 orderDoc['_rev'] = params['_rev'];

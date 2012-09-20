@@ -47,7 +47,10 @@ function(doc, req) {
         data.unfilledItems = [];
         for (barcode in unfilledItems) {
             if (unfilledItems[barcode] != 0) {
-                data.unfilledItems.push({ barcode: barcode, quantity: unfilledItems[barcode] });
+                data.unfilledItems.push( {  barcode: barcode,
+                                            name: doc['item-names'][barcode],
+                                            quantity: unfilledItems[barcode]
+                                        });
             }
         }
 
@@ -63,7 +66,10 @@ function(doc, req) {
 
                 for (barcode in thisShipment.items) {
                     if (thisShipment.items[barcode] != 0 ) {
-                        data.shippingItems.push({ barcode: i, quantity: Math.abs(thisShipment[barcode]) });
+                        data.shippingItems.push( {  barcode: barcode,
+                                                    name: doc['item-names'][barcode],
+                                                    quantity: Math.abs(thisShipment[barcode])
+                                                } );
                     }
                 }
             } else {

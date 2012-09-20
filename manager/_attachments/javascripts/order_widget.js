@@ -221,11 +221,13 @@ function OrderWidget(params) {
 
     // Given a scan (usually a barcode), return the hidden input
     // element from order-form that stores the quantity.  It creates a new
-    // input if it's not there yet
+    // input for the name and quantity if it's not there yet
     function inputForScan(scan) {
-        var input_id = 'scan-'+scan+'-quan';
+        var input_id = 'scan-'+scan+'-quan',
+            name_id  = 'scan-'+scan+'-name';
         var input = $('input#'+input_id);
         if (input.length == 0) {
+            $('<input id="' + name_id + '" name="' + name_id + '" type="hidden" value="">').appendTo(orderForm);
             input = $('<input id="' + input_id + '" name="' + input_id + '" type="hidden" value="0">').appendTo(orderForm);
         }
         return input;
@@ -290,6 +292,7 @@ function OrderWidget(params) {
                                                                 allow_delete: allow_delete,
                                                                 is_unknown: is_unknown ? true : false,
                                                                 name: item['name'] }));
+                        $('input#scan-'+scan+'-name').val(item.name);
                         orderTable.append(content);
                         wireUpEditButtons(content, scan);
                         d.resolve(content);

@@ -43,7 +43,11 @@ function(doc, req) {
 
         data.items = [];
         for (i in doc.items) {
-            data.items.push({ barcode: i, quantity: Math.abs(doc.items[i]), cost: ((doc['item-costs'][i]/100).toFixed(2)) });
+            data.items.push( {  barcode: i,
+                                name: doc['item-names'][i],
+                                quantity: Math.abs(doc.items[i]),
+                                cost: (doc['item-costs'][i]/100).toFixed(2)
+                            });
         }
         
     } else {

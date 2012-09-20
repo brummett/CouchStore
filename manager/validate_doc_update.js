@@ -7,6 +7,10 @@ function(newDoc, savedDoc, userCtx) {
         if (newDoc[field] == undefined) throw({ forbidden: message});
     }
 
+    function enforce(bool, message) {
+        if (!bool) throw({ forbidden: message});
+    }
+
     var validators = {
         order: function() {
             var barcode,
@@ -53,6 +57,19 @@ function(newDoc, savedDoc, userCtx) {
                 // must appear in the items list
                 if (! (barcode in newDoc['items'])) {
                     throw({ forbidden: 'Barcode ' + barcode + ' appears in the item-names list but not the quantity list'});
+                }
+            }
+
+            if ('shipments' in newDoc) {
+                for (i = 0; i < newDoc.shipments.length; i++) {
+                    enforce('items' in newDoc.shipments[i],
+                            'Shipment ' + i + ' has no items list');
+                    enforce('date' in newDoc.shipments[i],
+                            'Shipment ' + i + ' has no date');
+                    for (barcode in newDoc.shipments[i].items) {
+                        enforce(barcode in newDoc.items,
+                                'Shipment ' + i + ' has barcode ' + barcode + ' which is not in the items list');
+                    }
                 }
             }
         },

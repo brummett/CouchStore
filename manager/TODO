@@ -8,8 +8,6 @@ Sort the orders in the fill-ick-list dropdown by priority.  Remove the blank at 
 
 Make a page to transfer items from one warehouse to another
 
-check for order's valid shipments info in validate_doc_update
-
 Refactor the shipment-order-picker to use objects instead of already formatted strings
 
 Make a check-box on the 'make a sale' page that would immediately mark the items as shipped

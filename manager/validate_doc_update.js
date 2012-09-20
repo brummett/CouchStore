@@ -13,8 +13,7 @@ function(newDoc, savedDoc, userCtx) {
 
     var validators = {
         order: function() {
-            var barcode,
-                i;
+            var barcode;
 
             require('order-type');
             require('item-costs');
@@ -61,16 +60,7 @@ function(newDoc, savedDoc, userCtx) {
             }
 
             if ('shipments' in newDoc) {
-                for (i = 0; i < newDoc.shipments.length; i++) {
-                    enforce('items' in newDoc.shipments[i],
-                            'Shipment ' + i + ' has no items list');
-                    enforce('date' in newDoc.shipments[i],
-                            'Shipment ' + i + ' has no date');
-                    for (barcode in newDoc.shipments[i].items) {
-                        enforce(barcode in newDoc.items,
-                                'Shipment ' + i + ' has barcode ' + barcode + ' which is not in the items list');
-                    }
-                }
+                validators.shipments();
             }
         },
 
@@ -87,6 +77,33 @@ function(newDoc, savedDoc, userCtx) {
         warehouse: function() {
             require('name');
         },
+
+        shipments: function() {
+            var barcode,
+                i,
+                thisShipment,
+                count = {};
+
+            for (barcode in newDoc.items) {
+                count[barcode] = Math.abs(newDoc.items[barcode]);
+            }
+
+            for (i = 0; i < newDoc.shipments.length; i++) {
+                thisShipment = newDoc.shipments[i];
+
+                enforce('items' in thisShipment,
+                        'Shipment ' + i + ' has no items list');
+                enforce('date' in thisShipment,
+                        'Shipment ' + i + ' has no date');
+                for (barcode in thisShipment.items) {
+                    enforce(barcode in newDoc.items,
+                            'Shipment ' + i + ' has barcode ' + barcode + ' which is not in the items list');
+
+                    count[barcode] -= Math.abs(thisShipment.items[barcode]);
+                    enforce(count[barcode] >= 0, 'Shipments for barcode ' + barcode + ' are more than the items');
+                }
+            }
+        }
     };
 
         

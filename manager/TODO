@@ -1,7 +1,5 @@
 Make the date of an existing order unchangeable via validate-doc-update
 
-validate_doc_update should check that you don't ship more things than are in the order
-
 After filling a picklist, generate a box ID and show the user
 
 Sort the orders in the fill-ick-list dropdown by priority.  Remove the blank at the top of the select list

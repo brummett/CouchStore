@@ -18,3 +18,10 @@ Make the notification div floating
 
 When making a shipment, when the unfilled count goes to 0, dim the row
 
+Need an item history report
+
+The data lister search isn't case insensitive
+
+The data lister edit/remove buttons don't move the history back after the modal goes away
+
+Edit/remove buttons for the shipment lister aren't triggering the right routes

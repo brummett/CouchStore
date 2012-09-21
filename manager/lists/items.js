@@ -53,6 +53,15 @@ function(head,req) {
         }
     })();
 
+    // This is used to compose the edit and delete links
+    function idForRow(row) {
+        if (itemType == 'shipments') {
+            return encodeURIComponent(row.id) + '/' + encodeURIComponent(row.value.shipment);
+        } else {
+            return encodeURIComponent(row.id);
+        }
+    };
+
     provides('html', function() {
         var data = {
                 itemType: itemType,
@@ -65,7 +74,7 @@ function(head,req) {
             };
         while (row = getRow()) {
             if (! isDuplicate(row) && matches(row.key)) {
-                row.value._id = encodeURIComponent(row.id);
+                row.value._id = idForRow(row);
                 data.items.push(row.value);
             }
         }

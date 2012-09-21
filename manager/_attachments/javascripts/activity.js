@@ -637,15 +637,17 @@ $.couch.app(function(couchapp) {
                 );
         });
 
-        this.get(/#\/edit\/(.*)\/(.*)/, function(context) {
+        this.get('#/edit/(.*)/(.*)', function(context) {
             var type = context.params['splat'][0],
                 item_id = context.params['splat'][1];
 
             this.editItemModal(type, item_id)
-                .then(function(modal) { window.history.back() });
+                .then(function(modal) {
+                        window.history.back()
+                    });
         });
 
-        this.post(/#\/edit\/(.*)\/(.*)/, function(context) {
+        this.post('#/edit/(.*)/(.*)', function(context) {
             var validationError = 0,
                 type = context.params['splat'][0],
                 this_id = context.params['splat'][1],

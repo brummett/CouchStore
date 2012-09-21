@@ -38,7 +38,7 @@ function ShipmentWidget(params) {
         barcodeInput.blur();
         if (unfilledManager.hasBarcode(barcode)) {
             if (unfilledManager.removeItem(barcode)) {
-                name = unFilledManager.itemName(barcode);
+                name = unfilledManager.itemName(barcode);
                 shippingManager.addItem(barcode,name);
                 modalDone = true;
             } else {

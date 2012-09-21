@@ -44,7 +44,7 @@ function(head,req) {
         while (row = getRow()) {
             if (! shown[row.id] && matches(row.key)) {
                 shown[row.id] = true;  // Don't show the same item more than once
-                row.value._id = row.id;
+                row.value._id = encodeURIComponent(row.id);
                 data.items.push(row.value);
             }
         }

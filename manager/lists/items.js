@@ -11,7 +11,10 @@ function(head,req) {
     itemType = itemType.substr(0, itemType.indexOf('-')); // get the type up to the first '-'
     singular = itemType.substr(0, itemType.lastIndexOf('s')); // singular word used to construct the 'edit' URL
     var matches = search
-                ? function(key) { return key && (key.toString().toLowerCase().indexOf(search) > -1); }
+                ? function(key) { return (key !== null)
+                                        && (key !== undefined)
+                                        && (key != '')
+                                        && (key.toString().toLowerCase().indexOf(search.toLowerCase()) > -1); }
                 : function(key) { return 1; };
                     
     var headers = { items: [ 'Name', 'Sku','Barcode' ],
@@ -73,7 +76,7 @@ function(head,req) {
                 delete: '#/delete/' + singular + '/'
             };
         while (row = getRow()) {
-            if (! isDuplicate(row) && matches(row.key)) {
+            if (matches(row.key)  && ! isDuplicate(row)) {
                 row.value._id = idForRow(row);
                 data.items.push(row.value);
             }

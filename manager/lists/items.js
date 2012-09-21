@@ -1,11 +1,12 @@
-// The basic data page about inventory items
-// Use with the items-by-any view
+// The basic data page about inventory items, customers, warehouses, etc
+// Use with the <type>-by-any view
 function(head,req) {
     var ddoc = this,
         search = req.query['search-query'] && req.query['search-query'].toLowerCase(),
         Mustache = require('vendor/couchapp/lib/mustache'),
         itemType = req.path[req.path.length-1],
-        singular = '';
+        singular = '',
+        addableThings = {items: 1, customers: 1, warehouses: 1};  // Show the add button for these things
 
     itemType = itemType.substr(0, itemType.indexOf('-')); // get the type up to the first '-'
     singular = itemType.substr(0, itemType.lastIndexOf('s')); // singular word used to construct the 'edit' URL
@@ -17,6 +18,7 @@ function(head,req) {
                     customers: ['Name', 'Email','Phone'],
                     warehouses: ['Name','Email','Phone'],
                     orders: ['Order-Number', 'Customer-Name', 'Order-Type', 'Unfilled-Items', 'Shipped-Items'],
+                    shipments: ['Order-Number', 'Customer-Name', 'Shipped-Items', 'Date', 'Tracking-Number'],
                    };
     var template = ddoc.templates['data-lister'];
 
@@ -30,11 +32,31 @@ function(head,req) {
     replacement += '</td>';
     template = template.replace('**FIELDS**', replacement);
 
+    var isDuplicate = ( function() {
+        var shown = {};
+        return function(row) {
+            // For most listers, the doc ID is all we need to know something is
+            // a duplicate
+            var key;
+            if (itemType == 'shipments') {
+                // But for shipments, it's the combo if doc ID and shipment
+                key = row.value.shipment + row.id;
+            } else {
+                key = row.id;
+            }
+            if (shown[key]) {
+                return true;
+            } else {
+                shown[key] = true;
+                return false;
+            }
+        }
+    })();
+
     provides('html', function() {
-        var shown = {}
-            data = {
+        var data = {
                 itemType: itemType,
-                showAddButton: itemType != 'orders',  // Add orders in other parts of the app
+                showAddButton: (itemType in addableThings),
                 items: [],
                 headers: headers[itemType],
                 path: '#/data/' + itemType + '/',
@@ -42,8 +64,7 @@ function(head,req) {
                 delete: '#/delete/' + singular + '/'
             };
         while (row = getRow()) {
-            if (! shown[row.id] && matches(row.key)) {
-                shown[row.id] = true;  // Don't show the same item more than once
+            if (! isDuplicate(row) && matches(row.key)) {
                 row.value._id = encodeURIComponent(row.id);
                 data.items.push(row.value);
             }

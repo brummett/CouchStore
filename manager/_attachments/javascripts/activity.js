@@ -416,7 +416,8 @@ $.couch.app(function(couchapp) {
         });
 
         // Called to edit a previously defined shipment
-        this.get('#/shipment/:order-id/:shipment-id', function(context) {
+        this.get('#/edit/shipment/:order-id/:shipment-id', function(context) {
+            1;
 
         });
 

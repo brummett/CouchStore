@@ -6,9 +6,7 @@ function(doc) {
     var i;
 
     if ((doc.type == 'order') && ('shipments' in doc)) {
-log('doc has shipments');
         for (i = 0; i < doc.shipments.length; i++) {
-log('shipment '+i+' is box '+doc.shipments[i].box);
             emit([doc.shipments[i].date, doc.shipments[i].box], null);
         }
     }

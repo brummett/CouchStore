@@ -334,6 +334,22 @@ $.couch.app(function(couchapp) {
                             + (month < 10 ? '0' : '') + month + '-'
                             + (now.getDate() < 10 ? '0' : '') + now.getDate();
                 return dateStr;
+            },
+
+            // Find the last box ID used and return the next one
+            getNextBoxId: function() {
+                var d = $.Deferred();
+
+                couchapp.view('shipment-box-ids', {
+                    descending: true,
+                    startkey: [this.todayAsString(), ''],
+                    limit: 1,
+                    success: function(data) {
+                        var boxID = data.rows.length ? (data.rows[0].key[1] + 1) : 1;
+                        d.resolve(boxID);
+                    }
+                });
+                return d.promise();
             }
 
         });
@@ -440,6 +456,8 @@ $.couch.app(function(couchapp) {
         // called when a shipment form is submitted to define a shipment
         this.post('#/shipment/', function(context) {
             var orderId = 'order-' + context.params['order-number'];
+
+            // FIXME refactor to flatten the code
             couchapp.db.openDoc(orderId, {
                 success: function(doc) {
                     var items = {},
@@ -457,16 +475,26 @@ $.couch.app(function(couchapp) {
                     doc.items = doc.items || {};
                     doc.shipments.push({ date: context.params['date'], items: items });
 
-                    // Now save the updated doc
-                    couchapp.db.saveDoc(doc, {
-                        success: function(data) {
-                            showNotification('success', 'Shipment saved');
-                            context.redirect('#/shipment/');
-                        },
-                        error: function(status, reason, message) {
-                            showNotification('error', 'Could not save shipment: ' + message);
-                        }
-                    });
+                    context.getNextBoxId()
+                        .then(function(boxID) {
+                            doc.shipments[ doc.shipments.length - 1].box = boxID;
+
+                            // Now save the updated doc
+                            couchapp.db.saveDoc(doc, {
+                                success: function(data) {
+                                    showNotification('success', 'Shipment saved');
+                                    context.dialogModal('Shipment saved', 'Shipment for order '+orderId
+                                                                            +' is box '+boxID)
+                                        .then(function() {
+                                            context.redirect('#/shipment/');
+                                        });
+                                },
+                                error: function(status, reason, message) {
+                                    showNotification('error', 'Could not save shipment: ' + message);
+                                }
+                            });
+                        });
+
                 },
                 error: function() {
                     showNotification('error', 'There is no order with order-number ' + context.params['order-number']);

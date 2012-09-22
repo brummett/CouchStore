@@ -191,6 +191,17 @@ $.couch.app(function(couchapp) {
                 return d.promise();
             },
 
+            dialogModal: function(title, message) {
+                var d = $.Deferred();
+                var modal = $.mustache(couchapp.ddoc.templates['dialog-modal'],
+                                            { title: title, message: message });
+                modal = $(modal).appendTo(this.$element())
+                                .modal({backdrop: true, keyboard: true, show: true});
+                modal.on('hidden', function() { modal.remove(); d.resolve(true) });
+                return d.promise();
+            },
+ 
+
             fixupOrderWarehouseSelect: function(warehouseList, selectedWarehouseId) {
                 // The order show functions don't have access to all the warehouse docs, and
                 // the select input is empty.  After we get the order's HTML, we need to fill

@@ -408,6 +408,19 @@ $.couch.app(function(couchapp) {
             context.$element().empty();
         });
 
+        // When called without an order-number, it presents a list of shipments without tracking
+        // numbers for the user to pick from.  The form re-get()s this same URL with the
+        // order-number and shipment as a param
+        this.get('#/confirm-shipment/', function(context) {
+            if (! ('shipment-id' in context.params)) {
+                // No shipment, show the list of shipments to pick form
+                var list_q = '_list/confirm-shipment-order-picker/unconfirmed-shipments';
+                context.$element().load(list_q);
+
+            }
+
+        });
+
         // When called without an order-number, it presents a list of sale orders with unshipped items
         // to the user to pick from.  The form re-get()s this same URL with the order-number as a
         // param.
@@ -536,7 +549,6 @@ $.couch.app(function(couchapp) {
                         });
                 });
         });
-
 
         // This presents a form to the user to create some kind of order
         // order_type is either receive or sale

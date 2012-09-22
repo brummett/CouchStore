@@ -1,0 +1,18 @@
+<h1>Confirm a shipment</h1>
+<form method="get" action="#/confirm-shipment/" class="form-horizontal">
+    <p>There are {{count}} unconfirmed shipments</p>
+    <div class="control-group">
+        <label class="control-label" for="order-number">Shipment</label>
+        <div class="controls">
+            <select id="select-order-number" name="shipment-id">
+                <option value=''></option>
+                {{#shipments}}
+                    <option value={{id}}>Box {{box}}: {{orderNumber}} {{orderCount}} items</option>
+                {{/shipments}}
+            </select>
+        </div>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Select</button>
+
+</form>

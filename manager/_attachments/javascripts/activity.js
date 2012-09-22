@@ -417,6 +417,17 @@ $.couch.app(function(couchapp) {
                 var list_q = '_list/confirm-shipment-order-picker/unconfirmed-shipments';
                 context.$element().load(list_q);
 
+            } else {
+                // Show the confirm-shipment entry form
+
+                // shipment_id is composite of shipment-orderNumber
+                var shipment_id = context.params['shipment-id'],
+                    shipment    = shipment_id.substr(0, shipment_id.indexOf('-')),
+                    orderNumber = shipment_id.substr(shipment_id.indexOf('-') + 1),
+                    show_q      = '_show/confirm-shipment/order-' + orderNumber;
+
+                context.$element().load(show_q + '?shipment='+shipment);
+                //context.$element().load(show_q);
             }
 
         });

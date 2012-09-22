@@ -13,7 +13,9 @@ function(doc) {
                 count += doc.shipments[i].items[barcode];
             }
             // For now, they all have priority 0
-            emit(0, { shipment: i, count: count, box: doc.shipments[i].box });
+            emit(0, {   shipment: i,
+                        count: count,
+                        box: doc.shipments[i].box });
         }
     }
 }

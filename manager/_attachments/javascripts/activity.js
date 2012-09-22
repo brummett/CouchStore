@@ -219,12 +219,7 @@ $.couch.app(function(couchapp) {
             },
 
             fixupOrderDate: function() {
-                var now = new Date,
-                    month = now.getMonth() + 1,
-                    dateStr = now.getFullYear() + '-'
-                                    + (month < 10 ? '0' : '') + month + '-'
-                                    + (now.getDate() < 10 ? '0' : '') + now.getDate();
-                $('input#date').val(dateStr);
+                $('input#date').val(this.todayAsString());
             },
  
 
@@ -329,6 +324,16 @@ $.couch.app(function(couchapp) {
                     }
                 });
                 return d.promise();
+            },
+
+            // Today's date as a string
+            todayAsString: function() {
+                var now = new Date,
+                    month = now.getMonth() + 1,
+                    dateStr = now.getFullYear() + '-'
+                            + (month < 10 ? '0' : '') + month + '-'
+                            + (now.getDate() < 10 ? '0' : '') + now.getDate();
+                return dateStr;
             }
 
         });

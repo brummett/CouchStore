@@ -1,5 +1,3 @@
-After filling a picklist, generate a box ID and show the user
-
 Sort the orders in the fill-ick-list dropdown by priority.  Remove the blank at the top of the select list
 
 Make a page to start + edit + commit a physical inventory
@@ -21,3 +19,11 @@ When making a shipment, when the unfilled count goes to 0, dim the row
 Need an item history report
 
 Edit/remove buttons for the shipment lister aren't triggering the right routes
+
+Allow the user to choose the priority for warehouses
+
+-------------------------------------------------------------------------------
+
+Make tests!
+
+Interface with Amazon to get new orders and save confirmed orders

@@ -18,7 +18,7 @@ function(doc, req) {
         data.orderType = doc['order-type'];
         templateName = data.orderType+ '-order';
 
-        data.action = '#/order/' + doc['order-type'] + '/';
+        data.action = '#/create-order/' + doc['order-type'] + '/';
         data.title = 'Edit ' +  doc['order-type'] + ' order';
         data.date = doc.date;
         data.orderNumber = doc._id.substr(6);  // order docs start with the text 'order-'
@@ -61,7 +61,7 @@ function(doc, req) {
         data.orderType = req.query.type;
         templateName = data.orderType + '-order';
 
-        data.action = '#/order/' + req.query.type + '/';
+        data.action = '#/create-order/' + req.query.type + '/';
         data.title = 'New ' +req.query.type + ' order';
         data.date = '';
         data.orderNumber = '';

@@ -541,7 +541,7 @@ $.couch.app(function(couchapp) {
         // This presents a form to the user to create some kind of order
         // order_type is either receive or sale
         // The form posts to #/order/receive below VVV
-        this.get('#/create/order/:order_type', function(context) {
+        this.get('#/create-order/:order_type/', function(context) {
             var show_q = '_show/edit-order/?type=' + context.params.order_type;
 
             $.get(show_q)
@@ -561,7 +561,7 @@ $.couch.app(function(couchapp) {
 
         // Called when the user submits an order to the system
         // order_type is receive or sale
-        this.post('#/order/(.*)/(.*)', function(context) {
+        this.post('#/create-order/(.*)/(.*)', function(context) {
             var params = context.params,
                 orderDoc = {},
                 items = {},

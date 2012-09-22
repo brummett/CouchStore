@@ -349,6 +349,7 @@ function OrderWidget(params) {
     function deleteItem(scan) {
         var input = inputForScan(scan);
         input.remove();
+        $('input#scan-'+scan+'-name').remove();
         getTableRowForScan(scan)
             .then(function(tr) {
                 tr.animate( { height: '0px',

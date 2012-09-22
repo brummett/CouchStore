@@ -282,47 +282,45 @@ function OrderWidget(params) {
             d.resolve(tr);
 
         } else {
-            $.get(couchapp.db.uri + couchapp.ddoc._id + '/templates/activity-receive-shipment-item-row.template')
-                .then(function(content) {
+            function renderRow(item, is_unknown) {
+                var content = $( $.mustache(couchapp.ddoc.templates.partials['edit-order']['order-item-row'],
+                                        {   barcode: scan,
+                                            unitCost: centsToDollars(getCostFromItem(item)),
+                                            quantity: 0,
+                                            allowDelete: allow_delete,
+                                            isUnknown: is_unknown ? true : false,
+                                            name: item['name']
+                                        }));
+                $('input#scan-'+scan+'-name').val(item.name);
+                orderTable.append(content);
+                wireUpEditButtons(content, scan);
+                d.resolve(content);
+            };
 
-                    var renderRow = function(item, is_unknown) {
-                        content = $(context.template(content, { scan: scan,
-                                                                unitCost: centsToDollars(getCostFromItem(item)),
-                                                                count: 0,
-                                                                allow_delete: allow_delete,
-                                                                is_unknown: is_unknown ? true : false,
-                                                                name: item['name'] }));
-                        $('input#scan-'+scan+'-name').val(item.name);
-                        orderTable.append(content);
-                        wireUpEditButtons(content, scan);
-                        d.resolve(content);
-                    };
-
-                    couchapp.view('items-by-barcode', {
-                        include_docs: true,
-                        key: scan,
-                        success: function(data) {
-                            if (data.rows.length == 1) {
-                                renderRow(data.rows[0].doc);
-                            } else {
-                                couchapp.view('items-by-sku', {
-                                    key: scan,
-                                    include_docs: true,
-                                    success: function (data) {
-                                        if (data.rows.length == 1) {
-                                            renderRow(data.rows[0].doc);
-                                        } else if (allow_unknown) {
-                                            // This is an unknown item
-                                            renderRow({ 'cost-cents': '', name: ''}, true);
-                                        } else {
-                                            context.errorModal(scan + ' is an unknown barcode or sku');
-                                        }
-                                    }
-                                });
+            couchapp.view('items-by-barcode', {
+                include_docs: true,
+                key: scan,
+                success: function(data) {
+                    if (data.rows.length == 1) {
+                        renderRow(data.rows[0].doc);
+                    } else {
+                        couchapp.view('items-by-sku', {
+                            key: scan,
+                            include_docs: true,
+                            success: function (data) {
+                                if (data.rows.length == 1) {
+                                    renderRow(data.rows[0].doc);
+                                } else if (allow_unknown) {
+                                    // This is an unknown item
+                                    renderRow({ 'cost-cents': '', name: ''}, true);
+                                } else {
+                                    context.errorModal(scan + ' is an unknown barcode or sku');
+                                }
                             }
-                        }
-                    });
-                });
+                        });
+                    }
+                }
+            });
         }
         return d.promise();
     };

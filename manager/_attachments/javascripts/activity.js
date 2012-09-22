@@ -457,49 +457,53 @@ $.couch.app(function(couchapp) {
         this.post('#/shipment/', function(context) {
             var orderId = 'order-' + context.params['order-number'];
 
-            // FIXME refactor to flatten the code
             couchapp.db.openDoc(orderId, {
-                success: function(doc) {
-                    var items = {},
-                        prop,
-                        matches;
-                    // Go through the params and look for quantities
-                    for (prop in context.params) {
-                        matches = /scan-(\d+)-quan/.exec(prop);
-                        if (matches && matches.length) {
-                            items[matches[1]] = parseInt(context.params[prop]);
-                            continue;
-                        }
-                    }
-                    doc.shipments = doc.shipments || [];
-                    doc.items = doc.items || {};
-                    doc.shipments.push({ date: context.params['date'], items: items });
-
-                    context.getNextBoxId()
-                        .then(function(boxID) {
-                            doc.shipments[ doc.shipments.length - 1].box = boxID;
-
-                            // Now save the updated doc
-                            couchapp.db.saveDoc(doc, {
-                                success: function(data) {
-                                    showNotification('success', 'Shipment saved');
-                                    context.dialogModal('Shipment saved', 'Shipment for order '+orderId
-                                                                            +' is box '+boxID)
-                                        .then(function() {
-                                            context.redirect('#/shipment/');
-                                        });
-                                },
-                                error: function(status, reason, message) {
-                                    showNotification('error', 'Could not save shipment: ' + message);
-                                }
-                            });
-                        });
-
-                },
+                success: gotOrderDoc,
                 error: function() {
-                    showNotification('error', 'There is no order with order-number ' + context.params['order-number']);
+                    showNotification('error',
+                                    'There is no order with order-number ' + context.params['order-number']);
                 }
             });
+            
+            function gotOrderDoc(doc) {
+                var items = {},
+                    prop,
+                    matches;
+                // Go through the params and look for quantities
+                for (prop in context.params) {
+                    matches = /scan-(\d+)-quan/.exec(prop);
+                    if (matches && matches.length) {
+                        items[matches[1]] = parseInt(context.params[prop]);
+                        continue;
+                    }
+                }
+                doc.shipments = doc.shipments || [];
+                doc.items = doc.items || {};
+                doc.shipments.push({ date: context.params['date'], items: items });
+
+                context.getNextBoxId()
+                        .then( function(boxID) { addBoxIdToLatestShipment(doc, boxID) });
+            }
+
+            function addBoxIdToLatestShipment(doc, boxID) {
+                doc.shipments[ doc.shipments.length - 1 ].box = boxID;
+                couchapp.db.saveDoc(doc, {
+                    success: function() { savedOrderDoc(boxID) },
+                    error: function(status, reason, message) {
+                            showNotification('error', 'Could not save shipment: ' + message);
+                    }
+                });
+            }
+
+            function savedOrderDoc(boxID) {
+                context.dialogModal('Shipment saved', 'Shipment for order ' + orderId
+                                    + ' is box ' + boxID)
+                    .then(function() {
+                        showNotification('success', 'Shipment saved');
+                        context.redirect('#/shipment/');
+                    });
+            }
+                
         });
 
         // Presents a form to the user to edit an already existing order

@@ -27,7 +27,7 @@ function(doc) {
 
                 if ('tracking-number' in thisShipment) {
                     results['tracking-number'] = thisShipment['tracking-number'];
-                    emit(thisShopment['tracking-number'], results);
+                    emit(thisShipment['tracking-number'], results);
                 } else {
                     results['tracking-number'] = '';
                 }

@@ -1,4 +1,4 @@
-Sort the orders in the fill-ick-list dropdown by priority.  Remove the blank at the top of the select list
+Sort the orders in the fill-pick-list dropdown by priority.  Remove the blank at the top of the select list
 
 Make a page to start + edit + commit a physical inventory
 
@@ -12,7 +12,11 @@ When submitting an order, and the order has an unknown item, make that row red
 
 When making a shipment, when the unfilled count goes to 0, dim the row
 
-Need an item history report
+daily sale summary report:
+order-source    order-number    sku     quantity    price-each  shipping-charge   shipping-cost  warehouse  is-taxable
+one line for each different sku
+final line giving the total charged to the customer
+don't show shipping-charge for 2nd and later shipments
 
 Edit/remove buttons for the shipment lister aren't triggering the right routes
 
@@ -20,6 +24,26 @@ Allow the user to choose the priority for warehouses
 
 In the data lister for shipments, for shipments with no tracking number to list, have a button/link
 that goes to the confirm shipment page
+
+copy customer's is-taxable to their order
+
+copy item skus to the order
+
+The add/edit customer/item/warehouse submit button should be called "Save"
+
+item listers should scroll only the data, not the headers
+
+Import item data from the old system
+
+Create shipment page:
+"scan" should be called "barcode"
+The top table (unfilled items) needs another column for how many to ship, in case you don't have
+enough to fill the order completely
+
+data lister for items needs a column for current count per warehouse
+Need an item history report
+
+New Sale Order isn't auto-filling-in the unit price column
 
 -------------------------------------------------------------------------------
 
@@ -29,3 +53,4 @@ Interface with Amazon to get new orders and save confirmed orders
 
 refactor to put the data altering code into couch changes 
 
+Let the user upload pictures for items

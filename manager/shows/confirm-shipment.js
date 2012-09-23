@@ -3,6 +3,7 @@ function(doc, req) {
         Mustache = require('vendor/couchapp/lib/mustache'),
         data = {},
         thisShipment,
+        orderNumber,
         barcode = '';
 
     if (doc) {
@@ -12,9 +13,11 @@ function(doc, req) {
                 json: { reason: 'Document is a '+doc.type+', expected an order' }
             };
         }
+        orderNumber = doc._id.substr(6);  // order IDs start with 'order-'
 
         if ('shipment' in req.query) {
 
+            data['order-number'] = orderNumber;
             data['shipping-service-level'] = doc['shipping-service-level'];
             thisShipment = doc.shipments[ req.query.shipment ];
 
@@ -24,6 +27,8 @@ function(doc, req) {
                 data['box'] = thisShipment.box;
                 data['tracking-number'] = thisShipment['tracking-number'];
                 data['shipping-cost'] = thisShipment['shipping-cost'];
+
+                data.action = '#/confirm-shipment/' + orderNumber + '/' + req.query.shipment;
             } else {
                 // confirming a non-existent shipment?!
                 return {
@@ -33,7 +38,6 @@ function(doc, req) {
             }
         }
 
-        data.action = '#/confirm-shipment/'
         data['warehouse-name'] = doc['warehouse-name'];
         data['customer-name'] = doc['customer-name'];
         data._rev = doc._rev;

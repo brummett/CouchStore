@@ -427,9 +427,33 @@ $.couch.app(function(couchapp) {
                     show_q      = '_show/confirm-shipment/order-' + orderNumber;
 
                 context.$element().load(show_q + '?shipment='+shipment);
-                //context.$element().load(show_q);
             }
 
+        });
+
+        this.post('#/confirm-shipment/:orderNumber/:shipment', function(context) {
+            var params = context.params,
+                cost = Math.round(parseFloat(params['shipping-cost']) * 100);
+
+            couchapp.db.openDoc('order-' + params.orderNumber, {
+                success: function(doc) {
+                    doc.shipments[params.shipment]['tracking-number']   = params['tracking-number'];
+                    doc.shipments[params.shipment]['shipping-cost']     = cost;
+
+                    couchapp.db.saveDoc(doc, {
+                        success: function() {
+                            showNotification('success', 'Shipment confirmed');
+                            context.redirect('#/confirm-shipment/');
+                        },
+                        error: function(status, reason, message) {
+                                showNotification('error', 'Could not confirm shipment: ' + message);
+                        }
+                    });
+                },
+                error: function( status, reason, message) {
+                                showNotification('error', 'There is no order number ' + orderNumber);
+                }
+            });
         });
 
         // When called without an order-number, it presents a list of sale orders with unshipped items

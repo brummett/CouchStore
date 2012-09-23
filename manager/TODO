@@ -2,8 +2,6 @@ Sort the orders in the fill-ick-list dropdown by priority.  Remove the blank at 
 
 Make a page to start + edit + commit a physical inventory
 
-make a page to confirm a shipment and enter a tracking number.  Request the actual shipping cost?
-
 Make a page to transfer items from one warehouse to another
 
 Refactor the shipment-order-picker to use objects instead of already formatted strings
@@ -20,6 +18,9 @@ Edit/remove buttons for the shipment lister aren't triggering the right routes
 
 Allow the user to choose the priority for warehouses
 
+In the data lister for shipments, for shipments with no tracking number to list, have a button/link
+that goes to the confirm shipment page
+
 -------------------------------------------------------------------------------
 
 Make tests!
@@ -27,3 +28,4 @@ Make tests!
 Interface with Amazon to get new orders and save confirmed orders
 
 refactor to put the data altering code into couch changes 
+

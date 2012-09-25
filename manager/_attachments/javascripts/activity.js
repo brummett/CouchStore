@@ -426,7 +426,7 @@ $.couch.app(function(couchapp) {
                     orderNumber = shipment_id.substr(shipment_id.indexOf('-') + 1),
                     show_q      = '_show/confirm-shipment/order-' + orderNumber;
 
-                context.$element().load(show_q + '?shipment='+shipment);
+                context.$element().load(show_q + '?shipment='+encodeURIComponent(shipment));
             }
 
         });

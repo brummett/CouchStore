@@ -496,8 +496,26 @@ $.couch.app(function(couchapp) {
         });
 
         // Called to edit a previously defined shipment
-        this.get('#/edit/shipment/:order-id/:shipment-id', function(context) {
-            1;
+        this.get('#/edit/shipment/:orderId/:shipmentId', function(context) {
+            var show_q = '_show/shipment/' + context.params.orderId;
+            context.$element()
+                .load(show_q + '?shipment=' + encodeURIComponent(context.params.shipmentId),
+                    function() {
+                        ShipmentWidget({
+                            couchapp: couchapp,
+                            context: context,
+                            activity: activity
+                        });
+                    }
+                );
+
+        });
+
+        this.get('#/delete/shipment/:orderId/:shipmentId', function(context) {
+
+        });
+
+        this.post('#/delete/shipment/:orderId/:shipmentId', function(context) {
 
         });
 
@@ -515,6 +533,7 @@ $.couch.app(function(couchapp) {
             
             function gotOrderDoc(doc) {
                 var items = {},
+                    thisShipment,
                     prop,
                     matches;
                 // Go through the params and look for quantities
@@ -527,29 +546,45 @@ $.couch.app(function(couchapp) {
                 }
                 doc.shipments = doc.shipments || [];
                 doc.items = doc.items || {};
-                doc.shipments.push({ date: context.params['date'], items: items });
 
-                context.getNextBoxId()
-                        .then( function(boxID) { addBoxIdToLatestShipment(doc, boxID) });
+                if (context.params.shipment) {
+                    // Altering a previously defined shipment
+                    thisShipment = doc.shipments[context.params.shipment];
+                    thisShipment.date = context.params['date'];
+                    thisShipment.items = items;
+                } else {
+                    // Saving a new shipment
+                    thisShipment = { date: context.params['date'], items: items };
+                    doc.shipments.push(thisShipment);
+                }
+
+                if (thisShipment.box) {
+                    saveOrderDoc(doc, thisShipment.box);
+                } else {
+                    context.getNextBoxId()
+                            .then( function(boxID) { addBoxIdToLatestShipment(doc, boxID) });
+                }
             }
 
             function addBoxIdToLatestShipment(doc, boxID) {
                 doc.shipments[ doc.shipments.length - 1 ].box = boxID;
+                saveOrderDoc(doc, boxID);
+            }
+
+            function saveOrderDoc(doc, boxID) {
                 couchapp.db.saveDoc(doc, {
-                    success: function() { savedOrderDoc(boxID) },
+                    success: function() {
+                        context.dialogModal('Shipment saved', 'Shipment for order ' + orderId
+                                            + ' is box ' + boxID)
+                            .then(function() {
+                                showNotification('success', 'Shipment saved');
+                                context.redirect('#/shipment/');
+                            });
+                    },
                     error: function(status, reason, message) {
                             showNotification('error', 'Could not save shipment: ' + message);
                     }
                 });
-            }
-
-            function savedOrderDoc(boxID) {
-                context.dialogModal('Shipment saved', 'Shipment for order ' + orderId
-                                    + ' is box ' + boxID)
-                    .then(function() {
-                        showNotification('success', 'Shipment saved');
-                        context.redirect('#/shipment/');
-                    });
             }
                 
         });

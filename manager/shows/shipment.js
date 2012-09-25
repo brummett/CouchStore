@@ -63,12 +63,13 @@ function(doc, req) {
                 // An already existing shipment
                 data.title = 'Edit shipment';
                 data.date = thisShipment.date;
+                data.shipment = shipment;
 
                 for (barcode in thisShipment.items) {
                     if (thisShipment.items[barcode] != 0 ) {
                         data.shippingItems.push( {  barcode: barcode,
                                                     name: doc['item-names'][barcode],
-                                                    quantity: Math.abs(thisShipment[barcode])
+                                                    quantity: Math.abs(thisShipment.items[barcode])
                                                 } );
                     }
                 }

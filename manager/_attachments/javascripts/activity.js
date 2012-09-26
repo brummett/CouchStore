@@ -200,6 +200,31 @@ $.couch.app(function(couchapp) {
                 modal.on('hidden', function() { modal.remove(); d.resolve(true) });
                 return d.promise();
             },
+
+            newdialogModal: function(title, message, buttons) {
+                var d = $.Deferred(),
+                    answer,
+                    firstButton = ((!buttons) || (buttons.length == 0)) ? 'Ok' : buttons.shift(),
+                    modal = $.mustache(couchapp.ddoc.templates['newdialog-modal'],
+                                            { title: title, message: message, firstButton: firstButton, buttons: buttons });
+                modal = $(modal).appendTo(this.$element())
+                                .modal({backdrop: true, keyboard: true, show: true});
+                modal.find('form').submit(function() {
+                    answer = firstButton
+                    modal.modal('hide');
+                    return false;
+                })
+                .click(function(e) {
+                    var elt = $(e.srcElement);
+                    if (elt.is('button')) {
+                        answer = elt.attr('value');
+                        modal.modal('hide');
+                        return false;
+                    }
+                });
+                modal.on('hidden', function() { modal.remove(); d.resolve(answer) });
+                return d.promise();
+            },
  
 
             fixupOrderWarehouseSelect: function(warehouseList, selectedWarehouseId) {

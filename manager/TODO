@@ -18,8 +18,6 @@ one line for each different sku
 final line giving the total charged to the customer
 don't show shipping-charge for 2nd and later shipments
 
-Edit/remove buttons for the shipment lister aren't triggering the right routes
-
 Allow the user to choose the priority for warehouses
 
 In the data lister for shipments, for shipments with no tracking number to list, have a button/link

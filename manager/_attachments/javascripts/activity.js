@@ -536,11 +536,44 @@ $.couch.app(function(couchapp) {
 
         });
 
-        this.get('#/delete/shipment/:orderId/:shipmentId', function(context) {
+        this.get('#/delete/shipment/:orderId/:shipment', function(context) {
+            var orderNumber = context.params.orderId.substr(6),
+                shipment = context.params.shipment;
+            couchapp.db.openDoc(context.params.orderId, {
+                success: gotOrderDoc,
+                error: function() {
+                    showNotification('error', 'Could not find an order with order number ' + orderNumber);
+                }
+            });
 
-        });
-
-        this.post('#/delete/shipment/:orderId/:shipmentId', function(context) {
+            function gotOrderDoc(doc) {
+                if ( (! ( 'shipments' in doc)) || (shipment >= doc.shipments.length)) {
+                    showNotification('error', 'Order ' + orderNumber
+                                                + ' has no shipment ' + shipment);
+                    return;
+                }
+                var message = 'Are you sure you want to delete shipment '
+                               + shipment + ' from order ' + orderNumber;
+                var answer = context.newdialogModal('Delete Shipment',
+                                                    message,
+                                                    ['Ok', 'Cancel']);
+                answer.done(function(answer) {
+                    if (answer == 'Ok') {
+                        doc.shipments.splice(shipment, 1);  // Remove the shipment
+                        couchapp.db.saveDoc(doc, {
+                            success: function() {
+                                showNotification('success', 'Shipment deleted');
+                            },
+                            error: function(status, reason, message) {
+                                showNotification('error', 'Could not delete shipment: '+message);
+                            }
+                        });
+                    }
+                });
+                answer.always(function() {
+                        window.history.back();
+                });
+            }
 
         });
 

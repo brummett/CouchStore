@@ -119,27 +119,37 @@ function ShipmentWidget(params) {
     }
     ItemManager.prototype.removeItem = function(barcode) {
         var quantity = this.quantity(barcode);
-        if (quantity > 0) {
-            this.quantity(barcode, quantity - 1);
+        if (quantity-- > 0) {
+            this.quantity(barcode, quantity);
+            if (quantity == 0) {
+                this.trForBarcode(barcode).addClass('is-satisfied');
+            }
             return true;
         } else {
             return false;
         }
     }
     ItemManager.prototype.addItem = function(barcode, name) {
+        var tr,
+            quantity,
+            data;
         if (! this.hasBarcode(barcode)) {
-            var data = {    barcode: barcode,
+            data = {    barcode: barcode,
                             quantity: 0,
                             name: name
                         };
                         
-            var newTr = $($.mustache(couchapp.ddoc.templates.partials['edit-order']['shipment-item-row'], data));
-            this.table.append(newTr);
+            tr = $($.mustache(couchapp.ddoc.templates.partials['edit-order']['shipment-item-row'], data));
+            this.table.append(tr);
             
-            newTr.find('button.add-item').click( this.table == unfilledTable ? unfilledItemClicked : shippingItemClicked );
+            tr.find('button.add-item').click( this.table == unfilledTable ? unfilledItemClicked : shippingItemClicked );
+        } else {
+            tr = this.trForBarcode(barcode);
         }
-        var quantity = this.quantity(barcode);
+
+        quantity = this.quantity(barcode);
         this.quantity(barcode, quantity + 1);
+        tr.removeClass('is-satisfied');
     }
 
 }

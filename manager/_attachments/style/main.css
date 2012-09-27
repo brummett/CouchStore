@@ -15,6 +15,12 @@ form {
   background-color:#ddd;  
 }
 
+/* unknown items in the receive/sale order table */
 table.table-striped.item-table tr.is-unknown td {
-    background-color:#DA4F49;
+    background-color:#DA4F49;    /* Same color as the Bootstrap 'Danger' button  */
+}
+
+/* Items in the make a shipment page table with quantity 0 */
+table.table-striped.item-table tr.is-satisfied td {
+    opacity:0.4;
 }

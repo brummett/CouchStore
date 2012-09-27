@@ -8,8 +8,6 @@ Refactor the shipment-order-picker to use objects instead of already formatted s
 
 Make a check-box on the 'make a sale' page that would immediately mark the items as shipped
 
-When making a shipment, when the unfilled count goes to 0, dim the row
-
 daily sale summary report:
 order-source    order-number    sku     quantity    price-each  shipping-charge   shipping-cost  warehouse  is-taxable
 one line for each different sku

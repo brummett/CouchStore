@@ -8,8 +8,6 @@ Refactor the shipment-order-picker to use objects instead of already formatted s
 
 Make a check-box on the 'make a sale' page that would immediately mark the items as shipped
 
-When submitting an order, and the order has an unknown item, make that row red
-
 When making a shipment, when the unfilled count goes to 0, dim the row
 
 daily sale summary report:
@@ -41,7 +39,7 @@ enough to fill the order completely
 data lister for items needs a column for current count per warehouse
 Need an item history report
 
-New Sale Order isn't auto-filling-in the unit price column
+New Sale Order and receive order isn't auto-filling-in the unit price column
 
 Confirm shipment page needs to have text entry boxes for box weight and size
 

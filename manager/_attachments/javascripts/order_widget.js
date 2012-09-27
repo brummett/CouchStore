@@ -253,7 +253,8 @@ function OrderWidget(params) {
         // called when the add/edit item modal is submitted, so we can update the price/cost
         getTableRowForScan(item.barcode)
             .then(function(tr) {
-                tr.find('input.unit-cost').val(centsToDollars(getCostFromItem(item)));
+                tr.removeClass('is-unknown')
+                    .find('input.unit-cost').val(centsToDollars(getCostFromItem(item)));
                 tr.find('td.item-name').text(item.name);
             });
     });

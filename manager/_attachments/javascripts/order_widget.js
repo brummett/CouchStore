@@ -286,7 +286,7 @@ function OrderWidget(params) {
             function renderRow(item, is_unknown) {
                 var content = $( $.mustache(couchapp.ddoc.templates.partials['edit-order']['order-item-row'],
                                         {   barcode: scan,
-                                            unitCost: centsToDollars(getCostFromItem(item)),
+                                            cost: centsToDollars(getCostFromItem(item)),
                                             quantity: 0,
                                             allowDelete: allow_delete,
                                             isUnknown: is_unknown ? true : false,

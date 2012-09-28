@@ -19,8 +19,6 @@ Allow the user to choose the priority for warehouses
 In the data lister for shipments, for shipments with no tracking number to list, have a button/link
 that goes to the confirm shipment page
 
-copy customer's is-taxable to their order
-
 copy item skus to the order
 
 item listers should scroll only the data, not the headers

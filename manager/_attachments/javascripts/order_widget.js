@@ -268,6 +268,7 @@ function OrderWidget(params) {
         var customerNameInput = $('input#customer-name');
         customerNameInput.val( customer.firstname.concat(' ', customer.lastname));
         $('input#customer-id').val(customer['_id']);
+        $('input#is-taxable').val(customer.istaxable);
 
         // Remove any error messages/buttons left there
         customerNameInput.parents('.error').removeClass('error');

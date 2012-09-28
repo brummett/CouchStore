@@ -24,6 +24,7 @@ function(doc, req) {
         data.orderNumber = doc._id.substr(6);  // order docs start with the text 'order-'
         data.customerName = doc['customer-name'];
         data.customerId = doc['customer-id'];
+        data.isTaxable = doc['is-taxable'];
         data._rev = doc._rev;
 
         // Set the right ship service level

@@ -87,7 +87,9 @@ function OrderWidget(params) {
 
         jQuery.each(data, function(idx, item) {
             if (! seenIds[item.id]) {
-                results.push(item);
+                // The value that makes it to itemSelected below must be a single string
+                // We'll encode the istaxable along with the customer ID as a string
+                results.push({ name: item.key, data: item.value +':'+ item.id});
                 seenIds[item.id] = 1;
             }
         });
@@ -102,12 +104,15 @@ function OrderWidget(params) {
             method: 'get',
             triggerLength: 2,
         },
-        itemSelected: function(elt, customerId, customerName) {
+        itemSelected: function(elt, data, customerName) {
+                            var istaxable = data.substr(0, data.indexOf(':')),
+                                customerId = data.substr(data.indexOf(':') + 1);
                             $('input#customer-id').val(customerId);
+                            $('input#is-taxable').val(istaxable);
                             clearError($('input#customer-name'));
                         },
-        display: 'key',
-        val: 'id'
+        display: 'name',
+        val: 'data'
     });
 
 

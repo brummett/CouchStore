@@ -46,6 +46,7 @@ function(doc, req) {
         for (i in doc.items) {
             data.items.push( {  barcode: i,
                                 name: doc['item-names'][i],
+                                sku: doc['item-skus'][i],
                                 quantity: Math.abs(doc.items[i]),
                                 cost: (doc['item-costs'][i]/100).toFixed(2)
                             });

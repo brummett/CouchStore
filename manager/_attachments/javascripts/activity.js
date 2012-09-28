@@ -248,6 +248,7 @@ $.couch.app(function(couchapp) {
             },
  
 
+            // FIXME - orders _do_ have the names now - remove this
             fixupOrderItemNames: function() {
                 // The order show functions don't have access to all the item docs, so
                 // we need to go through all the item table rows and fill in names for them
@@ -707,6 +708,7 @@ $.couch.app(function(couchapp) {
                 items = {},
                 item_costs = {},
                 item_names = {},
+                item_skus = {},
                 next_url = '',
                 order_type = params['splat'][0],
                 order_number = params['splat'][1] || params['order-number'];
@@ -736,6 +738,12 @@ $.couch.app(function(couchapp) {
                         item_names[matches[1]] = params[prop];
                         continue;
                     }
+
+                    matches = /scan-(.*?)-sku/.exec(prop);
+                    if (matches && matches.length) {
+                        item_skus[matches[1]] = params[prop];
+                        continue;
+                    }
                 }
             };
 
@@ -757,6 +765,7 @@ $.couch.app(function(couchapp) {
             orderDoc.type = 'order';
             orderDoc['item-costs'] = item_costs;
             orderDoc['item-names'] = item_names;
+            orderDoc['item-skus'] = item_skus;
 
             if (params['_rev']) {
                 orderDoc['_rev'] = params['_rev'];

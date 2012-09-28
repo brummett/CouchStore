@@ -229,10 +229,12 @@ function OrderWidget(params) {
     // input for the name and quantity if it's not there yet
     function inputForScan(scan) {
         var input_id = 'scan-'+scan+'-quan',
-            name_id  = 'scan-'+scan+'-name';
+            name_id  = 'scan-'+scan+'-name',
+            sku_id   = 'scan-'+scan+'-sku';
         var input = $('input#'+input_id);
         if (input.length == 0) {
             $('<input id="' + name_id + '" name="' + name_id + '" type="hidden" value="">').appendTo(orderForm);
+            $('<input id="' + sku_id + '" name="' + sku_id + '" type="hidden" value="">').appendTo(orderForm);
             input = $('<input id="' + input_id + '" name="' + input_id + '" type="hidden" value="0">').appendTo(orderForm);
         }
         return input;
@@ -261,6 +263,8 @@ function OrderWidget(params) {
                 tr.removeClass('is-unknown')
                     .find('input.unit-cost').val(centsToDollars(getCostFromItem(item)));
                 tr.find('td.item-name').text(item.name);
+                $('input#scan-'+item.barcode+'-name').val(item.name);
+                $('input#scan-'+item.barcode+'-sku').val(item.sku);
             });
     });
     activity.bind('customer-updated', function(context,customer) {
@@ -299,6 +303,7 @@ function OrderWidget(params) {
                                             name: item['name']
                                         }));
                 $('input#scan-'+scan+'-name').val(item.name);
+                $('input#scan-'+scan+'-sku').val(item.sku);
                 orderTable.append(content);
                 wireUpEditButtons(content, scan);
                 d.resolve(content);
@@ -355,6 +360,7 @@ function OrderWidget(params) {
         var input = inputForScan(scan);
         input.remove();
         $('input#scan-'+scan+'-name').remove();
+        $('input#scan-'+scan+'-sku').remove();
         getTableRowForScan(scan)
             .then(function(tr) {
                 tr.animate( { height: '0px',

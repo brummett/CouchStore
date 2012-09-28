@@ -19,8 +19,6 @@ Allow the user to choose the priority for warehouses
 In the data lister for shipments, for shipments with no tracking number to list, have a button/link
 that goes to the confirm shipment page
 
-copy item skus to the order
-
 item listers should scroll only the data, not the headers
 
 Import item data from the old system
@@ -31,6 +29,8 @@ The top table (unfilled items) needs another column for how many to ship, in cas
 enough to fill the order completely
 
 data lister for items needs a column for current count per warehouse
+toggle for displaying/hiding inactive/obsolete items
+
 Need an item history report
 
 Confirm shipment page needs to have text entry boxes for box weight and size

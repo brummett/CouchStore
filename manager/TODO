@@ -23,8 +23,6 @@ copy customer's is-taxable to their order
 
 copy item skus to the order
 
-The add/edit customer/item/warehouse submit button should be called "Save"
-
 item listers should scroll only the data, not the headers
 
 Import item data from the old system

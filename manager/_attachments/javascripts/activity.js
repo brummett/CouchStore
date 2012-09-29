@@ -660,10 +660,10 @@ $.couch.app(function(couchapp) {
             function runOrderWidget() {
                 getWarehouseList().then( context.fixupOrderWarehouseSelect );
                 context.fixupOrderDate();
-                OrderWidget({   couchapp: couchapp,
-                                context: context,
-                                activity: activity,
-                                itemRowPartial: 'inventory-item-row'
+                new OrderWidget({   couchapp: couchapp,
+                                    context: context,
+                                    activity: activity,
+                                    itemRowPartial: 'inventory-item-row'
                             });
             }
 
@@ -693,10 +693,9 @@ $.couch.app(function(couchapp) {
                     getWarehouseList().then( function(warehouseList) { context.fixupOrderWarehouseSelect(warehouseList, d.promise()) } );
                     context.fixupOrderItemNames()
                         .then(function() {
-                            OrderWidget({   couchapp: couchapp,
-                                            context: context,
-                                            activity: activity,
-                                            itemRowPartial: 'order-item-row'
+                            new OrderWidget({   couchapp: couchapp,
+                                                context: context,
+                                                activity: activity
                                         });
                         });
                 });
@@ -715,10 +714,9 @@ $.couch.app(function(couchapp) {
                     // Still need to supply today's date and fix up the warehouse select
                     getWarehouseList().then( context.fixupOrderWarehouseSelect );
                     context.fixupOrderDate();
-                    OrderWidget({   couchapp: couchapp,
-                                    context: context,
-                                    activity: activity,
-                                    itemRowPartial: 'order-item-row'
+                    new OrderWidget({   couchapp: couchapp,
+                                        context: context,
+                                        activity: activity
                                 });
                 });
                     

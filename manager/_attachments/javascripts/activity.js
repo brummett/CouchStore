@@ -657,8 +657,17 @@ $.couch.app(function(couchapp) {
             if (inv_id) {
                 show_q += '/' + inv_id;
             }
-            context.$element().load(show_q);
+            function runOrderWidget() {
+                getWarehouseList().then( context.fixupOrderWarehouseSelect );
+                context.fixupOrderDate();
+                OrderWidget({   couchapp: couchapp,
+                                context: context,
+                                activity: activity,
+                                itemRowPartial: 'inventory-item-row'
+                            });
+            }
 
+            context.$element().load(show_q, runOrderWidget);
         });
 
         // Presents a form to the user to edit an already existing order

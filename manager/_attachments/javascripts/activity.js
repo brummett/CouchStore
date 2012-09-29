@@ -753,10 +753,9 @@ $.couch.app(function(couchapp) {
             function runOrderWidget() {
                 getWarehouseList().then( context.fixupOrderWarehouseSelect );
                 context.fixupOrderDate();
-                new OrderWidget({   couchapp: couchapp,
+                new InventoryWidget({   couchapp: couchapp,
                                     context: context,
                                     activity: activity,
-                                    itemRowPartial: 'inventory-item-row'
                             });
             }
 

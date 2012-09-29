@@ -12,9 +12,17 @@
 //      allow_unknown: true if line items can be unknown, false if it should show an error dialog for unknown items
 //      allow_delete: true if the order item lines should include a delete button
 function OrderWidget(params) {
+    if (!params) {
+        return;     // Handling class inheritance call
+    }
+
     this.common_init(params);
 
     var widget = this;
+
+    this.customerInput = $('input#customer-name', this.orderForm);
+    this.customerIdInput = $('input#customer-id', this.orderForm);
+    this.orderType = this.orderForm.attr('data-order-type');
 
     // This would normally belong inside the submit() handler along with all the other validation functions
     // but this one requires a trip to the server to get some data.  Since the submit needs to succeed or fail
@@ -76,6 +84,8 @@ function OrderWidget(params) {
 
 
 (function() {
+OrderWidget.prototype.orderNumberInputId = 'input#order-number';
+
 OrderWidget.prototype.common_init = function common_init(params) {
     this.couchapp = params.couchapp;
     this.context = params.context;
@@ -86,17 +96,15 @@ OrderWidget.prototype.common_init = function common_init(params) {
     this.allow_unknown = ('allow_unknown' in params) ? params.allow_unknown : true;  // Default is true
     this.allow_delete = ('allow_delete' in params) ? params.allow_delete : true;     // Default is true
     this.barcodeInput = $('input#barcode', this.barcodeScan);
-    this.customerInput = $('input#customer-name', this.orderForm);
-    this.customerIdInput = $('input#customer-id', this.orderForm);
-    this.orderNumberInput = $('input#order-number', this.orderForm);
-    this.orderType = this.orderForm.attr('data-order-type');
+    this.orderNumberInput = $(this.orderNumberInputId, this.orderForm);
     this.numErrors = 0;
 
     // Connect any already-existing item rows' button callbacks
+    var widget = this;
     $('tr.line-item').each(function(idx, elt) {
         var elt = $(elt),
             barcode = elt.attr('id').substr(5); // Their IDs start with 'scan-'
-        this.wireUpEditButtons(elt, barcode);
+        widget.wireUpEditButtons(elt, barcode);
     });
 
     // Turn off browser autocomplete for all the form fields
@@ -196,9 +204,9 @@ OrderWidget.prototype.v_checkKnownCustomer = function v_checkKnownCustomer(input
     }
 };
 
-OrderWidget.prototype.formSubmission = function formSubmission(e) {
-    // Clear any prior errors/warnings
-    var orderNumberError = this.hasError($('input#order-number'));
+// Clear any prior errors/warnings
+OrderWidget.prototype.clearPriorErrors = function clearPriorErrors() {
+    var orderNumberError = this.hasError(this.orderNumberInput);
 
     this.orderForm.find('.error').removeClass('error');
     this.orderForm.find('.warning').removeClass('warning');
@@ -211,12 +219,14 @@ OrderWidget.prototype.formSubmission = function formSubmission(e) {
     } else {
         this.numErrors = 0;
     }
+};
 
+OrderWidget.prototype.validateFormInputs = function validateFormInputs() {
     var dateInput = $('input#date', this.orderForm);
 
     this.v_required(dateInput);
     this.v_is_date(dateInput);
-    this.v_required( $('input#order-number', this.orderForm) );
+    this.v_required( this.orderNumberInput, this.orderForm);
     this.v_required( $('input#customer-name', this.orderForm) );
 
     this.v_checkKnownCustomer( $('input#customer-name'), this.orderForm)
@@ -225,6 +235,12 @@ OrderWidget.prototype.formSubmission = function formSubmission(e) {
     this.v_checkUnknownItems($('button.is-unknown', this.context.$element()));
 
     this.v_checkCostsPrices($('input.unit-cost', this.orderTable));
+};
+
+OrderWidget.prototype.formSubmission = function formSubmission(e) {
+    this.clearPriorErrors();
+
+    this.validateFormInputs();
 
     if (this.numErrors == 0) {
         this.copyCostsToForm();
@@ -406,5 +422,25 @@ OrderWidget.prototype.deleteItem = function deleteItem(scan) {
         });
 };
 })();  // End of OrderWidget prototype function definitions
+
+
+
+function InventoryWidget(params) {
+    this.common_init(params);
+}
+
+InventoryWidget.prototype = new OrderWidget;
+InventoryWidget.prototype.orderNumberInputId = 'input#section';
+InventoryWidget.prototype.itemRowPartial = 'inventory-item-row';
+
+InventoryWidget.prototype.validateFormInputs = function validateFormInputs() {
+    var dateInput = $('input#date', this.orderForm);
+
+    this.v_required(dateInput);
+    this.v_is_date(dateInput);
+    this.v_required( this.orderNumberInput, this.orderForm);
+
+    this.v_checkUnknownItems($('button.is-unknown', this.context.$element()));
+};
 
 

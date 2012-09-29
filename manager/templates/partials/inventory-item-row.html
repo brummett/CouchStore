@@ -1,0 +1,20 @@
+<tr class="line-item{{#isUnknown}} is-unknown{{/isUnknown}}" id="scan-{{barcode}}">
+    <td><div>
+        <button class="add-item btn btn-mini btn-info"><i class="icon-plus-sign icon-white"></i></button>
+        <button class="remove-item btn btn-mini btn-info"><i class="icon-minus-sign icon-white"></i></button>
+        {{#allowDelete}}
+            <button class="delete-item btn btn-mini btn-danger"><i class="icon-trash icon-white"></i></button>
+        {{/allowDelete}}
+        </div>
+    </td>
+    <td class="item-count">{{quantity}}</td>
+    <td class="item-name control-group">
+        <div class="controls">
+            {{#isUnknown}}
+                <button class="btn btn-warning is-unknown" type="button"><i class="icon-question-sign icon-white"></i> Unknown</button>
+            {{/isUnknown}}
+            {{name}}
+        </div>
+    </td>
+    <td class="item-scan">{{barcode}}</td>
+</tr>

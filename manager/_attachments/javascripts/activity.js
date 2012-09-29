@@ -648,6 +648,19 @@ $.couch.app(function(couchapp) {
                 
         });
 
+
+        // Presents a form to the user to start an inventory correction
+        this.get('#/inventory/(.*)', function(context) {
+            var inv_id = context.params['splat'][0],
+                show_q = '_show/partial-inventory';
+
+            if (inv_id) {
+                show_q += '/' + inv_id;
+            }
+            context.$element().load(show_q);
+
+        });
+
         // Presents a form to the user to edit an already existing order
         this.get('#/edit/order/(.*)', function(context) {
             var order_id = context.params['splat'][0],

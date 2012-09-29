@@ -77,5 +77,5 @@ function(doc, req) {
     data.shipServiceLevels = shipServiceLevels;
     data.orderSources = orderSources;
 
-    return Mustache.to_html(ddoc.templates[templateName], data, ddoc.templates.partials['edit-order']);
+    return Mustache.to_html(ddoc.templates[templateName], data, ddoc.templates.partials);
 }

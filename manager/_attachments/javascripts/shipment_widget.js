@@ -139,7 +139,7 @@ function ShipmentWidget(params) {
                             name: name
                         };
                         
-            tr = $($.mustache(couchapp.ddoc.templates.partials['edit-order']['shipment-item-row'], data));
+            tr = $($.mustache(couchapp.ddoc.templates.partials['shipment-item-row'], data));
             this.table.append(tr);
             
             tr.find('button.add-item').click( this.table == unfilledTable ? unfilledItemClicked : shippingItemClicked );

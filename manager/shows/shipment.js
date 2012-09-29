@@ -93,7 +93,7 @@ function(doc, req) {
 
     }
 
-    return Mustache.to_html(ddoc.templates['shipment'], data, ddoc.templates.partials['edit-order']);
+    return Mustache.to_html(ddoc.templates['shipment'], data, ddoc.templates.partials);
 }
         
         

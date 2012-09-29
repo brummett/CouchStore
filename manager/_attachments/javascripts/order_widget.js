@@ -294,7 +294,7 @@ function OrderWidget(params) {
 
         } else {
             function renderRow(item, is_unknown) {
-                var content = $( $.mustache(couchapp.ddoc.templates.partials['edit-order']['order-item-row'],
+                var content = $( $.mustache(couchapp.ddoc.templates.partials['order-item-row'],
                                         {   barcode: scan,
                                             cost: centsToDollars(getCostFromItem(item)),
                                             quantity: 0,

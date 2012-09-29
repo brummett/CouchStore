@@ -686,7 +686,8 @@ $.couch.app(function(couchapp) {
                         .then(function() {
                             OrderWidget({   couchapp: couchapp,
                                             context: context,
-                                            activity: activity
+                                            activity: activity,
+                                            itemRowPartial: 'order-item-row'
                                         });
                         });
                 });
@@ -707,7 +708,8 @@ $.couch.app(function(couchapp) {
                     context.fixupOrderDate();
                     OrderWidget({   couchapp: couchapp,
                                     context: context,
-                                    activity: activity
+                                    activity: activity,
+                                    itemRowPartial: 'order-item-row'
                                 });
                 });
                     

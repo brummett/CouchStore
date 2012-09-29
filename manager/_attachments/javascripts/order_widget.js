@@ -19,6 +19,7 @@ function OrderWidget(params) {
         couchapp = params.couchapp,
         context = params.context,
         activity = params.activity,
+        itemRowPartial = params.itemRowPartial,
         allow_unknown = ('allow_unknown' in params) ? params.allow_unknown : true,
         allow_delete = ('allow_delete' in params) ? params.allow_delete : true,
         barcodeInput = $('input#barcode', barcodeScan),
@@ -294,7 +295,7 @@ function OrderWidget(params) {
 
         } else {
             function renderRow(item, is_unknown) {
-                var content = $( $.mustache(couchapp.ddoc.templates.partials['order-item-row'],
+                var content = $( $.mustache(couchapp.ddoc.templates.partials[itemRowPartial],
                                         {   barcode: scan,
                                             cost: centsToDollars(getCostFromItem(item)),
                                             quantity: 0,

@@ -443,20 +443,6 @@ $.couch.app(function(couchapp) {
 
                 // Find out what the warehouse's name is given its ID
                 var whenDone = $.Deferred();
-                whenDone.done(
-                    function() {
-                        context.showNotification('success', 'Order ' + order_number + ' saved!');
-                        activity.trigger('order-updated', orderDoc);
-                        context.$element().empty();
-                        d.resolve();
-                        context.redirect(next_url);
-                    });
-                whenDone.fail(
-                   function(status, reason, message) {
-                        $.log('Problem saving order '+ orderDoc._id +"\nmessage: " + message + "\nstatus: " + status + "\nreason: "+reason);
-                        d.reject();
-                        context.showNotification('error' , 'Problem saving order ' + orderDoc._id + ': ' + message);
-                    });
 
                 context.updateOrdersItems(orderDoc)
                     .then( function() {
@@ -836,14 +822,25 @@ $.couch.app(function(couchapp) {
             }
             orderDoc['order-type'] = order_type;
 
-            context.createOrderlikeDoc({    keep_costs: true,
+            var whenDone = context.createOrderlikeDoc({
+                                            keep_costs: true,
                                             quantity_fixup: quantity_fixup,
                                             order_doc: orderDoc,
                                             next_url: next_url,
                                         },
                                         params);
-                                            
-
+            whenDone.done(
+                function() {
+                    context.showNotification('success', 'Order ' + order_number + ' saved!');
+                        activity.trigger('order-updated', orderDoc);
+                    context.$element().empty();
+                    context.redirect(next_url);
+                });
+            whenDone.fail(
+               function(status, reason, message) {
+                    $.log('Problem saving order '+ orderDoc._id +"\nmessage: " + message + "\nstatus: " + status + "\nreason: "+reason);
+                    context.showNotification('error' , 'Problem saving order ' + orderDoc._id + ': ' + message);
+                });
         });
 
         this.get('#/data/:type/', function(context) {

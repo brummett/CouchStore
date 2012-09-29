@@ -35,6 +35,14 @@ Need an item history report
 
 Confirm shipment page needs to have text entry boxes for box weight and size
 
+Refactor the conversion to/from cents/dollars into a reusable module
+
+Sale order page should validate the shipping charge input
+
+Resolve the difference between saveOrderDoc and SaveOrder
+
+After editing a sale/receive order from the data->orders page, it should go back
+to the data->orders page
 -------------------------------------------------------------------------------
 
 Make tests!
@@ -44,3 +52,7 @@ Interface with Amazon to get new orders and save confirmed orders
 refactor to put the data altering code into couch changes 
 
 Let the user upload pictures for items
+
+refactor the order and shipment widgets so the newly added item rows are _shows of item docs
+
+Make a new couchapp object that uses the jQuery deferred system

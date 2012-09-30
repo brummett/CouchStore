@@ -14,6 +14,35 @@ function(newDoc, oldDoc, userCtx) {
             throw({ forbidden: "Field can't be changed: "+field });
     }
 
+    // for order-type docs, make sure the barcodes that appear in 'items'
+    // also appear in the other named fields, and vice-versa
+    function validate_items_against(fields) {
+        var varcode, i, other;
+        for (barcode in newDoc.items) {
+            // quantities must be non-zero
+            if (! newDoc.items[barcode]) {
+                throw({ forbidden: 'Quantity for barcode ' + barcode + ' must be non-zero'});
+            }
+
+            // And be in these other fields
+            for (i = 0; i < fields.length; i++) {
+                other = fields[i];
+                if (! (barcode in newDoc[ other ])) {
+                    throw({ forbidden: 'Barcode ' + barcode + ' appears in the quantity list but not the ' + other + ' list'});
+                }
+            }
+        }
+
+        for (i = 0; i < fields.length; i++) {
+            other = fields[i];
+            for (barcode in newDoc[ other ]) {
+                if (! (barcode in newDoc.items)) {
+                    throw({ forbidden: 'Barcode ' + barcode + ' appears in the ' + other + ' list but not the quantity list'});
+                }
+            }
+        }
+    }
+
     var validators = {
         order: function() {
             var barcode;
@@ -31,47 +60,12 @@ function(newDoc, oldDoc, userCtx) {
     
             unchanged('date');
 
-            for (barcode in newDoc.items) {
-                // quantities must be non-zero
-                if (! newDoc.items[barcode]) {
-                    throw({ forbidden: 'Quantity for barcode ' + barcode + ' must be non-zero'});
-                }
-                // And also appear in the costs list
-                if (! ( barcode in newDoc['item-costs'])) {
-                    throw({ forbidden: 'Barcode ' + barcode + ' appears in the quantity list but not the item-costs list'});
-                }
-                // And also in the names list
-                if (! (barcode in newDoc['item-names'])) {
-                    throw({ forbidden: 'Barcode ' + barcode + ' appears in the quantity list but not the item-names list'});
-                }
-                // And the skus list
-                if (! (barcode in newDoc['item-skus'])) {
-                    throw({ forbidden: 'Barcode ' + barcode + ' appears in the quantity list but not the item-skus list'});
-                }
-            }
+            validate_items_against(['item-costs', 'item-names', 'item-skus']);
     
             for (barcode in newDoc['item-costs']) {
                 // item-costs must be an integer (cents)
                 if (Math.round(newDoc['item-costs'][barcode]) != newDoc['item-costs'][barcode]) {
                     throw({ forbidden: 'Cost for barcode ' + barcode + ' must be an integer number of cents'});
-                }
-                // and also appear in the quantity list
-                if (! (barcode in newDoc.items) ) {
-                    throw({ forbidden: 'Barcode ' + barcode + ' appears in the item-costs list but not the quantity list'});
-                }
-            }
-
-            for (barcode in newDoc['item-names']) {
-                // must appear in the items list
-                if (! (barcode in newDoc['items'])) {
-                    throw({ forbidden: 'Barcode ' + barcode + ' appears in the item-names list but not the quantity list'});
-                }
-            }
-
-            for (barcode in newDoc['item-skus']) {
-                // must appear in the items list
-                if (! (barcode in newDoc['items'])) {
-                    throw({ forbidden: 'Barcode ' + barcode + ' appears in the item-skus list but not the quantity list'});
                 }
             }
 

@@ -396,13 +396,13 @@ $.couch.app(function(couchapp) {
                     var prop = '',
                     matches;
                     for (prop in params) {
-                        matches = /scan-(\d+)-quan/.exec(prop);
+                        matches = /scan-(.*?)-quan/.exec(prop);
                         if (matches && matches.length) {
                             items[matches[1]] = quantity_fixup(parseInt(params[prop]));
                             continue;
                         }
                         if (keep_costs) {
-                            matches = /scan-(\d+)-cost/.exec(prop);
+                            matches = /scan-(.*?)-cost/.exec(prop);
                             if (matches && matches.length) {
                                 item_costs[matches[1]] = Math.round(parseFloat(params[prop]) * 100);
                                 continue;

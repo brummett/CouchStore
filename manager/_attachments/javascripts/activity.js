@@ -787,6 +787,156 @@ $.couch.app(function(couchapp) {
  
         });
 
+        // Used to apply the accumulated partial physical inventories into one "order" per
+        // warehouse that will make the item counts correct
+        this.get('#/inventory-commit/', function(context) {
+            var content = $.mustache(couchapp.ddoc.templates['confirm-inventory-corrections'],
+                                    { action: '#/inventory-commit/' },
+                                    couchapp.ddoc.templates.partials);
+            context.$element().html(content);
+            context.$element('div#corrections')
+                    .load('_list/proposed-inventory-correction/inventory-by-warehouse-barcode-permanent?group=true&group_level=2');
+        });
+
+        this.post('#/inventory-commit/', function(context) {
+            var todaysDate = context.todayAsString(),
+                stopFromErrors = false,
+                is_last_doc = false,
+                userName = '',
+                remove_on_error = [],   // In case of a problem, the list of finalized orders to remove
+                saveCorrections = $.Deferred(),
+                partialInventoriesRemoved = $.Deferred();
+
+            saveCorrections.done(function() {
+                removePartialInventories();
+            });
+
+            partialInventoriesRemoved.done(function() {
+                showNotification('success', 'Inventory changes applied successfully!');
+                context.redirect('#/');
+            });
+            partialInventoriesRemoved.fail(function(message) {
+                remove_on_error.forEach(function(orderDoc) {
+                    couchapp.db.removeDoc(orderDoc);
+                });
+                showNotification('error', message);
+            });
+
+            // Get the user name
+            $.couch.session({
+                success: function(data) {
+                    userName = data.userCtx.name;
+                    collectAndApplyCorrections();
+                },
+                error: function(status, reason, message) {
+                    saveCorrections.reject();
+                    partialInventoriesRemoved.reject('Cannot retrieve user info from the DB session');
+                }
+            });
+
+            function collectAndApplyCorrections() {
+                couchapp.view('inventory-by-warehouse-barcode-permanent', {
+                    group: true,
+                    group_level: 2,
+                    success: processRows,
+                    error: function(status, reason, message) {
+                        saveCorrections.reject();
+                        partialInventoriesRemoved.reject('Cannot get inventory corrections: '+message);
+                    }
+                });
+            }
+
+            function saveOrderDoc(orderDoc) {
+                if (stopFromErrors) return;
+
+                couchapp.db.saveDoc(orderDoc, {
+                    success: function() { 
+                        remove_on_error.push(orderDoc);
+                        if (is_last_doc) saveCorrections.resolve();
+                    },
+                    error: function(status, reason, message) {
+                        saveCorrections.reject();
+                        partialInventoriesRemoved.reject('Problem saving inventory correction for ' + orderDoc['warehouse-name'] + ':' + message);
+                        stopFromErrors = true;
+                    }
+                });
+            };
+
+            function processRows(data) {
+                var orderDoc,
+                    lastWarehouse = '';
+
+                data.rows.forEach(function(row) {
+                    if (stopFromErrors) return;
+
+                    var warehouseName = row.key[0],
+                        barcode = row.key[1],
+                        name = row.value.name,
+                        sku = row.value.sku,
+                        delta = row.value.count;
+
+                    if (warehouseName != lastWarehouse) {
+                        if (orderDoc) {
+                            saveOrderDoc(orderDoc);
+                        }
+                        // initialize a new order doc
+                        lastWarehouse = warehouseName;
+                        orderDoc = {
+                            _id: 'order-' + warehouseName + '-inv-' + todaysDate,
+                            type: 'order',
+                            'order-type': 'inventory-correction',
+                            date: todaysDate,
+                            'warehouse-name': warehouseName,
+                            'customer-name': userName,
+                            items: {},
+                            'item-skus': {},
+                            'item-names': {},
+                        };
+                    }
+                    // There _should_ be only one row per barcode per warehouse
+                    orderDoc.items[barcode] = delta;
+                    orderDoc['item-skus'][barcode] = sku;
+                    orderDoc['item-names'][barcode] = name;
+                });
+                is_last_doc = true;
+                saveOrderDoc(orderDoc);
+            };
+
+            var to_save = 0;
+            function removeThisPartialInventory(row) {
+                if (stopFromErrors) return;
+
+                var remove = { _id: row.id, _rev: row.value.rev };
+                couchapp.db.removeDoc(remove, {
+                    success: function() {
+                        to_save--;
+                        if (to_save <= 0) {
+                            partialInventoriesRemoved.resolve();
+                        }
+                    },
+                    error: function(status, reason, message) {
+                        stopFromErrors = true;
+                        partialInventoriesRemoved.reject(message);
+                    }
+                });
+            };
+
+            function removePartialInventories() {
+                couchapp.db.allDocs({
+                    start_key: JSON.stringify('inv-'),
+                    end_key: JSON.stringify('inv-ZZZZZZZZZZZZ'),
+                    success: function(data) {
+                        to_save = data.rows.length;
+                        data.rows.forEach(removeThisPartialInventory);
+                    },
+                    error: function(status, reason, message) {
+                        stopFromErrors = true;
+                        partialInventoriesRemoved.reject(message);
+                    }
+                });
+            }
+        });
+
         // Presents a form to the user to edit an already existing order
         this.get('#/edit/order/(.*)', function(context) {
             var order_id = context.params['splat'][0],

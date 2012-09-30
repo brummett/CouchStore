@@ -146,6 +146,16 @@ $.couch.app(function(couchapp) {
         this.use('Title');
 
         this.helpers({
+            userName: (function() {
+                        var userName = '';
+                        return function(val) {
+                            if (val !== undefined) {
+                                userName = val;
+                            }
+                            return userName;
+                        }
+                    })(),
+
             showNotification: showNotification,
 
             showNav: function() {
@@ -502,11 +512,21 @@ $.couch.app(function(couchapp) {
                     context.hideNav();
                 }
             });
+            // Save the user name
+            $.couch.session({
+                success: function(data) {
+                    context.userName(data.userCtx.name);
+                },
+                error: function(status, reason, message) {
+                    partialInventoriesRemoved.reject('Cannot retrieve user info from the DB session');
+                }
+            });
         });
 
         this.bind('loggedOut', function(context) {
             this.$element().empty();
             this.hideNav();
+            context.userName('');
             showNotification('info','Logged Out');
         });
 

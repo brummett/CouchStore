@@ -882,7 +882,7 @@ $.couch.app(function(couchapp) {
                 });
         });
 
-        this.get('#/data/:type/', function(context) {
+        this.get('#/data/:type/', function dataLister(context) {
             var search  = context.params['search-query'] || '';
                 type    = context.params['type'],
                 view    = type + '-by-any',
@@ -896,6 +896,42 @@ $.couch.app(function(couchapp) {
             $.get(list_q)
                 .then(function(content) {
                         context.$element().html(content);
+
+                        // The physical inventories lister should show the list of proposed corrections, too
+                        if (type == 'inventories') {
+                            var list_q = '_list/proposed-inventory-correction/inventory-by-warehouse-barcode-permanent?group=true&group_level=2'
+                            // For some reason, using $.get() here would always trigger the error handler :(
+                            // we'll spell it out longhand
+                            $.ajax({
+                                url: list_q,
+                                type: 'GET',
+                                async: true,
+                                dataType: 'html',
+                                success: function(content) {
+                                    context.$element().append(content);
+                                },
+                                error: function(resp, status, error) {
+                                    1;
+                                }
+                            });
+                            //$.get(list_q, function(content) {
+                            //    context.$element().append(content);
+                            //});
+                            //$.get(list_q).
+                            //    success(function(content) {
+                            //            context.$element().append(content);
+                            //    })
+                            //    .error(function(results) {
+                            //            1;
+                            //    });
+                            //$.get(list_q)
+                            //    .then(function(content) {
+                            //            context.$element().append(content);
+                            //        },
+                            //          function(result) {
+                            //              1;
+                            //        });
+                        }
                     },
                     function(result) {
                         showNotification('error', 'Error getting data for '+type+ ': ' + $.parseJSON(result.responseText).reason);

@@ -1,0 +1,34 @@
+{{#warehouses}}
+    <div>
+        {{#warehouseName}}
+            <h2>Corrections for warehouse {{warehouseName}}</h2>
+        {{/warehouseName}}
+        {{^warehouseName}}
+            </h2>Corrections for all warehouses</h2>
+        {{/warehouseName}}
+
+        <table class="table table-striped table-condensed">
+            <thead><tr>
+                <th>Name</th>
+                <th>SKU</th>
+                <th>Barcode</th>
+                <th>Correction</th>
+            </tr></thead>
+
+            <tbody>
+                {{^items}}
+                    <tr><td><i>No corrections</i></td></tr>
+                {{/items}}
+                {{#items}}
+                    <tr>
+                        <td>{{name}}</td>
+                        <td>{{sku}}</td>
+                        <td>{{barcode}}</td>
+                        <td>{{count}}</td>
+                    </tr>
+                {{/items}}
+            </tbody>
+        </table>
+    </div>
+{{/warehouses}}
+            

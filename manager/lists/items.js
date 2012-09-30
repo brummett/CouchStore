@@ -27,7 +27,7 @@ function(head,req) {
                     warehouses: ['Name','Email','Phone'],
                     orders: ['Order-Number', 'Customer-Name', 'Order-Type', 'Unfilled-Items', 'Shipped-Items'],
                     shipments: ['Order-Number', 'Customer-Name', 'Shipped-Items', 'Date', 'Tracking-Number'],
-                    inventories: ['Section', 'Kinds', 'Items']
+                    inventories: ['Warehouse', 'Section', 'Kinds', 'Items']
                    };
     var template = ddoc.templates['data-lister'];
 

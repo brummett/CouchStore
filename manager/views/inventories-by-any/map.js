@@ -7,8 +7,7 @@ function(doc) {
         barcode;
 
     if (doc.type == 'inventory') {
-log('Got inventory '+doc._id);
-        var results = { kinds: 0, items: 0, section: doc.section };
+        var results = { warehouse: doc['warehouse-name'], kinds: 0, items: 0, section: doc.section };
 
         for (barcode in doc.items) {
             results.kinds++;

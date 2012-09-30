@@ -444,17 +444,23 @@ $.couch.app(function(couchapp) {
                 // Find out what the warehouse's name is given its ID
                 var whenDone = $.Deferred();
 
-                context.updateOrdersItems(orderDoc)
-                    .then( function() {
-                        couchapp.db.openDoc(orderDoc['warehouse-id'], {
-                            success: function(warehouseDoc) {
-                                orderDoc['warehouse-name'] = warehouseDoc.name;
-                                context.saveOrder(orderDoc, whenDone);
-                            }
-                        });
+                function getWarehouseAndSaveOrder() {
+                    couchapp.db.openDoc(orderDoc['warehouse-id'], {
+                        success: function(warehouseDoc) {
+                            orderDoc['warehouse-name'] = warehouseDoc.name;
+                            context.saveOrder(orderDoc, whenDone);
+                        }
                     });
+                };
+
+                if (keep_costs) {
+                    context.updateOrdersItems(orderDoc)
+                        .then( getWarehouseAndSaveOrder );
+                } else {
+                    getWarehouseAndSaveOrder();
+                }
                 
-                return d.promise();
+                return whenDone.promise();
             }
 
         });

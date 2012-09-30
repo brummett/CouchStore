@@ -1,6 +1,6 @@
 // proposed-inventory-correction
-// Use with the inventory-by-warehouse-barcode-permanent view
-// probably with ?group=true  group_level=2
+// Use with the inventory-by-permanenet-warehouse-barcode view
+// probably with ?group=true
 //
 // For each warehouse, show a table with barcodes and the correction necessary
 // to make the real inventory numbers match the proposed inventory 
@@ -11,17 +11,20 @@ function(head,req) {
         barcode,
         warehouses = {};
 
-    // Keys will be [ warehouse-name, barcode, is-permanent], depending on the grouping
+    // Keys will be [ is-permanent, warehouse-name, barcode], depending on the grouping
     while( row = getRow() ) {
-        warehouse = row.key[0];
-        barcode = row.key[1];
+        warehouse = row.key[1];
+        barcode = row.key[2];
         
         warehouses[warehouse] = warehouses[warehouse] || {};
         warehouses[warehouse][barcode] = warehouses[warehouse][barcode]
                                         || { count: 0, barcode: barcode, sku: row.value.sku, name: row.value.name };
-        warehouses[warehouse][barcode].count += row.value.count;
+        warehouses[warehouse][barcode].count -= row.value.count;
     }
 
+    provides('json', function() {
+        return JSON.stringify(warehouses);
+    });
 
     provides('html', function() {
         var Mustache = require('vendor/couchapp/lib/mustache'),

@@ -1,5 +1,9 @@
 function(keys, values, rereduce) {
     var i, sum = 0;
+
+for (i = 0; i < keys.length; i++) {
+    log('key ' + JSON.stringify(keys[i]) + '  value ' + JSON.stringify(values[i]));
+}
     for (i = 0; i < values.length; i++) {
         sum += values[i].count;
     }

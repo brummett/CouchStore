@@ -48,12 +48,9 @@ function(newDoc, oldDoc, userCtx) {
             var barcode;
 
             require('order-type');
-            require('item-costs');
             require('customer-name');
-            require('customer-id');
             require('date');
             require('warehouse-name');
-            require('warehouse-id');
             require('items');
             require('item-names');
             require('item-skus');
@@ -67,6 +64,12 @@ function(newDoc, oldDoc, userCtx) {
                 if (Math.round(newDoc['item-costs'][barcode]) != newDoc['item-costs'][barcode]) {
                     throw({ forbidden: 'Cost for barcode ' + barcode + ' must be an integer number of cents'});
                 }
+            }
+
+            if (newDoc['order-type'] != 'inventory-correction') {
+                require('customer-id');
+                require('warehouse-id');
+                require('item-costs');
             }
 
             if ('shipments' in newDoc) {

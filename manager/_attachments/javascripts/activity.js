@@ -754,6 +754,39 @@ $.couch.app(function(couchapp) {
             context.$element().load(show_q, runOrderWidget);
         });
 
+        // Submit a partial inventory correction
+        this.post('#/inventory/(.*)', function(context) {
+            var params = context.params,
+                section = params['splat'][0] || params['section'],
+                quantity_fixup,
+                orderDoc = { _id: 'inv-' + section, type: 'inventory' },
+                next_url = '#/';
+
+            quantity_fixup = function(n) { return n };  // receive items are positive
+
+            var whenDone = context.createOrderlikeDoc({
+                                            keep_costs: false,
+                                            quantity_fixup: quantity_fixup,
+                                            order_doc: orderDoc,
+                                            next_url: next_url,
+                                        },
+                                        params);
+            whenDone.done(
+                function() {
+                    context.showNotification('success', 'Inventory for section ' + section + ' saved!');
+                        activity.trigger('inventory-updated', orderDoc);
+                    context.$element().empty();
+                    context.redirect(next_url);
+                });
+            whenDone.fail(
+               function(status, reason, message) {
+                    $.log('Problem saving inventory for section  '+ section +"\nmessage: " + message + "\nstatus: " + status + "\nreason: "+reason);
+                    context.showNotification('error' , 'Problem saving inventory for section ' + section + ': ' + message);
+                });
+
+ 
+        });
+
         // Presents a form to the user to edit an already existing order
         this.get('#/edit/order/(.*)', function(context) {
             var order_id = context.params['splat'][0],

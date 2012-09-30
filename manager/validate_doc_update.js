@@ -113,14 +113,28 @@ function(newDoc, oldDoc, userCtx) {
                     enforce(count[barcode] >= 0, 'Shipments for barcode ' + barcode + ' are more than the items');
                 }
             }
-        }
-    };
+        },
 
+        inventory: function() {
+            require('date');
+            require('warehouse-name');
+            require('warehouse-id');
+            require('items');
+            require('item-names');
+            require('item-skus');
+
+            unchanged('date');
+
+            validate_items_against(['item-names', 'item-skus']);
+         }
+    };
         
     enforce(userCtx.name, 'You must be logged in to make changes');
 
     if (newDoc._deleted) return;
 
     require('type');
-    validators[newDoc.type]();
+    if (newDoc.type in validators) {
+        validators[newDoc.type]();
+    }
 }

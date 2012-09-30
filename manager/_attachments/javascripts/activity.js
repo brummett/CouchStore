@@ -822,7 +822,7 @@ $.couch.app(function(couchapp) {
             var todaysDate = context.todayAsString(),
                 stopFromErrors = false,
                 is_last_doc = false,
-                userName = '',
+                userName = context.userName(),
                 remove_on_error = [],   // In case of a problem, the list of finalized orders to remove
                 saveCorrections = $.Deferred(),
                 partialInventoriesRemoved = $.Deferred();
@@ -842,35 +842,23 @@ $.couch.app(function(couchapp) {
                 showNotification('error', message);
             });
 
-            // Get the user name
-            $.couch.session({
-                success: function(data) {
-                    userName = data.userCtx.name;
-                    collectAndApplyCorrections();
-                },
+            // Start the process!
+            couchapp.view('inventory-by-warehouse-barcode-permanent', {
+                group: true,
+                group_level: 2,
+                success: processRows,
                 error: function(status, reason, message) {
                     saveCorrections.reject();
-                    partialInventoriesRemoved.reject('Cannot retrieve user info from the DB session');
+                    partialInventoriesRemoved.reject('Cannot get inventory corrections: '+message);
                 }
             });
-
-            function collectAndApplyCorrections() {
-                couchapp.view('inventory-by-warehouse-barcode-permanent', {
-                    group: true,
-                    group_level: 2,
-                    success: processRows,
-                    error: function(status, reason, message) {
-                        saveCorrections.reject();
-                        partialInventoriesRemoved.reject('Cannot get inventory corrections: '+message);
-                    }
-                });
-            }
 
             function saveOrderDoc(orderDoc) {
                 if (stopFromErrors) return;
 
                 couchapp.db.saveDoc(orderDoc, {
-                    success: function() { 
+                    success: function(result) {
+                        orderDoc._rev = result.rev;
                         remove_on_error.push(orderDoc);
                         if (is_last_doc) saveCorrections.resolve();
                     },
@@ -943,8 +931,8 @@ $.couch.app(function(couchapp) {
 
             function removePartialInventories() {
                 couchapp.db.allDocs({
-                    start_key: JSON.stringify('inv-'),
-                    end_key: JSON.stringify('inv-ZZZZZZZZZZZZ'),
+                    startkey: 'inv-',
+                    endkey: 'inv-\u9999',
                     success: function(data) {
                         to_save = data.rows.length;
                         data.rows.forEach(removeThisPartialInventory);

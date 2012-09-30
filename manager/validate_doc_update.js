@@ -18,6 +18,7 @@ function(newDoc, oldDoc, userCtx) {
     // also appear in the other named fields, and vice-versa
     function validate_items_against(fields) {
         var varcode, i, other;
+
         for (barcode in newDoc.items) {
             // quantities must be non-zero
             if (! newDoc.items[barcode]) {
@@ -57,7 +58,6 @@ function(newDoc, oldDoc, userCtx) {
     
             unchanged('date');
 
-            validate_items_against(['item-costs', 'item-names', 'item-skus']);
     
             for (barcode in newDoc['item-costs']) {
                 // item-costs must be an integer (cents)
@@ -66,11 +66,14 @@ function(newDoc, oldDoc, userCtx) {
                 }
             }
 
-            if (newDoc['order-type'] != 'inventory-correction') {
+            if (newDoc['order-type'] == 'inventory-correction') {
+                validate_items_against(['item-names', 'item-skus']);
+            } else {
                 require('customer-id');
                 require('warehouse-id');
                 require('item-costs');
-            }
+                validate_items_against(['item-costs', 'item-names', 'item-skus']);
+            } 
 
             if ('shipments' in newDoc) {
                 validators.shipments();

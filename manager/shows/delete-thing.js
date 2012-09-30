@@ -10,6 +10,8 @@ function(doc, req) {
         data.id = doc._id;
         if (doc.type == 'customer') {
             data.name = doc.lastname ? (doc.firstname + ' ' + doc.lastname) : doc.firstname;
+        } else if (doc.type == 'inventory') {
+            data.name = ' for section ' + doc.section;
         } else if (doc.type == 'order') {
             data.name = doc._id.substr(6);  // Order IDs start with 'order-'
         } else {

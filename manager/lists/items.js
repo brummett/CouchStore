@@ -9,7 +9,12 @@ function(head,req) {
         addableThings = {items: 1, customers: 1, warehouses: 1};  // Show the add button for these things
 
     itemType = itemType.substr(0, itemType.indexOf('-')); // get the type up to the first '-'
-    singular = itemType.substr(0, itemType.lastIndexOf('s')); // singular word used to construct the 'edit' URL
+    if (itemType == 'inventories') {
+        singular = 'inventory';
+    } else {
+        singular = itemType.substr(0, itemType.lastIndexOf('s')); // singular word used to construct the 'edit' URL
+    }
+
     var matches = search
                 ? function(key) { return (key !== null)
                                         && (key !== undefined)
@@ -22,6 +27,7 @@ function(head,req) {
                     warehouses: ['Name','Email','Phone'],
                     orders: ['Order-Number', 'Customer-Name', 'Order-Type', 'Unfilled-Items', 'Shipped-Items'],
                     shipments: ['Order-Number', 'Customer-Name', 'Shipped-Items', 'Date', 'Tracking-Number'],
+                    inventories: ['Section', 'Kinds', 'Items']
                    };
     var template = ddoc.templates['data-lister'];
 

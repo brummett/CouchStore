@@ -26,7 +26,8 @@ function(doc, req) {
         for (barcode in doc.items) {
             data.items.push( {  quantity: doc.items[barcode],
                                 name:     doc['item-names'][barcode],
-                                sku:      doc['item-skus'][barcode]
+                                sku:      doc['item-skus'][barcode],
+                                barcode:  barcode
                             });
         }
 

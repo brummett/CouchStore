@@ -735,7 +735,7 @@ $.couch.app(function(couchapp) {
 
 
         // Presents a form to the user to start an inventory correction
-        this.get('#/inventory/(.*)', function(context) {
+        this.get('#/edit/inventory/(.*)', function(context) {
             var inv_id = context.params['splat'][0],
                 show_q = '_show/partial-inventory';
 

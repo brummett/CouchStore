@@ -76,9 +76,6 @@ function OrderWidget(params) {
         val: 'data'
     });
 
-    this.orderForm.submit(this.formSubmission.bind(this));
-    this.barcodeScan.submit(this.barcodeWasScanned.bind(this));
-    this.activity.bind('item-updated', this.itemWasUpdated.bind(this));
     this.activity.bind('customer-updated', this.customerWasUpdated.bind(this));
 }
 
@@ -110,6 +107,9 @@ OrderWidget.prototype.common_init = function common_init(params) {
     // Turn off browser autocomplete for all the form fields
     $('input[type=text]').attr('autocomplete', 'off');
 
+    this.orderForm.submit(this.formSubmission.bind(this));
+    this.barcodeScan.submit(this.barcodeWasScanned.bind(this));
+    this.activity.bind('item-updated', this.itemWasUpdated.bind(this));
 }
 
 OrderWidget.prototype.itemRowPartial = 'order-item-row';

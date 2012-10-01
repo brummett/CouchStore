@@ -1,4 +1,8 @@
 <form action="{{path}}" method="get" id="search" class="well form-search">
-    <i class="icon-search"></i><input type="text" name="search-query" class="search-query input-medium" placeholder="Search" value+="{{search-query}}">
-    {{#search-query}} <a href="{{path}}">&times;</a> {{/search-query}}
+    <i class="icon-search icon-white"></i>&nbsp;
+    <div class="input-prepend">
+        <button class="btn btn-primary" type="submit"><i class="icon-search icon-white"></i> Search</button>
+        <input type="text" name="search-query" class="search-query" value="{{search-query}}">
+    </div>
+    {{#search-query}}<a href="{{path}}">&times;</a>{{/search-query}}
 </form>

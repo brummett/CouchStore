@@ -13,13 +13,12 @@ couchapp_load([
   "vendor/couchapp/jquery.couch.app.js",
   "vendor/couchapp/jquery.couch.app.util.js",
   "vendor/couchapp/jquery.mustache.js",
-  "vendor/couchapp/jquery.evently.js",
   "vendor/sammy.js/sammy.js",
   "vendor/sammy.js/sammy.template.js",
   "vendor/sammy.js/sammy.title.js",
-  "vendor/sammy.js/sammy.form.js",
   "vendor/bootstrap/bootstrap.js",
   "vendor/bootstrap/bootstrap-typeahead.js",
   "javascripts/order_widget.js",
-  "javascripts/shipment_widget.js"
+  "javascripts/shipment_widget.js",
+  "javascripts/inventory_report.js"
 ]);

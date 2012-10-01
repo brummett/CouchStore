@@ -1251,7 +1251,12 @@ $.couch.app(function(couchapp) {
 
 
         this.get('#/report/inventory/', function(context) {
-            var list_q = '_list/current-inventory-report/inventory-by-permanent-warehouse-barcode?group=true&startkey=[1]';
+            var search = context.params['search-query']
+                list_q = '_list/current-inventory-report/inventory-by-permanent-warehouse-barcode?group=true&startkey=[1]';
+
+            if (search) {
+                list_q += '&search-query=' + encodeURIComponent(search);
+            }
             context.$element().load(list_q, function() {
                 new InventoryReport({
                         context: context,

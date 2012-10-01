@@ -6,10 +6,18 @@
 // the current inventory levels
 function(head,req) {
     var ddoc = this,
+        search = req.query['search-query'] && req.query['search-query'].toLowerCase(),
         row,
-        data = { warehouses: [], items: [], 'search-query': req.query['search-query'] },
+        data = { warehouses: [], items: [], 'search-query': req.query['search-query'], path: '#/report/inventory/' },
         all_items = {},
         warehouses = {};
+
+    var matches = search
+                ? function(key) { return (key !== null)
+                                        && (key !== undefined)
+                                        && (key != '')
+                                        && (key.toString().toLowerCase().indexOf(search) > -1); }
+                : function(key) { return 1; };
 
     function process_row(row) {
         var warehouse   = row.key[1],
@@ -45,7 +53,12 @@ function(head,req) {
 
     // Keys will be [ is-permanent, warehouse-name, barcode], depending on the grouping
     while( row = getRow() ) {
-        process_row(row);
+        if (matches(row.key[2])   // barcode
+            || matches(row.value.name)
+            || matches(row.value.sku)
+        ) {
+            process_row(row);
+        }
     }
     
     add_all_items_to_data();

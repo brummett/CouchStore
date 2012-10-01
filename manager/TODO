@@ -26,8 +26,7 @@ Create shipment page:
 The top table (unfilled items) needs another column for how many to ship, in case you don't have
 enough to fill the order completely
 
-data lister for items needs a column for current count per warehouse
-toggle for displaying/hiding inactive/obsolete items
+toggle for displaying/hiding inactive/obsolete items in the inventory report page and/or item lister
 
 Need an item history report
 

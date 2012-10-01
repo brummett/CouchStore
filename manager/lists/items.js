@@ -19,7 +19,7 @@ function(head,req) {
                 ? function(key) { return (key !== null)
                                         && (key !== undefined)
                                         && (key != '')
-                                        && (key.toString().toLowerCase().indexOf(search.toLowerCase()) > -1); }
+                                        && (key.toString().toLowerCase().indexOf(search) > -1); }
                 : function(key) { return 1; };
                     
     var headers = { items: [ 'Name', 'Sku','Barcode' ],

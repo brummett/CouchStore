@@ -1030,8 +1030,8 @@ $.couch.app(function(couchapp) {
                         // The physical inventories lister should show the list of proposed corrections, too
                         if (type == 'inventories') {
                             var list_q = '_list/proposed-inventory-correction/inventory-by-permanent-warehouse-barcode?group=true';
-                            // For some reason, using $.get() here would always trigger the error handler :(
-                            // we'll spell it out longhand
+                            // FIXME: For some reason, using $.get() here would always trigger the error handler :(
+                            // we'll spell it out longhand  - maybe the list function isn't setting the content type correctly?
                             $.ajax({
                                 url: list_q,
                                 type: 'GET',

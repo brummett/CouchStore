@@ -1,0 +1,49 @@
+<h2>Inventory Report</h2>
+<form action="{{path}}" method="get" id="search" class="well form-search">
+    <i class="icon-search"></i><input type="text" name="search-query" class="search-query input-medium" placeholder="Search" value="{{search-query}}">
+    {{#search-query}} <a href="{{path}}">&times;</a> {{/search-query}}
+</form>
+
+<form class="form-inline">
+    <label class="control-label" for="warehouse-chooser">Warehouses</label>
+    <select id="warehouse-chooser" name="warehouse-chooser" multiple="multiple">
+        {{#warehouses}}
+            <option selected="selected" value={{.}}>{{.}}</option>
+        {{/warehouses}}
+    </select>
+    <label class="checkbox">
+        <input type="checkbox" id="all" name="all"> All
+    </label>
+</form>
+
+<table id="item-list" class="table table-condensed">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>SKU</th>
+        <th>Barcode</th>
+        <th>Warehouse</th>
+        <th>Count</th>
+        <th></th>
+    </tr>
+    </thead>
+
+    <tbody id="search-results">
+        {{^items}}
+            <tr><td><i>No results</i></td></tr>
+        {{/items}}
+        {{#items}}
+            <tr class="inventory-row wh-{{warehouse}}" {{#hidden}}style="display:none;"{{/hidden}}>
+                <td>{{name}}</td>
+                <td>{{sku}}</td>
+                <td>{{barcode}}</td>
+                <td>{{warehouse}}</td>
+                <td>{{count}}</td>
+                <td>
+                    <a href="{{edit}}{{_id}}" class="edit-item btn"><i class="icon-edit"></i> Edit</a>
+                </td>
+            </tr>
+        {{/items}}
+    </tbody>
+</table>
+

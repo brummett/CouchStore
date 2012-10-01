@@ -1249,6 +1249,34 @@ $.couch.app(function(couchapp) {
             
         });
 
+
+        this.get('#/report/inventory/', function(context) {
+            var list_q = '_list/current-inventory-report/inventory-by-permanent-warehouse-barcode?group=true&startkey=[1]';
+            context.$element().load(list_q, function() {
+                var warehouseChooser = context.$element('select#warehouse-chooser');
+
+                warehouseChooser.change(function(e) {
+                    context.$element('tr.inventory-row').hide();
+                    $('select#warehouse-chooser option:selected').each(function() {
+                        var warehouse = $(this).text();
+                        context.$element('tr.inventory-row.wh-'+warehouse).show();
+                    });
+                });
+
+                context.$element('input#all').change(function(e) {
+                    var value = $(e.target).prop('checked');
+                    if (value) {
+                        context.$element('tr.inventory-row').hide();
+                        context.$element('tr.inventory-row.wh-All').show();
+                        warehouseChooser.prop('disabled', true);
+                    } else {
+                        warehouseChooser.prop('disabled', false);
+                        //context.$element('tr.inventory-row.wh-All').hide();
+                        warehouseChooser.change();
+                    }
+                });
+            });
+        });
     });
 
     activity.run('#/');

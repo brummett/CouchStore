@@ -70,6 +70,6 @@ function(head,req) {
     provides('html', function() {
         var Mustache = require('vendor/couchapp/lib/mustache');
             
-        return Mustache.to_html(ddoc.templates['current-inventory-report'], data);
+        return Mustache.to_html(ddoc.templates['current-inventory-report'], data, ddoc.templates.partials);
     });
 }

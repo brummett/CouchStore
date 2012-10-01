@@ -1,8 +1,5 @@
 <h2>Inventory Report</h2>
-<form action="{{path}}" method="get" id="search" class="well form-search">
-    <i class="icon-search"></i><input type="text" name="search-query" class="search-query input-medium" placeholder="Search" value="{{search-query}}">
-    {{#search-query}} <a href="{{path}}">&times;</a> {{/search-query}}
-</form>
+{{> search-form}}
 
 <form class="form-inline">
     <label class="control-label" for="warehouse-chooser">Warehouses</label>

@@ -89,7 +89,7 @@ function(head,req) {
         }
 
         data['search-query'] = search;
-        return Mustache.to_html(template, data);
+        return Mustache.to_html(template, data, ddoc.templates.partials);
     });
 
 }

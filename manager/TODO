@@ -28,8 +28,6 @@ enough to fill the order completely
 
 toggle for displaying/hiding inactive/obsolete items in the inventory report page and/or item lister
 
-Need an item history report
-
 Confirm shipment page needs to have text entry boxes for box weight and size
 
 Refactor the conversion to/from cents/dollars into a reusable module

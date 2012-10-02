@@ -31,7 +31,7 @@
         {{/items}}
         {{#items}}
             <tr class="inventory-row wh-{{warehouse}}" {{#hidden}}style="display:none;"{{/hidden}}>
-                <td>{{name}}</td>
+                <td><a href="#/report/item-history/{{barcode}}">{{name}}</a></td>
                 <td>{{sku}}</td>
                 <td>{{barcode}}</td>
                 <td>{{warehouse}}</td>

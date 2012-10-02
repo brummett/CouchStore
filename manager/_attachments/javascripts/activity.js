@@ -215,10 +215,21 @@ $.couch.app(function(couchapp) {
                 var d = $.Deferred(),
                     answer,
                     firstButton = ((!buttons) || (buttons.length == 0)) ? 'Ok' : buttons.shift(),
-                    modal = $.mustache(couchapp.ddoc.templates['newdialog-modal'],
-                                            { title: title, message: message, firstButton: firstButton, buttons: buttons });
+                    modal, elt,
+                    data = { title: title, firstButton: firstButton, buttons: buttons };
+
+                if (typeof(message) == 'object') {
+                    elt = message;   // This seems cheesy....
+                } else {
+                    data.message = message;
+                }
+
+                modal = $.mustache(couchapp.ddoc.templates['newdialog-modal'], data);
                 modal = $(modal).appendTo(this.$element())
                                 .modal({backdrop: true, keyboard: true, show: true});
+                if (elt) {
+                    modal.find('div.modal-body').append(elt);
+                }
                 modal.find('form').submit(function() {
                     answer = firstButton
                     modal.modal('hide');
@@ -1265,6 +1276,35 @@ $.couch.app(function(couchapp) {
                     });
             });
         });
+
+        this.get('#/report/item-history/:barcode', function(context) {
+            var list_q = '_list/item-history/item-history-by-barcode-date';
+
+            if ('barcode' in context.params) {
+                list_q += '?startkey=' + encodeURIComponent(JSON.stringify([context.params.barcode]))
+                        + '&endkey=' + encodeURIComponent(JSON.stringify([context.params.barcode,{}]));
+            }
+
+            $.ajax({
+                url: list_q,
+                type: 'GET',
+                async: true,
+                dataType: 'html',
+                success: function(content) {
+                    var answer = context.newdialogModal('Item History',
+                                                        $(content),
+                                                        ['Ok']);
+                    answer.always(function() {
+                        window.history.back()
+                    });
+                },
+                error: function(code, error, message) {
+                    showNotification('error', 'History not available: '+message);
+                }
+            });
+        });
+
+
     });
 
     activity.run('#/');

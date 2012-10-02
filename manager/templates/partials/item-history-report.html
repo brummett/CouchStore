@@ -1,0 +1,22 @@
+<table class="table table-condensed">
+    <caption>{{name}} history</caption>
+    <thead>
+        <tr><td>Date</td>
+            <td>Order</td>
+            <td>Warehouse</td>
+            <td>Number</td>
+            <td>Count</td>
+        </tr>
+    </thead>
+    <tbody>
+        {{#items}}
+            <tr><td>{{date}}</td>
+                <td>{{order-type}}</td>
+                <td>{{warehouse}}</td>
+                <td>{{order-number}}</td>
+                <td>{{count}}</td>
+            </tr>
+        {{/items}}
+    </tbody>
+</table>
+

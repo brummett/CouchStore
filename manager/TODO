@@ -1,3 +1,6 @@
+Switch to using sammy.nested_params for parsing all the scan-*-quan, scan-*-name, etc
+params from orders
+
 Sort the orders in the fill-pick-list dropdown by priority.  Remove the blank at the top of the select list
 
 Make a page to transfer items from one warehouse to another
@@ -55,3 +58,4 @@ Let the user upload pictures for items
 refactor the order and shipment widgets so the newly added item rows are _shows of item docs
 
 Make a new couchapp object that uses the jQuery deferred system
+and lets you use lists and shows to fetch non-json data

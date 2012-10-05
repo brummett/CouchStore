@@ -1,11 +1,26 @@
+// shows/edit-order
 function(doc, req) {
     var ddoc = this,
         Mustache = require('vendor/couchapp/lib/mustache'),
+        shipping = require('views/lib/shipping-priority'),
         data = {},
         templateName = '',
         i = 0,
-        shipServiceLevels = [ {id: 'standard'} ,{id:  'expedited'}, {id: 'overnight'}],
-        orderSources = [ {id: 'web'}, {id: 'amazon'},{id: 'phone'},{id: 'ebay'},{id: 'buy.com'}];
+        shipServiceLevels,
+        orderSources;
+
+    // The template needs the lists transformed into lists of objects with the 'id' the printable item
+    function makeId(s) {
+        return { id: s };
+    }
+    function rcmp(a, b) {  // reverse sort
+        if (a > b) return -1;
+        if (a < b) return +1;
+        return 0;
+    }
+
+    shipServiceLevels = shipping.levels.sort(rcmp).map(makeId);
+    orderSources = shipping.sources.map(makeId);
 
     if (doc) {
         if ( doc.type != 'order' ) {

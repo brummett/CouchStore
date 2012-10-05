@@ -9,7 +9,7 @@ function(doc) {
         i = 0,
         count = 0;
 
-     if (doc.type == 'order') {
+     if ((doc.type == 'order' ) && (doc['order-type'] === 'sale')) {
         // order doc IDs start with the string 'order-'
         order_number = doc._id.substring(6);
         isBackordered = doc.shipments ? doc.shipments.length : 0;

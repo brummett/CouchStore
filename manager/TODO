@@ -30,6 +30,8 @@ Some possible solutions:
     http://www.imaputz.com/cssStuff/bigFourVersion.html
     http://www.farinspace.com/jquery-scrollable-table-plugin/
     http://stackoverflow.com/questions/983031/jquery-how-to-freeze-table-header-and-allow-scrolling-of-the-rest-of-the-rows
+Also, client-side table sorting:
+http://tablesorter.com/docs/
 
 Import item data from the old system
 

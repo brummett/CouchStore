@@ -3,41 +3,42 @@
 function(doc) {
     var unfilledItems = 0,
         shippedItems = 0,
-        i,
-        barcode;
+        Order = require('views/lib/Order'),
+        order = Order.newFromDoc(doc);
 
-    if (doc.type == 'order') {
-        if (doc['order-type'] == 'sale') {
+    if (order) {
+        if (order.isShippable()) {
             // Figure out how many items remain unshipped
             // First, how many we ultimately need to ship
-            for (barcode in doc.items) {
-                unfilledItems += Math.abs( doc.items[barcode]  );
-            }
-            if ('shipments' in doc) {
-                for (i = 0; i < doc.shipments.length; i++) {
-                    for (barcode in doc.shipments[i].items) {
-                        unfilledItems -= doc.shipments[i].items[barcode];
-                        shippedItems  += doc.shipments[i].items[barcode];
+            order.barcodes().forEach(function(barcode) {
+                unfilledItems += Math.abs( order.quantityForBarcode(barcode));
+            });
+            if (order.hasShipments()) {
+                order.shipments().forEach(function(shipment) {
+                    var barcode;
+                    for (barcode in shipment.items) {
+                        unfilledItems -= shipment.items[barcode];
+                        shippedItems  += shipment.items[barcode];
                     }
-                }
+                });
             }
         } else {
             // not a sale order
-            for (barcode in doc.items) {
-                shippedItems += Math.abs( doc.items[barcode]  );
-            }
+            order.barcodes().forEach(function(barcode) {
+                shippedItems += Math.abs( order.quantityForBarcode(barcode) );
+            });
         }
             
         // order doc IDs start with the string 'order-'
-        var order_number = doc._id.substring(6);
+        var order_number = order.orderNumber();
         var results = { 'order-number': order_number,
-                        'customer-name': doc['customer-name'],
-                        'order-type': doc['order-type'],
+                        'customer-name': order.customerName(),
+                        'order-type': order.orderType(),
                         'unfilled-items': unfilledItems,
                         'shipped-items': shippedItems
                     };
 
         emit(order_number, results);
-        emit(doc['customer-name'], results);
+        emit(order.customerName(), results);
     }
 }

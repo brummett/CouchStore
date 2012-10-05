@@ -3,12 +3,13 @@
 // Caller should get the latest-sorting item, then pick the next
 // letter
 function(doc) {
-    var i;
+    var Order = require('views/lib/Order'),
+        order = Order.newFromDoc(doc);
 
-    if ((doc.type == 'order') && ('shipments' in doc)) {
-        for (i = 0; i < doc.shipments.length; i++) {
-            emit([doc.shipments[i].date, doc.shipments[i].box], null);
-        }
+    if (order && order.hasShipments()) {
+        order.shipments().forEach(function(shipment) {
+            emit([shipment.date, shipment.box], null);
+        });
     }
 }
 

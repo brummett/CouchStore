@@ -1,45 +1,41 @@
 // shipments-by-any
 // keys are customer names, order numbers, tracking numbers, item names and barcodes
+// shipments-by-any
 function(doc) {
-    var thisShipment,
-        i,
-        shippedItems = 0,
-        results,
-        barcode;
+    var Order = require('views/lib/Order'),
+        order = Order.newFromDoc(doc),
+        orderNumber = '',
+        customerName = '';
 
-    if (doc.type == 'order') {
-        if ('shipments' in doc) {
-            for (i = 0; i < doc.shipments.length; i++) {
-                thisShipment = doc.shipments[i];
+    if (order && order.hasShipments()) {
+        orderNumber = order.orderNumber();
+        customerName = order.customerName();
 
-                // First go through to count the number of items
-                shippedItems = 0;
-                for (barcode in thisShipment.items) {
-                    shippedItems += thisShipment.items[barcode];
-                }
+        order.shipments().forEach(function(shipment, idx) {
+            var shippedItems = 0,
+                barcode = '',
+                results = { 'order-number': orderNumber,
+                            'customer-name': customerName,
+                            shipment: idx,
+                            date: order.date(),
+                            'shipped-items': 0 };
 
-                // Emit the results
-                results = { 'order-number': doc._id.substring(6),   // order doc IDs start with the string 'order-'
-                            'customer-name': doc['customer-name'],
-                            'shipment':     i,
-                            'date':         thisShipment.date,
-                            'shipped-items': shippedItems };
-
-                if ('tracking-number' in thisShipment) {
-                    results['tracking-number'] = thisShipment['tracking-number'];
-                    emit(thisShipment['tracking-number'], results);
-                } else {
-                    results['tracking-number'] = '';
-                }
-                emit(results['order-number'], results);
-                emit(results['customer-name'], results);
-
-                // emit keys for each barcode
-                for (barcode in thisShipment.items) {
-                    emit(barcode, results);
-                    emit(doc['item-names'][barcode], results);
-                }
+            for (barcode in shipment.items) {
+                results['shipped-items'] += shipment.items[barcode];
             }
-        }
+
+            results['tracking-number'] = ('tracking-number' in shipment)
+                                        ? shipment['tracking-number']
+                                        : '';
+
+            emit(orderNumber, results);
+            emit(customerName, results);
+
+            // emit keys for each barcode in the shipment
+            for(barcode in shipment.items) {
+                emit(barcode, results);
+                emit(order.nameForBarcode(barcode), results);
+            }
+        });
     }
 }

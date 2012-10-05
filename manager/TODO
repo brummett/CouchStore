@@ -1,11 +1,13 @@
 Switch to using sammy.nested_params for parsing all the scan-*-quan, scan-*-name, etc
 params from orders
 
-Sort the orders in the fill-pick-list dropdown by priority.  Remove the blank at the top of the select list
-
 Make a page to transfer items from one warehouse to another
 
+Make tests!
+
 Refactor the shipment-order-picker to use objects instead of already formatted strings
+
+In the Item History window, the "number" column should link to the edit-order page
 
 Make a check-box on the 'make a sale' page that would immediately mark the items as shipped
 
@@ -14,6 +16,9 @@ order-source    order-number    sku     quantity    price-each  shipping-charge 
 one line for each different sku
 final line giving the total charged to the customer
 don't show shipping-charge for 2nd and later shipments
+
+Report for items needed to order: items that are part of an existing order where the current inventory count is negative.
+Also include items where the current count is less than how many were ordered in the last month?
 
 Allow the user to choose the priority for warehouses
 
@@ -46,8 +51,6 @@ Resolve the difference between saveOrderDoc and SaveOrder
 After editing a sale/receive order from the data->orders page, it should go back
 to the data->orders page
 -------------------------------------------------------------------------------
-
-Make tests!
 
 Interface with Amazon to get new orders and save confirmed orders
 

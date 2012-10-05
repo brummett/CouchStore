@@ -1,12 +1,15 @@
+// shipment-order-picker
+// Generates the data used by the shipment-order-picker list
+// that becomes the "Make a Shipment" drop-down chooser
 function(doc) {
     var order_number = '',
         barcode,
         isBackordered = 0,
-        shipping = { standard: 10, expedited: 5, overnight: 1 },
+        shipping = require('views/lib/shipping-priority'),
         i = 0,
         count = 0;
 
-     if (doc.type == 'order') {
+     if ((doc.type == 'order' ) && (doc['order-type'] === 'sale')) {
         // order doc IDs start with the string 'order-'
         order_number = doc._id.substring(6);
         isBackordered = doc.shipments ? doc.shipments.length : 0;
@@ -23,7 +26,7 @@ function(doc) {
         }
         if (count < 0) {
             count = Math.abs(count);
-            emit([order_number, shipping[doc['shipping-service-level']]],
+            emit([shipping.priority(doc), order_number],
                 { message: order_number + ' ' + count + ' items from '+ doc['warehouse-name'] + ' ' + doc['shipping-service-level'] + ' shipping',
                   isBackordered: isBackordered
                 });

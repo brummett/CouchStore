@@ -28,15 +28,23 @@ Order.prototype.barcodes = function() {
 }
 
 Order.prototype.quantityForBarcode = function(barcode) {
+    if (!('items' in this.__doc)) return null;
     return this.__doc.items[barcode];
 }
 
 Order.prototype.nameForBarcode = function(barcode) {
+    if (!('item-names' in this.__doc)) return null;
     return this.__doc['item-names'][barcode];
 }
 
 Order.prototype.skuForBarcode = function(barcode) {
+    if (!('item-skus' in this.__doc)) return null;
     return this.__doc['item-skus'][barcode];
+}
+
+Order.prototype.costForBarcode = function(barcode) {
+    if (!('item-costs' in this.__doc)) return null;
+    return this.__doc['item-costs'][barcode];
 }
 
 Order.prototype.shipments = function(barcode) {
@@ -73,6 +81,35 @@ Order.prototype.customerName = function(name) {
         this.__doc['customer-name'] = name;
     }
     return this.__doc['customer-name'];
+}
+
+Order.prototype.customerId = function(id) {
+    if (id !== undefined) {
+        // Maybe we should have a way to link the name and customer id?
+        this.__doc['customer-id'] = id;
+    }
+    return this.__doc['customer-id'];
+}
+
+Order.prototype.isTaxable = function(t) {
+    if (t !== undefined) {
+        this.__doc['is-taxable'] = t;
+    }
+    return this.__doc['is-taxable'];
+}
+
+Order.prototype.shippingServiceLevel = function(l) {
+    if (l !== undefined) {
+        this.__doc['shipping-service-level'] = l;
+    }
+    return this.__doc['shipping-service-level'];
+}
+
+Order.prototype.orderSource = function(s) {
+    if (s !== undefined) {
+        this.__doc['order-source'] = s;
+    }
+    return this.__doc['order-source'];
 }
 
 Order.prototype.isShippable = function () {

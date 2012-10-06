@@ -3,6 +3,8 @@ function(doc, req) {
     var ddoc = this,
         Mustache = require('vendor/couchapp/lib/mustache'),
         shipping = require('views/lib/shipping-priority'),
+        Order = require('views/lib/Order'),
+        order,
         data = {},
         templateName = '',
         i = 0,
@@ -23,49 +25,55 @@ function(doc, req) {
     orderSources = shipping.sources.map(makeId);
 
     if (doc) {
-        if ( doc.type != 'order' ) {
+        if ( doc.type !== 'order' ) {
             return {
                 code: 403,
                 json: { reason: 'Document is a '+doc.type+', expected an order' }
             };
         }
 
-        data.orderType = doc['order-type'];
-        templateName = data.orderType+ '-order';
+        order = Order.newFromDoc(doc);
 
-        data.action = '#/create-order/' + doc['order-type'] + '/';
-        data.title = 'Edit ' +  doc['order-type'] + ' order';
-        data.date = doc.date;
-        data.orderNumber = doc._id.substr(6);  // order docs start with the text 'order-'
-        data.customerName = doc['customer-name'];
-        data.customerId = doc['customer-id'];
-        data.isTaxable = doc['is-taxable'];
+        data.orderType = order.orderType();
+        templateName = order.orderType()+ '-order';
+
+        data.action = '#/create-order/' + order.orderType() + '/';
+        data.title = 'Edit ' +  order.orderType() + ' order';
+        data.date           = order.date();
+        data.orderNumber    = order.orderNumber();
+        data.customerName   = order.customerName();
+        data.customerId     = order.customerId();
+        data.isTaxable      = order.isTaxable()
         data._rev = doc._rev;
 
         // Set the right ship service level
         for (i = 0; i < shipServiceLevels.length; i++) {
-            if (shipServiceLevels[i]['id'] == doc['shipping-service-level']) {
+            if (shipServiceLevels[i]['id'] == order.shippingServiceLevel()) {
                 shipServiceLevels[i]['selected'] = 'selected';
                 break;
             }
         }
         // set the right order source
         for (i = 0; i < orderSources; i++) {
-            if (orderSources[i]['id'] == doc['order-source']) {
+            if (orderSources[i]['id'] == order.orderSource()) {
                 orderSources[i]['selected'] = 'selected';
                 break;
             }
         }
 
+
         data.items = [];
-        for (i in doc.items) {
-            data.items.push( {  barcode: i,
-                                name: doc['item-names'][i],
-                                sku: doc['item-skus'][i],
-                                quantity: Math.abs(doc.items[i]),
-                                cost: (doc['item-costs'][i]/100).toFixed(2)
+        order.barcodes().forEach(function(barcode) {
+            var cost = order.costForBarcode() 
+                        ? (order.costForBarcode(barcode)/100).toFixed(2)
+                        : '';
+            data.items.push( {  barcode: barcode,
+                                name: order.nameForBarcode(barcode),
+                                sku: order.skuForBarcode(barcode),
+                                quantity: Math.abs(order.quantityForBarcode(barcode)),
+                                cost: cost
                             });
-        }
+        });
         
     } else {
         if (! req.query.type) {

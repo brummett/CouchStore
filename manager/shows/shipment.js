@@ -1,6 +1,8 @@
 function(doc, req) {
     var ddoc = this,
         Mustache = require('vendor/couchapp/lib/mustache'),
+        Order = require('views/lib/Order'),
+        order,
         data = {},
         unfilledItems = {},
         templateName = '',
@@ -9,7 +11,9 @@ function(doc, req) {
         barcode = '';
 
     if (doc) {
-        if ( doc.type != 'order' ) {
+        order = Order.newFromDoc(doc);
+
+        if ( ! order ) {
             return {
                 code: 403,
                 json: { reason: 'Document is a '+doc.type+', expected an order' }
@@ -19,29 +23,29 @@ function(doc, req) {
         data.action = '#/shipment/'
         data.title = 'Create shipment';
 
-        data.orderType = doc['order-type'];
+        data._rev                   = doc._rev;
+        data.orderType              = order.orderType();
+        data.orderNumber            = order.orderNumber();
+        data.warehouseName          = order.warehouseName();
+        data.customerName           = order.customerName();
+        data.shippingServiceLevel   = order.shippingServiceLevel();
+        data.orderSource            = order.orderSource();
 
-        data.orderNumber = doc._id.substr(6);  // order docs start with the text 'order-'
-        data.warehouseName = doc['warehouse-name'];
-        data.customerName = doc['customer-name'];
-        data._rev = doc._rev;
-        data.shippingServiceLevel = doc['shipping-service-level'];
-        data.orderSource = doc['order-source'];
-
-        data.shippingCharge = doc['shipping-charge'] ? (parseInt(doc['shipping-charge']) / 100).toFixed(2) : '0.00';
+        data.shippingCharge = order.shippingCharge() ? (parseInt(order.shippingCharge()) / 100).toFixed(2) : '0.00';
 
         // How many items we ultimately need to ship out
         unfilledItems = {};
-        for (barcode in doc.items) {
-            unfilledItems[barcode] = Math.abs(doc.items[barcode]);
-        }
+        order.barcodes().forEach(function(barcode) {
+            unfilledItems[barcode] = Math.abs(order.quantityForBarcode(barcode));
+        });
         // Deduct items already shipped
         if ('shipments' in doc) {
-            for (i = 0; i < doc.shipments.length; i++) {
-                for (barcode in doc.shipments[i].items) {
-                    unfilledItems[barcode] -= doc.shipments[i].items[barcode];
+            order.shipments().forEach(function(shipment) {
+                var barcode;
+                for (barcode in shipment.items) {
+                    unfilledItems[barcode] -= shipment.items[barcode];
                 }
-            }
+            });
         }
         // Only include non-zero items to avoid cluttering up the interface
         data.unfilledItems = [];
@@ -95,5 +99,4 @@ function(doc, req) {
 
     return Mustache.to_html(ddoc.templates['shipment'], data, ddoc.templates.partials);
 }
-        
-        
+

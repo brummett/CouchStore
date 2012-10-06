@@ -7,7 +7,7 @@ Order.newFromDoc = function(doc) {
     if (doc && (doc.type === 'order')) {
         order = new Order;
         order.__doc = doc;
-        var orderNumber = doc._id.substr(6);    // the order's ID starts with 'order-'
+        var orderNumber = Order.orderNumber(doc);
             orderType   = doc['order-type'];
 
         // orderNumber and orderType are immutable
@@ -16,6 +16,15 @@ Order.newFromDoc = function(doc) {
 
         return order;
     } 
+}
+
+// An order's ID starts with 'order-'
+Order.orderNumber = function(doc) {
+    if (typeof(doc) === 'string') {
+        return doc.substr(6);
+    } else if (typeof(doc) === 'object') {
+        return doc._id.substr(6);
+    }
 }
 
 Order.prototype.barcodes = function() {
@@ -110,6 +119,13 @@ Order.prototype.orderSource = function(s) {
         this.__doc['order-source'] = s;
     }
     return this.__doc['order-source'];
+}
+
+Order.prototype.shippingCharge = function(s) {
+    if (s !== undefined) {
+        this.__doc['shipping-charge'] = s;
+    }
+    return this.__doc['shipping-charge'];
 }
 
 Order.prototype.isShippable = function () {

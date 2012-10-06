@@ -3,6 +3,7 @@
 function(head,req) {
     var ddoc = this,
         Mustache = require('vendor/couchapp/lib/mustache'),
+        Order = require('views/lib/Order'),
         data = { shipments: [], count: 0 };
 
 
@@ -10,7 +11,7 @@ function(head,req) {
         var row,
             orderNumber;
         while( row = getRow() ) {
-            orderNumber = row.id.substr(6);   // order numbers start with 'order-'
+            orderNumber = Order.orderNumber(row.id);
             data.count++;
             data.shipments.push({   id: row.value.shipment + '-' + orderNumber,
                                     orderNumber: orderNumber,

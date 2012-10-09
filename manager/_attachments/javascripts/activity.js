@@ -11,13 +11,12 @@ $.couch.app(function(couchapp) {
             .animate({ opacity: 0}, 5000, function() { notification.removeClass(alertClass) });
     };
 
+    var loggedInUser = false;
 
     var account = $.sammy('#account', function() {
         var account = this;
 
         this.use('Template');
-
-        var _current_user = false;
 
         this.bind('run', function(context) {
             this.init();
@@ -25,23 +24,23 @@ $.couch.app(function(couchapp) {
 
         this.helpers( {
             isLoggedIn: function() {
-                return !! _current_user;
+                return !! loggedInUser;
             },
             doWithUser: function(callback) {
-                callback(_current_user);
+                callback(loggedInUser);
             },
             init: function(callback) {
                 $.couch.session({
                     success: function(session) {
                         if (session.userCtx && session.userCtx.name) {
-                            var prevName = _current_user;
-                            _current_user = session.userCtx;
-                            if (! _current_user || (_current_user.name != prevName)) {
+                            var prevName = loggedInUser;
+                            loggedInUser = session.userCtx;
+                            if (! loggedInUser || (loggedInUser.name != prevName)) {
                                 // changed from loggout out to logged in, or switched user
                                 account.trigger('loggedIn');
                             }
                             if (callback) {
-                                callback(_current_user);
+                                callback(loggedInUser);
                             }
                         } else {
                             account.trigger('loggedOut');
@@ -51,11 +50,11 @@ $.couch.app(function(couchapp) {
             },
             doWithValidUser: function(callback, force) {
                 var user = this;
-                if (!this._current_user || force) {
+                if (!this.loggedInUser || force) {
                     this.init(callback);
                 } else {
                     if (callback) {
-                        callback(_current_user);
+                        callback(logegdInUser);
                     }
                 }
             },
@@ -77,7 +76,7 @@ $.couch.app(function(couchapp) {
                 var user = this;
                 $.couch.logout({
                     success: function() {
-                        user._current_user = false;
+                        user.logegdInUser = false;
                         account.trigger('loggedOut');
                     },
                     error: function(code, error, reason) {
@@ -110,7 +109,7 @@ $.couch.app(function(couchapp) {
             this.login(context.params['name'], context.params['password']);
         });
         this.bind('loggedIn', function(context) {
-            this.render('templates/account-loggedIn.template', {user: _current_user}).swap();
+            this.render('templates/account-loggedIn.template', {user: loggedInUser}).swap();
             activity.trigger('loggedIn');
             this.redirect('#/');
         });
@@ -146,16 +145,6 @@ $.couch.app(function(couchapp) {
         this.use('Title');
 
         this.helpers({
-            userName: (function() {
-                        var userName = '';
-                        return function(val) {
-                            if (val !== undefined) {
-                                userName = val;
-                            }
-                            return userName;
-                        }
-                    })(),
-
             showNotification: showNotification,
 
             showNav: function() {
@@ -523,21 +512,11 @@ $.couch.app(function(couchapp) {
                     context.hideNav();
                 }
             });
-            // Save the user name
-            $.couch.session({
-                success: function(data) {
-                    context.userName(data.userCtx.name);
-                },
-                error: function(status, reason, message) {
-                    partialInventoriesRemoved.reject('Cannot retrieve user info from the DB session');
-                }
-            });
         });
 
         this.bind('loggedOut', function(context) {
             this.$element().empty();
             this.hideNav();
-            context.userName('');
             showNotification('info','Logged Out');
         });
 
@@ -833,7 +812,6 @@ $.couch.app(function(couchapp) {
             var todaysDate = context.todayAsString(),
                 stop_from_errors = false,
                 is_last_doc = false,
-                userName = context.userName(),
                 remove_on_error = [],   // In case of problems, remove these already-saved docs
                 d = $.Deferred();
 
@@ -871,7 +849,7 @@ $.couch.app(function(couchapp) {
                         'order-type': 'inventory-correction',
                         date: todaysDate,
                         'warehouse-name': warehouse,
-                        'customer-name': userName,
+                        'customer-name': loggedInUser,
                         items: {},
                         'item-skus': {},
                         'item-names': {}

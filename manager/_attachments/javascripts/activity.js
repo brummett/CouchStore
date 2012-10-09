@@ -561,6 +561,8 @@ $.couch.app(function(couchapp) {
                 success: function(doc) {
                     doc.shipments[params.shipment]['tracking-number']   = params['tracking-number'];
                     doc.shipments[params.shipment]['shipping-cost']     = cost;
+                    doc.shipments[params.shipment]['weight']            = params['weight'];
+                    doc.shipments[params.shipment]['size']              = params['size'];
 
                     couchapp.db.saveDoc(doc, {
                         success: function() {

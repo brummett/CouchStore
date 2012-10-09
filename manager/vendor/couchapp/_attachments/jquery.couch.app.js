@@ -91,15 +91,20 @@
         return cachedModule;
       }
       var exports = {};
+      var module = {};
       var resolved = resolveModule(name, name.split('/'), parents, ddoc);
       var source = resolved[0]; 
       parents = resolved[1];
-      var s = "var func = function (exports, require) { " + source + " };";
+      var s = "var func = function (module, exports, require) { " + source + " };";
       try {
         eval(s);
-        func.apply(ddoc, [exports, function(name) {return require(name, parents)}]);
+        func.apply(ddoc, [module, exports, function(name) {return require(name, parents)}]);
       } catch(e) { 
         throw ["error","compilation_error","Module require('"+name+"') raised error "+e.toSource()]; 
+      }
+
+      if (module && module.exports) {
+        exports = module.exports;
       }
       setCachedModule(name, parents, exports);
       return exports;

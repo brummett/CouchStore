@@ -1,24 +1,25 @@
+// confirm-shipment show
 function(doc, req) {
     var ddoc = this,
         Mustache = require('vendor/couchapp/lib/mustache'),
+        Order = require('views/lib/Order'),
+        order = Order.newFromDoc(doc),
         data = {},
         thisShipment,
         orderNumber,
         barcode = '';
 
     if (doc) {
-        if ( doc.type != 'order' ) {
+        if ( ! order ) {
             return {
                 code: 403,
                 json: { reason: 'Document is a '+doc.type+', expected an order' }
             };
         }
-        orderNumber = doc._id.substr(6);  // order IDs start with 'order-'
-
         if ('shipment' in req.query) {
 
-            data['order-number'] = orderNumber;
-            data['shipping-service-level'] = doc['shipping-service-level'];
+            data['order-number'] = order.orderNumber();
+            data['shipping-service-level'] = order.shippingServiceLevel();
             thisShipment = doc.shipments[ req.query.shipment ];
 
             if (thisShipment) {
@@ -28,22 +29,22 @@ function(doc, req) {
                 data['tracking-number'] = thisShipment['tracking-number'];
                 data['shipping-cost'] = thisShipment['shipping-cost'];
 
-                data.action = '#/confirm-shipment/' + orderNumber + '/' + req.query.shipment;
+                data.action = '#/confirm-shipment/' + order.orderNumber() + '/' + req.query.shipment;
             } else {
                 // confirming a non-existent shipment?!
                 return {
                     code: 404,
-                    json: { reason: 'Order ' + orderNumber + ' has no shipment ' + shipment }
+                    json: { reason: 'Order ' + order.orderNumber() + ' has no shipment ' + shipment }
                 };
             }
         }
 
-        data['warehouse-name'] = doc['warehouse-name'];
-        data['customer-name'] = doc['customer-name'];
+        data['warehouse-name'] = order.warehouseName();
+        data['customer-name'] = order.customerName();
         data._rev = doc._rev;
-        data['shipping-service-level'] = doc['shipping-service-level'];
+        data['shipping-service-level'] = order.shippingServiceLevel();
 
-        data['shipping-charge'] = doc['shipping-charge'] ? (parseInt(doc['shipping-charge']) / 100).toFixed(2) : '0.00';
+        data['shipping-charge'] = order.shippingCharge() ? (parseInt(order.shippingCharge()) / 100).toFixed(2) : '0.00';
 
     } else {
         if (! req.query.type) {
@@ -59,5 +60,3 @@ function(doc, req) {
 
     return Mustache.to_html(ddoc.templates['confirm-shipment'], data);
 }
-        
-        

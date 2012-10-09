@@ -91,6 +91,7 @@ OrderWidget.prototype.common_init = function common_init(params) {
     this.couchapp = params.couchapp;
     this.context = params.context;
     this.activity = params.activity;
+    this.Money = this.couchapp.require('views/lib/money');
     this.orderTable = params.context.$element('table#order-display');
     this.barcodeScan = params.context.$element('form#barcode-scan');
     this.orderForm = params.context.$element('form#order-form');
@@ -191,7 +192,7 @@ OrderWidget.prototype.v_checkUnknownItems = function v_checkUnknownItems(input) 
 OrderWidget.prototype.v_checkCostsPrices = function v_checkCostsPrices(inputs) {
     var widget = this;
     inputs.each(function(idx, input) { widget.v_required($(input)) });
-    inputs.each(function(idx, input) { widget.v_matches($(input), /\d*\.\d\d/, 'Bad money format') });
+    inputs.each(function(idx, input) { widget.v_matches($(input), widget.Money.dollarsAndCentsRegex, 'Bad money format') });
 };
 
 // The customerIdInput is filled in by the itemSelected handler of the customer/vendor input
@@ -289,14 +290,6 @@ OrderWidget.prototype.inputForScan = function inputForScan(scan) {
     return input;
 };
 
-OrderWidget.prototype.centsToDollars = function centsToDollars (cents) {
-    if (cents) {
-        return (parseFloat(cents) / 100).toFixed(2);
-    } else {
-        return "0.00";
-    }
-};
-
 OrderWidget.prototype.getCostFromItem = function getCostFromItem(item) {
     if (this.orderType == 'receive') {
         return item['cost-cents'];
@@ -311,7 +304,7 @@ OrderWidget.prototype.itemWasUpdated = function itemWasUpdated(context, item) {
     widget.getTableRowForScan(item.barcode)
         .then(function(tr) {
             tr.removeClass('is-unknown')
-                .find('input.unit-cost').val(widget.centsToDollars(widget.getCostFromItem(item)));
+                .find('input.unit-cost').val(widget.Money.toDollars(widget.getCostFromItem(item)));
             tr.find('td.item-name').text(item.name);
             $('input#scan-'+item.barcode+'-name').val(item.name);
             $('input#scan-'+item.barcode+'-sku').val(item.sku);
@@ -350,7 +343,7 @@ OrderWidget.prototype.getTableRowForScan = function getTableRowForScan(scan) {
         function renderRow(item, is_unknown) {
             var content = $( $.mustache(template,
                                     {   barcode: scan,
-                                        cost: widget.centsToDollars(widget.getCostFromItem(item)),
+                                        cost: widget.Money.toDollars(widget.getCostFromItem(item)),
                                         quantity: 0,
                                         allowDelete: widget.allow_delete,
                                         isUnknown: is_unknown ? true : false,

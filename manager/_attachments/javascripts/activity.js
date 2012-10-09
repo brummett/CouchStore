@@ -144,6 +144,8 @@ $.couch.app(function(couchapp) {
         this.use('Template');
         this.use('Title');
 
+        var Money = couchapp.require('views/lib/money');
+
         this.helpers({
             showNotification: showNotification,
 
@@ -414,7 +416,7 @@ $.couch.app(function(couchapp) {
                         if (keep_costs) {
                             matches = /scan-(.*?)-cost/.exec(prop);
                             if (matches && matches.length) {
-                                item_costs[matches[1]] = Math.round(parseFloat(params[prop]) * 100);
+                                item_costs[matches[1]] = Money.toCents(params[prop]);
                                 continue;
                             }
                         }
@@ -555,7 +557,7 @@ $.couch.app(function(couchapp) {
 
         this.post('#/confirm-shipment/:orderNumber/:shipment', function(context) {
             var params = context.params,
-                cost = Math.round(parseFloat(params['shipping-cost']) * 100);
+                cost = Money.toCents(params['shipping-cost']);
 
             couchapp.db.openDoc('order-' + params.orderNumber, {
                 success: function(doc) {
@@ -1121,8 +1123,8 @@ $.couch.app(function(couchapp) {
                     doc['name']         = context.params['name'];
                     doc['sku']          = context.params['sku'];
                     doc['description']  = context.params['description'];
-                    doc['cost-cents']   = Math.round(cost * 100);
-                    doc['price-cents']  = Math.round(price * 100);
+                    doc['cost-cents']   = Money.toCents(cost);
+                    doc['price-cents']  = Money.toCents(price);
                 } else if (type == 'customer') {
                     doc['firstname'] = context.params['firstname'];
                     doc['lastname'] = context.params['lastname'];

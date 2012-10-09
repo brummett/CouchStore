@@ -3,6 +3,7 @@ function(doc, req) {
     var ddoc = this,
         Mustache = require('vendor/couchapp/lib/mustache'),
         shipping = require('views/lib/shipping-priority'),
+        Money = require('views/lib/money'),
         Order = require('views/lib/Order'),
         order,
         data = {},
@@ -65,8 +66,8 @@ function(doc, req) {
 
         data.items = [];
         order.barcodes().forEach(function(barcode) {
-            var cost = order.costForBarcode() 
-                        ? (order.costForBarcode(barcode)/100).toFixed(2)
+            var cost = order.costForBarcode(barcode)
+                        ? Money.toDollars(order.costForBarcode(barcode))
                         : '';
             data.items.push( {  barcode: barcode,
                                 name: order.nameForBarcode(barcode),

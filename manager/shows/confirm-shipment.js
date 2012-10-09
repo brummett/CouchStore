@@ -2,6 +2,7 @@
 function(doc, req) {
     var ddoc = this,
         Mustache = require('vendor/couchapp/lib/mustache'),
+        Money = require('views/lib/money'),
         Order = require('views/lib/Order'),
         order = Order.newFromDoc(doc),
         data = {},
@@ -45,7 +46,7 @@ function(doc, req) {
         data._rev = doc._rev;
         data['shipping-service-level'] = order.shippingServiceLevel();
 
-        data['shipping-charge'] = order.shippingCharge() ? (parseInt(order.shippingCharge()) / 100).toFixed(2) : '0.00';
+        data['shipping-charge'] = order.shippingCharge() ? Money.toDollars(order.shippingCharge()) : '0.00';
 
     } else {
         if (! req.query.type) {

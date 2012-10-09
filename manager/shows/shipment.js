@@ -1,6 +1,7 @@
 function(doc, req) {
     var ddoc = this,
         Mustache = require('vendor/couchapp/lib/mustache'),
+        Money = require('views/lib/money'),
         Order = require('views/lib/Order'),
         order,
         data = {},
@@ -31,7 +32,7 @@ function(doc, req) {
         data.shippingServiceLevel   = order.shippingServiceLevel();
         data.orderSource            = order.orderSource();
 
-        data.shippingCharge = order.shippingCharge() ? (parseInt(order.shippingCharge()) / 100).toFixed(2) : '0.00';
+        data.shippingCharge = order.shippingCharge() ? Money.toDollars(order.shippingCharge()) : '0.00';
 
         // How many items we ultimately need to ship out
         unfilledItems = {};

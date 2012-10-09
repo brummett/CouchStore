@@ -1,6 +1,8 @@
+// edit-item show
 function(doc, req) {
-    var ddoc = this;
-    var Mustache = require('vendor/couchapp/lib/mustache');
+    var ddoc = this,
+        Mustache = require('vendor/couchapp/lib/mustache'),
+        Money = require('views/lib/money');
 
     var data = {};
     if(doc) {
@@ -9,8 +11,8 @@ function(doc, req) {
         data.name = doc.name;
         data.sku = doc.sku;
         data.barcode = doc.barcode;
-        data.cost = doc['cost-cents'] ? (parseFloat(doc['cost-cents']) / 100).toFixed(2) : "0.00";
-        data.price = doc['price-cents'] ? (parseFloat(doc['price-cents']) / 100).toFixed(2) : "0.00";
+        data.cost = doc['cost-cents'] ? Money.toDollars(doc['cost-cents']) : "0.00";
+        data.price = doc['price-cents'] ? Money.toDollars(doc['price-cents']) : "0.00";
         data.description = doc.description;
         data['add-edit-title'] = "Edit";
     } else {

@@ -41,17 +41,20 @@ function OrderWidget(params) {
     });
 
     // Type ahead code for the customer/vendor field
+    var customer_data = {};
     var typeaheadProcessor = function(jsonString) {
+        customer_data = {};
         var data = jQuery.parseJSON(jsonString).rows,
-            seenIds = {},
             results = [];
 
         jQuery.each(data, function(idx, item) {
-            if (! seenIds[item.id]) {
+            if (! customer_data[item.id]) {
                 // The value that makes it to itemSelected below must be a single string
                 // We'll encode the istaxable along with the customer ID as a string
-                results.push({ name: item.key, data: item.value +':'+ item.id});
-                seenIds[item.id] = 1;
+                customer_data[item.id] = { name: item.value.name,
+                                           'is-taxable': item.value['is-taxable'],
+                                            address: item.value.address };
+                results.push({ name: item.value.name, data: item.id});
             }
         });
         return results;
@@ -65,11 +68,12 @@ function OrderWidget(params) {
             method: 'get',
             triggerLength: 2,
         },
-        itemSelected: function(elt, data, customerName) {
-                            var istaxable = data.substr(0, data.indexOf(':')),
-                                customerId = data.substr(data.indexOf(':') + 1);
+        itemSelected: function(elt, customerId, customerName) {
+                            var istaxable = customer_data[customerId]['is-taxable'],
+                                address = customer_data[customerId]['address'];
                             $('input#customer-id').val(customerId);
                             $('input#is-taxable').val(istaxable);
+                            $('input#customer-address').val(address);
                             widget.clearError($('input#customer-name'));
                         },
         display: 'name',

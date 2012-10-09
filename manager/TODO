@@ -45,8 +45,6 @@ enough to fill the order completely
 
 toggle for displaying/hiding inactive/obsolete items in the inventory report page and/or item lister
 
-Refactor the conversion to/from cents/dollars into a reusable module
-
 Sale order page should validate the shipping charge input
 
 Resolve the difference between saveOrderDoc and SaveOrder

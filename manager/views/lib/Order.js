@@ -92,6 +92,14 @@ Order.prototype.customerName = function(name) {
     return this.__doc['customer-name'];
 }
 
+Order.prototype.customerAddress = function(a) {
+    if (a !== undefined) {
+        // Maybe we should have a way to link the name and customer id?
+        this.__doc['customer-address'] = name;
+    }
+    return this.__doc['customer-address'];
+}
+
 Order.prototype.customerId = function(id) {
     if (id !== undefined) {
         // Maybe we should have a way to link the name and customer id?

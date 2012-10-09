@@ -324,6 +324,7 @@ OrderWidget.prototype.customerWasUpdated = function customerWasUpdated(context, 
 
     customerNameInput.val( customer.firstname.concat(' ', customer.lastname));
     $('input#customer-id').val(customer['_id']);
+    $('input#customer-address').val(customer['address']);
     $('input#is-taxable').val(customer.istaxable);
 
     // Remove any error messages/buttons left there

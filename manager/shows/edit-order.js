@@ -43,6 +43,7 @@ function(doc, req) {
         data.orderNumber    = order.orderNumber();
         data.customerName   = order.customerName();
         data.customerId     = order.customerId();
+        data.customerAddress = order.customerAddress();
         data.isTaxable      = order.isTaxable()
         data._rev = doc._rev;
 
@@ -92,6 +93,7 @@ function(doc, req) {
         data.orderNumber = '';
         data.customer = '';
         data.customerId = '';
+        data.address = '';
         data.items = [];
         data.costs = [];
     }

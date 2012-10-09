@@ -39,6 +39,7 @@ function(doc, req) {
             }
         }
 
+        data['address'] = order.customerAddress();
         data['warehouse-name'] = order.warehouseName();
         data['customer-name'] = order.customerName();
         data._rev = doc._rev;

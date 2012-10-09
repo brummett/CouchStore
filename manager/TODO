@@ -12,8 +12,6 @@ Refactor the shipment-order-picker to use objects instead of already formatted s
 
 In the Item History window, the "number" column should link to the edit-order page
 
-Customer address should be part of the order doc, so it can be part of the shipment page
-
 Make a check-box on the 'make a sale' page that would immediately mark the items as shipped
 
 daily sale summary report:

@@ -71,6 +71,14 @@ function(head,req) {
         }
     };
 
+    function isEditable(row) {
+        if ((itemType === 'orders') && (row.value['order-type'] === 'inventory-correction')) {
+            return false;
+        } else {
+            return true;
+        }
+    };
+
     provides('html', function() {
         var data = {
                 itemType: itemType,
@@ -84,6 +92,7 @@ function(head,req) {
         while (row = getRow()) {
             if (matches(row.key)  && ! isDuplicate(row)) {
                 row.value._id = idForRow(row);
+                row.value.editable = isEditable(row);
                 data.items.push(row.value);
             }
         }

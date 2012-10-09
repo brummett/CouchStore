@@ -144,6 +144,14 @@ Order.prototype.isShippable = function () {
     }
 };
 
+Order.prototype.isEditable = function () {
+    if (this.orderType() === 'inventory-correction') {
+        return false;
+    } else {
+        return true;
+    }
+};
+
 // Does this order have any shipments?
 Order.prototype.hasShipments = function () {
     return (('shipments' in this.__doc) && this.__doc.shipments.length);

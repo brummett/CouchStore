@@ -1,6 +1,3 @@
-Need a template/inventory-correction-order so the 'edit' link on the order lister works for
-inventory corrections
-
 Switch to using sammy.nested_params for parsing all the scan-*-quan, scan-*-name, etc
 params from orders
 

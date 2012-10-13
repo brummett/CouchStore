@@ -5,9 +5,9 @@ function Order() { }
 Order.newFromDoc = function(doc) {
 
     if (doc && (doc.type === 'order')) {
-        order = new Order;
+        var order = new Order;
         order.__doc = doc;
-        var orderNumber = Order.orderNumber(doc);
+        var orderNumber = Order.orderNumber(doc),
             orderType   = doc['order-type'];
 
         // orderNumber and orderType are immutable

@@ -1,5 +1,5 @@
 // Test the order module
-var Order = require('views/lib/Order');
+var Order = require(__dirname + '/../views/lib/Order');
 var assert = require('assert');
 
 describe('Order module', function() {

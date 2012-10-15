@@ -13,8 +13,6 @@ for (i = 0; i < levels.length; i++) {
 }
 
 var priority = function priority(doc) {
-log('getting prio for source '+doc['order-source']+' level '+doc['shipping-service-level'] );
-log(sourcePriority[ doc['order-source'] ] + levelPriority[ doc['shipping-service-level'] ]);
     return sourcePriority[ doc['order-source'] ] + levelPriority[ doc['shipping-service-level'] ];
 }
 
@@ -22,4 +20,4 @@ exports.priority = priority;
 exports.sources = sources;
 exports.levels = levels;
 exports.sourcePriority = sourcePriority;
-exports.levelsPriority = levelPriority;
+exports.levelPriority = levelPriority;

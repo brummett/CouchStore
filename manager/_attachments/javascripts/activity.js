@@ -4,7 +4,9 @@ function runActivity(couchapp) {
 
     var showNotification = function(type, message) {
         // Type can be error, warning, success, info
-        var alertClass = 'alert-' + type, notification = $('#inline-notification');
+        var alertClass = 'alert-' + type,
+            notification = $('#inline-notification');
+
         notification
             .empty()
             .addClass(alertClass)

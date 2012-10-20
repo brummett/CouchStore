@@ -118,6 +118,10 @@ function runActivity(couchapp) {
             }
         });  // end helpers
 
+        this.notFound = function() { };
+
+        this.get('#/', function(context) { });
+
         this.get('#/login', function(context) {
             context.render('templates/account-loginForm.template')
                     .swap(function() {
@@ -155,12 +159,14 @@ function runActivity(couchapp) {
             this.redirect('#/');
         });
 
-        account.run();
+        account.run('#/');
     });
 
 
     var activity = $.sammy('#activity', function() {
         var activity = this;
+
+        activity.notFound = function() { };
 
         this.use('Template');
         this.use('Title');

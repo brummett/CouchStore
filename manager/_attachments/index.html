@@ -98,11 +98,10 @@
   <script src="javascripts/inventory_report.js"></script>
   <script src="javascripts/activity.js"></script>
   <script type="text/javascript" charset="utf-8">
-    $.couch.app(function(app) {
-      //$("#account").evently("account", app);
-      //$("#profile").evently("profile", app);
-      //$.evently.connect("#account","#profile", ["loggedIn","loggedOut"]);
-      //$("#items").evently("items", app);
+    $(document).ready(function() {
+        $.couch.app(function(couchapp) {
+            runActivity(couchapp);
+        });
     });
   </script>
 </html>

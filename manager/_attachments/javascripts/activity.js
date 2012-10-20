@@ -1,4 +1,6 @@
-$.couch.app(function(couchapp) {
+function runActivity(couchapp) {
+    // return true if running in the Zombie.js test harness
+    var isZombie = /Zombie.js/.test(navigator.userAgent);
 
     var showNotification = function(type, message) {
         // Type can be error, warning, success, info
@@ -1292,4 +1294,4 @@ $.couch.app(function(couchapp) {
 
     activity.run('#/');
 
-});
+};

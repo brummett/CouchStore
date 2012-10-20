@@ -2,6 +2,19 @@ function runActivity(couchapp) {
     // return true if running in the Zombie.js test harness
     var isZombie = /Zombie.js/.test(navigator.userAgent);
 
+    function fade(elt, delay, then) {
+        delay = delay === undefined ? 5000 : delay;
+        if (isZombie) {
+            window.setTimeout(function() {
+                then();
+            });
+        } else {
+            elt.animate({ opacity: 0},
+                        5000,
+                        then);
+        }
+    }
+
     var showNotification = function(type, message) {
         // Type can be error, warning, success, info
         var alertClass = 'alert-' + type,
@@ -11,8 +24,12 @@ function runActivity(couchapp) {
             .empty()
             .addClass(alertClass)
             .append(message)
-            .show()
-            .animate({ opacity: 0}, 5000, function() { notification.removeClass(alertClass) });
+            .show();
+
+            fade(notification, 5000, function() {
+                        notification.removeClass(alertClass);
+                        notification.hide();
+                });
     };
 
     var loggedInUser = false;

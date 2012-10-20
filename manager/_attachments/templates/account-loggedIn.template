@@ -1,8 +1,8 @@
-<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+<a id="accountButton" class="btn dropdown-toggle" data-toggle="dropdown" href="#">
     <i class="icon-user"></i>&nbsp;<span id="user-name"><%= user.name %></span>&nbsp;<span class="caret"></span>
 </a>
 <ul id="account-menu" class="dropdown-menu">
-    <li><a href="#/profile">User profile</a></li>
+    <li><a id="profileLink" href="#/profile">User profile</a></li>
     <li class="divider"></li>
-    <li><a href="#/logout">Logout</a></li>
+    <li><a id="logoutLink" href="#/logout">Logout</a></li>
 </ul>

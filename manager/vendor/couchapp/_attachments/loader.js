@@ -6,19 +6,4 @@ function couchapp_load(scripts) {
 };
 
 couchapp_load([
-  "/_utils/script/sha1.js",
-  "/_utils/script/json2.js",
-   "vendor/jquery/jquery-1.7.2.js",
-  "/_utils/script/jquery.couch.js",
-  "vendor/couchapp/jquery.couch.app.js",
-  "vendor/couchapp/jquery.couch.app.util.js",
-  "vendor/couchapp/jquery.mustache.js",
-  "vendor/sammy.js/sammy.js",
-  "vendor/sammy.js/sammy.template.js",
-  "vendor/sammy.js/sammy.title.js",
-  "vendor/bootstrap/bootstrap.js",
-  "vendor/bootstrap/bootstrap-typeahead.js",
-  "javascripts/order_widget.js",
-  "javascripts/shipment_widget.js",
-  "javascripts/inventory_report.js"
 ]);

@@ -1,9 +1,10 @@
-// Test that the main pages exist
+// Test that a user can log in
 var assert = require('assert');
 var Browser = require('zombie');
 
-var couch_url = 'http://test:test@localhost:5984';
-var nano = require('nano')(couch_url);
+var auth_couch_url = 'http://test:test@localhost:5984';
+var couch_url = 'http://localhost:5984';
+var nano = require('nano')(auth_couch_url);
 
 var dbname = 'testdb' + process.pid;
 var main_page_url = couch_url + '/' + dbname + '/_design/manager/index.html';
@@ -21,7 +22,7 @@ describe('Load design doc', function() {
 
     it('pushes design doc', function(done) {
         var couchapp_dir = __dirname + '/..',
-            db_url = couch_url + '/' + dbname,
+            db_url = auth_couch_url + '/' + dbname,
             cmdline = 'couchapp push '+couchapp_dir+' '+db_url,
             exec = require('child_process').exec;
 

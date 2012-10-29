@@ -21,6 +21,7 @@ describe('Load design doc', function() {
     });
 
     it('pushes design doc', function(done) {
+        this.timeout(5000);   // give the DB time to wake up
         var couchapp_dir = __dirname + '/..',
             db_url = auth_couch_url + '/' + dbname,
             cmdline = 'couchapp push '+couchapp_dir+' '+db_url,
@@ -104,5 +105,11 @@ describe('visit main page and log in', function() {
         //assert.notEqual(browser.queryAll('#inventory-menu')[0].display,
         //                'none',
         //                'inventory menu is not hidden');
+    });
+
+    it('removes the test db', function(done) {
+        nano.db.destroy(dbname, function(err) {
+            done(err);
+        });
     });
 });

@@ -34,4 +34,13 @@ describe('Money module', function() {
         assert.ok(! money.isDollarsAndCents('0.2'));
     });
 
+    it('makes a string from cents', function() {
+        assert.equal(money.toDollarsString(123), '1.23');
+        assert.equal(money.toDollarsString('123'), '1.23');
+        assert.equal(money.toDollarsString(0), '0.00');
+        assert.equal(money.toDollarsString('0.00'), '0.00');
+        assert.equal(money.toDollarsString('abc'), '0.00');
+        assert.equal(money.toDollarsString(''), '0.00');
+    });
+
 });

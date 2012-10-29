@@ -304,7 +304,7 @@ OrderWidget.prototype.itemWasUpdated = function itemWasUpdated(context, item) {
     widget.getTableRowForScan(item.barcode)
         .then(function(tr) {
             tr.removeClass('is-unknown')
-                .find('input.unit-cost').val(widget.Money.toDollars(widget.getCostFromItem(item)));
+                .find('input.unit-cost').val(widget.Money.toDollarsString(widget.getCostFromItem(item)));
             tr.find('td.item-name').text(item.name);
             $('input#scan-'+item.barcode+'-name').val(item.name);
             $('input#scan-'+item.barcode+'-sku').val(item.sku);
@@ -343,7 +343,7 @@ OrderWidget.prototype.getTableRowForScan = function getTableRowForScan(scan) {
         function renderRow(item, is_unknown) {
             var content = $( $.mustache(template,
                                     {   barcode: scan,
-                                        cost: widget.Money.toDollars(widget.getCostFromItem(item)),
+                                        cost: widget.Money.toDollarsString(widget.getCostFromItem(item)),
                                         quantity: 0,
                                         allowDelete: widget.allow_delete,
                                         isUnknown: is_unknown ? true : false,

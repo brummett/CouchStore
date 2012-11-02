@@ -7,6 +7,9 @@
         <div class="modal-body">
                 <input type="hidden" id="_id" name="_id" value="{{_id}}">
                 <input type="hidden" id="_rev" name="_rev" value="{{_rev}}">
+                {{#scanned}}
+                    <input type="hidden" id="scanned" name="scanned" value="{{scanned}}">
+                {{/scanned}}
 
                 <fieldset id="name-field">
                     <div class="control-group">

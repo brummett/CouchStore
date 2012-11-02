@@ -1139,6 +1139,10 @@ function runActivity(couchapp) {
                     return false;
                 }
                 var doc = { type: type };
+                // scanned is used in the receive/sale order page when an unknown
+                // item is scanned, the user brings up the edit item form and changes
+                // the barcode.  This retains the original scanned thing
+                var scanned = context.params['scanned'];
                 if (context.params['_id']) {
                     doc['_id'] = context.params['_id'];
                     doc['_rev'] = context.params['_rev'];

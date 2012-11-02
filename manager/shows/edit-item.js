@@ -18,6 +18,9 @@ function(doc, req) {
     } else {
         data['add-edit-title'] = "Add";
         data['barcode'] = req.id;
+        // The receiver will use this to match up what was scanned
+        // in case the user used a different barcode
+        data['scanned'] = req.id;
     }
 
     return Mustache.to_html(ddoc.templates['edit-item'], data);

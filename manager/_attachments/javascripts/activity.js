@@ -1182,6 +1182,7 @@ function runActivity(couchapp) {
                         showNotification('success', type + ' saved');
                     },
                     error: function(status, reason, message) {
+                        modal.modal('hide');
                         showNotification('error', 'Problem saving ' + type + ': ' + message);
                     }
                 });

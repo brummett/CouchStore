@@ -298,22 +298,38 @@ OrderWidget.prototype.getCostFromItem = function getCostFromItem(item) {
     }
 };
 
-OrderWidget.prototype.itemWasUpdated = function itemWasUpdated(context, item) {
+OrderWidget.prototype.renameInputsForNewBarcode = function renameInputsForNewBarcode(oldBc,newBc) {
+    var ext, elt, id;
+    ['name','sku','quan'].forEach(function(ext) {
+        elt = $('input#scan-' + oldBc + '-' + ext);
+        elt.attr('name', 'scan-' + newBc + '-' + ext);
+    });
+};
+
+OrderWidget.prototype.itemWasUpdated = function itemWasUpdated(e, args) {
     // called when the add/edit item modal is submitted, so we can update the price/cost
-    var widget = this;
-    widget.getTableRowForScan(item.barcode)
+    var widget = this,
+        item = args.item,
+        scanned = args.scanned;
+    if (item.barcode != scanned) {
+        // The user changed the barcode for an unknown item
+        // Rename all the related inputs for the now known barcode
+        widget.renameInputsForNewBarcode(scanned, item.barcode);
+    }
+    widget.getTableRowForScan(scanned)
         .then(function(tr) {
             tr.removeClass('is-unknown')
                 .find('input.unit-cost').val(widget.Money.toDollarsString(widget.getCostFromItem(item)));
             tr.find('td.item-name').text(item.name);
-            $('input#scan-'+item.barcode+'-name').val(item.name);
-            $('input#scan-'+item.barcode+'-sku').val(item.sku);
+            $('input#scan-'+scanned+'-name').val(item.name);
+            $('input#scan-'+scanned+'-sku').val(item.sku);
         });
 };
 
-OrderWidget.prototype.customerWasUpdated = function customerWasUpdated(context, customer) {
+OrderWidget.prototype.customerWasUpdated = function customerWasUpdated(context, args) {
     // called when the add/edit item modal is submitted, so we can update the customer's name
-    var customerNameInput = this.orderForm.find('input#customer-name');
+    var customer = args.doc,
+        customerNameInput = this.orderForm.find('input#customer-name');
 
     customerNameInput.val( customer.firstname.concat(' ', customer.lastname));
     $('input#customer-id').val(customer['_id']);
@@ -331,9 +347,17 @@ OrderWidget.prototype.customerWasUpdated = function customerWasUpdated(context, 
 // element for the scan.  It will create a new row if it's
 // not there yet
 OrderWidget.prototype.getTableRowForScan = function getTableRowForScan(scan) {
-    var tr      = this.orderTable.find('tr#scan-' + scan),
+    var tr,
         d       = jQuery.Deferred(),
         widget  = this;
+
+    tr = this.orderTable.find('tr#scan-' + scan);  // first lookup by id
+    if (tr.length == 0) {
+        // Didn't find a row by id, maybe by name?
+        // This can happen if an unknown item was scanned and when the user filled in the 
+        // info, the scanned string wasn't the barcode, and later they scanned the barcode
+        tr = this.orderTable.find('tr[name=scan-'+scan+']');
+    }
 
     if (tr.length) {
         d.resolve(tr);

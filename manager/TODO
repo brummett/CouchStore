@@ -17,8 +17,8 @@ one line for each different sku
 final line giving the total charged to the customer
 don't show shipping-charge for 2nd and later shipments
 
-In the receive/sale page, if you scan an unknown item, go to the edit/add item modal, then use something
-different for the barcode, when you get back to the order it doesn't act correctly
+In the receive/sale page, if you scan an item's barcode and later the item's sku, it will
+incorrectly put two line-items in the order table
 
 Report for items needed to order: items that are part of an existing order where the current inventory count is negative.
 Also include items where the current count is less than how many were ordered in the last month?

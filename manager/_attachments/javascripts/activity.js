@@ -1178,7 +1178,7 @@ function runActivity(couchapp) {
                 couchapp.db.saveDoc(doc, {
                     success: function(data) {
                         modal.modal('hide');
-                        activity.trigger(type + '-updated', doc);
+                        activity.trigger(type + '-updated', { item: doc, scanned: scanned });
                         showNotification('success', type + ' saved');
                     },
                     error: function(status, reason, message) {

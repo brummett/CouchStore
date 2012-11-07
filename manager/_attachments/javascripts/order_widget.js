@@ -328,7 +328,7 @@ OrderWidget.prototype.itemWasUpdated = function itemWasUpdated(e, args) {
 
 OrderWidget.prototype.customerWasUpdated = function customerWasUpdated(context, args) {
     // called when the add/edit item modal is submitted, so we can update the customer's name
-    var customer = args.doc,
+    var customer = args.item,
         customerNameInput = this.orderForm.find('input#customer-name');
 
     customerNameInput.val( customer.firstname.concat(' ', customer.lastname));

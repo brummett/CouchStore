@@ -80,12 +80,14 @@ function OrderWidget(params) {
         val: 'data'
     });
 
-    this.activity.bind('customer-updated', this.customerWasUpdated.bind(this));
 }
 
 
 (function() {
 OrderWidget.prototype.orderNumberInputId = 'input#order-number';
+
+var latestOrderWidget = null;
+var didBindGlobalEvents = false;
 
 OrderWidget.prototype.common_init = function common_init(params) {
     this.couchapp = params.couchapp;
@@ -114,7 +116,29 @@ OrderWidget.prototype.common_init = function common_init(params) {
 
     this.orderForm.submit(this.formSubmission.bind(this));
     this.barcodeScan.submit(this.barcodeWasScanned.bind(this));
-    this.activity.bind('item-updated', this.itemWasUpdated.bind(this));
+
+    //var updateItemCallback = this.itemWasUpdated.bind(this);
+    //this.activity.bind('item-updated', updateItemCallback);
+    //this.deactivate = function() {
+    //    isactive = false;
+    //    widget.activity._unlisten('item-updated', updateItemCallback);
+    //};
+
+    latestOrderWidget = this;
+    this.deactivate = function() {
+        latestOrderWidget = null;
+    };
+    if (! didBindGlobalEvents) {
+        // We only want to bind these activity-wide events once no matter how many
+        // times they go into the receive/sale page
+        this.activity.bind('item-updated', function(e, args) {
+            if (latestOrderWidget) latestOrderWidget.itemWasUpdated(e, args);
+        });
+        this.activity.bind('customer-updated', function(e, args) {
+            if (latestOrderWidget) latestOrderWidget.customerWasUpdated(e,args);
+        });
+        didBindGlobalEvents = true;
+    }
 }
 
 OrderWidget.prototype.itemRowPartial = 'order-item-row';

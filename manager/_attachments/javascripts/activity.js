@@ -172,6 +172,7 @@ function runActivity(couchapp) {
         this.use('Title');
 
         var Money = couchapp.require('views/lib/money');
+        var currentOrderWidget;
 
         this.helpers({
             showNotification: showNotification,
@@ -182,6 +183,13 @@ function runActivity(couchapp) {
 
             hideNav: function() {
                 $('#navbar .logged-in-menu').hide();
+            },
+
+            deactivateOrderWidget: function() {
+                if (currentOrderWidget) {
+                    currentOrderWidget.deactivate();
+                    currentOrderWidget = null;
+                }
             },
 
             editItemModal: function(type, item_id) {
@@ -556,6 +564,7 @@ function runActivity(couchapp) {
         });
 
         this.get('#/', function(context) {
+            context.deactivateOrderWidget();
             context.$element().empty();
         });
 
@@ -563,6 +572,7 @@ function runActivity(couchapp) {
         // numbers for the user to pick from.  The form re-get()s this same URL with the
         // order-number and shipment as a param
         this.get('#/confirm-shipment/', function(context) {
+            context.deactivateOrderWidget();
             if (! ('shipment-id' in context.params)) {
                 // No shipment, show the list of shipments to pick form
                 var list_q = '_list/confirm-shipment-order-picker/unconfirmed-shipments';
@@ -613,6 +623,7 @@ function runActivity(couchapp) {
         // to the user to pick from.  The form re-get()s this same URL with the order-number as a
         // param.
         this.get('#/shipment/', function(context) {
+            context.deactivateOrderWidget();
             if (! ('order-number' in context.params)) {
                 // No order-number, show the list of orders to pick from
 
@@ -650,6 +661,7 @@ function runActivity(couchapp) {
 
         // Called to edit a previously defined shipment
         this.get('#/edit/shipment/:orderId/:shipmentId', function(context) {
+            context.deactivateOrderWidget();
             var show_q = '_show/shipment/' + context.params.orderId;
             context.$element()
                 .load(show_q + '?shipment=' + encodeURIComponent(context.params.shipmentId),
@@ -665,6 +677,7 @@ function runActivity(couchapp) {
         });
 
         this.get('#/delete/shipment/:orderId/:shipment', function(context) {
+            context.deactivateOrderWidget();
             var orderNumber = context.params.orderId.substr(6),
                 shipment = context.params.shipment;
             couchapp.db.openDoc(context.params.orderId, {
@@ -778,6 +791,7 @@ function runActivity(couchapp) {
 
         // Presents a form to the user to start an inventory correction
         this.get('#/edit/inventory/(.*)', function(context) {
+            context.deactivateOrderWidget();
             var inv_id = context.params['splat'][0],
                 show_q = '_show/partial-inventory';
 
@@ -832,6 +846,7 @@ function runActivity(couchapp) {
         // Used to apply the accumulated partial physical inventories into one "order" per
         // warehouse that will make the item counts correct
         this.get('#/inventory-commit/', function(context) {
+            context.deactivateOrderWidget();
             var content = $.mustache(couchapp.ddoc.templates['confirm-inventory-corrections'],
                                     { action: '#/inventory-commit/' },
                                     couchapp.ddoc.templates.partials);
@@ -940,6 +955,7 @@ function runActivity(couchapp) {
 
         // Presents a form to the user to edit an already existing order
         this.get('#/edit/order/(.*)', function(context) {
+            context.deactivateOrderWidget();
             var order_id = context.params['splat'][0],
                 show_q = '_show/edit-order';
 
@@ -961,7 +977,8 @@ function runActivity(couchapp) {
                     getWarehouseList().then( function(warehouseList) { context.fixupOrderWarehouseSelect(warehouseList, d.promise()) } );
                     context.fixupOrderItemNames()
                         .then(function() {
-                            new OrderWidget({   couchapp: couchapp,
+                            currentOrderWidget = new OrderWidget({
+                                                couchapp: couchapp,
                                                 context: context,
                                                 activity: activity
                                         });
@@ -973,6 +990,7 @@ function runActivity(couchapp) {
         // order_type is either receive or sale
         // The form posts to #/order/receive below VVV
         this.get('#/create-order/:order_type/', function(context) {
+            context.deactivateOrderWidget();
             var show_q = '_show/edit-order/?type=' + context.params.order_type;
 
             $.get(show_q)
@@ -982,7 +1000,8 @@ function runActivity(couchapp) {
                     // Still need to supply today's date and fix up the warehouse select
                     getWarehouseList().then( context.fixupOrderWarehouseSelect );
                     context.fixupOrderDate();
-                    new OrderWidget({   couchapp: couchapp,
+                    currentOrderWidget = new OrderWidget({
+                                        couchapp: couchapp,
                                         context: context,
                                         activity: activity
                                 });
@@ -1034,6 +1053,7 @@ function runActivity(couchapp) {
         });
 
         this.get('#/data/:type/', function dataLister(context) {
+            context.deactivateOrderWidget();
             var search  = context.params['search-query'] || '';
                 type    = context.params['type'],
                 view    = type + '-by-any',
@@ -1091,6 +1111,7 @@ function runActivity(couchapp) {
         });
 
         this.get('#/edit/(.*)/(.*)', function(context) {
+            context.deactivateOrderWidget();
             var type = context.params['splat'][0],
                 item_id = context.params['splat'][1];
 
@@ -1216,6 +1237,7 @@ function runActivity(couchapp) {
         });
 
         this.get('#/delete/:thing/:id', function(context) {
+            context.deactivateOrderWidget();
             var docid = context.params['id'],
                 thing = context.params['thing'],
                 doc,
@@ -1277,6 +1299,7 @@ function runActivity(couchapp) {
 
 
         this.get('#/report/inventory/', function(context) {
+            context.deactivateOrderWidget();
             var search = context.params['search-query']
                 list_q = '_list/current-inventory-report/inventory-by-permanent-warehouse-barcode?group=true&startkey=[1]';
 
@@ -1293,6 +1316,7 @@ function runActivity(couchapp) {
         });
 
         this.get('#/report/item-history/:barcode', function(context) {
+            context.deactivateOrderWidget();
             var list_q = '_list/item-history/item-history-by-barcode-date';
 
             if ('barcode' in context.params) {

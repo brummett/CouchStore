@@ -7,6 +7,7 @@ function(doc, req) {
         data._id = doc._id;
         data._rev = doc._rev;
         data.name = doc.name;
+        data.priority = doc.priority;
         data.address = doc.address;
         data.phonenumber = doc.phonenumber;
         data.alternatephonenumber = doc.alternatephonenumber;

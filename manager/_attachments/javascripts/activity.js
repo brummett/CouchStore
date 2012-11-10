@@ -281,7 +281,7 @@ function runActivity(couchapp) {
                 var html = '',
                     warehouseSelect = $('select#warehouse-id');
                 $.each(warehouseList, function(idx, warehouse) {
-                    html += '<option value="' + warehouse.id + '">' + warehouse.key + '</option>';
+                    html += '<option value="' + warehouse.id + '">' + warehouse.value + '</option>';
                 });
                 warehouseSelect.append(html);
                 selectedWarehouseId && selectedWarehouseId.done(
@@ -515,7 +515,7 @@ function runActivity(couchapp) {
 
         function getWarehouseList () {
             var d = $.Deferred();
-            couchapp.view('warehouses-by-name', {
+            couchapp.view('warehouses-by-priority', {
                 success: function(data) {
                     d.resolve(data.rows);
                 },
@@ -1188,6 +1188,7 @@ function runActivity(couchapp) {
                     doc['notes'] = context.params['notes'];
                 } else if (type == 'warehouse') {
                     doc['name'] = context.params['name'];
+                    doc['priority'] = context.params['priority'];
                     doc['address'] = context.params['address'];
                     doc['phonenumber'] = context.params['phonenumber'];
                     doc['alternatephonenumber'] = context.params['alternatephonenumber'];

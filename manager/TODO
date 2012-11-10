@@ -23,8 +23,6 @@ incorrectly put two line-items in the order table
 Report for items needed to order: items that are part of an existing order where the current inventory count is negative.
 Also include items where the current count is less than how many were ordered in the last month?
 
-Allow the user to choose the priority for warehouses
-
 In the data lister for shipments, for shipments with no tracking number to list, have a button/link
 that goes to the confirm shipment page
 

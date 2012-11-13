@@ -292,8 +292,12 @@ OrderWidget.prototype.copyCostsToForm = function copyCostsToForm() {
 
 // When a barcode is scanned in
 OrderWidget.prototype.barcodeWasScanned = function barcodeWasScanned(e) {
-    this.addRemoveItem(this.barcodeInput.val(), 1);
-    this.barcodeInput.val('');
+    var barcode = this.barcodeInput.val();
+    barcode = barcode.replace(/^\s+|\s+$/g,'');
+    if (barcode.length) {
+        this.addRemoveItem(this.barcodeInput.val(), 1);
+        this.barcodeInput.val('');
+    }
     this.barcodeInput.focus();
     return false;
 };

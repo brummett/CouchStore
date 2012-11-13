@@ -9,6 +9,15 @@ function(doc) {
     var barcode;
 
     if (doc.type == 'order') {
+        if (doc['order-type'] === 'warehouse-transfer') {
+            for (barcode in doc.items) {
+                emit([1, doc['source-warehouse-name'], barcode],
+                    {   count: (0 - doc.items[barcode]),
+                        name: doc['item-names'][barcode],
+                        sku: doc['item-skus'][barcode]
+                    });
+            }
+        }
         for (barcode in doc.items) {
             emit([1, doc['warehouse-name'], barcode],
                 {   count: doc.items[barcode],

@@ -498,6 +498,7 @@ function runActivity(couchapp) {
                 
                 // Copy some params to the order doc directly
                 var copy_props =  ['date','customer-name','customer-id','warehouse-id',
+                                    'source-warehouse-id',
                                     'shipping-service-level', 'order-source','is-taxable','_rev',
                                     'shipping-charge','section', 'customer-address'],
                     i;
@@ -1062,7 +1063,8 @@ function runActivity(couchapp) {
                 order_type = params['splat'][0],
                 order_number = params['splat'][1] || params['order-number'],
                 quantity_fixup,
-                orderDoc = { _id: 'order-' + order_number, type: 'order' },
+                orderDoc,
+                keep_costs = true,
                 next_url;
 
             if (order_type == 'receive') {
@@ -1071,14 +1073,22 @@ function runActivity(couchapp) {
             } else if (order_type == 'sale') {
                 quantity_fixup = function(n) { return 0 - n };  // sale items are negative
                 next_url = context.path;  // stay at the same URL
+            } else if (order_type === 'warehouse-transfer') {
+                quantity_fixup = function(n) { return n };  // receive items are positive
+                next_url = '#/';   // Go back to the start page
+                keep_costs = false;
+                order_number = order_number || 'xfer-' + params['source-warehouse-id']
+                                                + '-' + params['warehouse-id']
+                                                + '-' + params['date'];
             } else {
                 showNotification('error', 'Unknown type of order: '+order_type);
                 return;
             }
+            orderDoc = { _id: 'order-' + order_number, type: 'order' };
             orderDoc['order-type'] = order_type;
 
             var whenDone = context.createOrderlikeDoc({
-                                            keep_costs: true,
+                                            keep_costs: keep_costs,
                                             quantity_fixup: quantity_fixup,
                                             order_doc: orderDoc,
                                             next_url: next_url,

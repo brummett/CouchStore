@@ -49,7 +49,10 @@ function(newDoc, oldDoc, userCtx) {
             var barcode;
 
             require('order-type');
-            require('customer-name');
+            if (newDoc['order-type'] != 'warehouse-transfer') {
+                // warehouse transfers don't have customers
+                require('customer-name');
+            }
             require('date');
             require('warehouse-name');
             require('items');
@@ -66,7 +69,9 @@ function(newDoc, oldDoc, userCtx) {
                 }
             }
 
-            if (newDoc['order-type'] == 'inventory-correction') {
+            if ((newDoc['order-type'] == 'inventory-correction')
+                || (newDoc['order-type'] == 'warehouse-transfer')) {
+
                 validate_items_against(['item-names', 'item-skus']);
             } else {
                 require('customer-id');

@@ -1,7 +1,7 @@
 Switch to using sammy.nested_params for parsing all the scan-*-quan, scan-*-name, etc
 params from orders
 
-Make a page to transfer items from one warehouse to another
+Eliminate warehouse-id from the order docs and just store warehouse-name instead
 
 Make tests!
 

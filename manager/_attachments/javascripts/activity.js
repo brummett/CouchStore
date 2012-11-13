@@ -513,12 +513,25 @@ function runActivity(couchapp) {
                 var whenDone = $.Deferred();
 
                 function getWarehouseAndSaveOrder() {
-                    couchapp.db.openDoc(orderDoc['warehouse-id'], {
-                        success: function(warehouseDoc) {
-                            orderDoc['warehouse-name'] = warehouseDoc.name;
-                            context.saveOrder(orderDoc, whenDone);
-                        }
-                    });
+                    var getWarehouseName = function() {
+                        couchapp.db.openDoc(orderDoc['warehouse-id'], {
+                            success: function(warehouseDoc) {
+                                orderDoc['warehouse-name'] = warehouseDoc.name;
+                                context.saveOrder(orderDoc, whenDone);
+                            }
+                        });
+                    }
+    
+                    if (orderDoc['order-type'] === 'warehouse-transfer') {
+                        couchapp.db.openDoc(orderDoc['source-warehouse-id'], {
+                            success: function(srcWarehouseDoc) {
+                                orderDoc['source-warehouse-name'] = srcWarehouseDoc.name;
+                                getWarehouseName();
+                            }
+                        });
+                    } else {
+                        getWarehouseName();
+                    }
                 };
 
                 if (keep_costs) {

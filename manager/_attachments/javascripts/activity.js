@@ -279,15 +279,35 @@ function runActivity(couchapp) {
                 // the select input is empty.  After we get the order's HTML, we need to fill
                 // in the warehouse select
                 var html = '',
-                    warehouseSelect = $('select#warehouse-id');
+                    warehouseSelect = $('select.warehouse-picker');
+
                 $.each(warehouseList, function(idx, warehouse) {
                     html += '<option value="' + warehouse.id + '">' + warehouse.value + '</option>';
                 });
                 warehouseSelect.append(html);
-                selectedWarehouseId && selectedWarehouseId.done(
-                    function(warehouseId) {
-                        warehouseSelect.val(warehouseId);
+
+                if (typeof(selectedWarehouseId) === 'Array') {
+                    selectedWarehouseId.forEach(function(warehouseId, idx) {
+                        warehouseId && warehouseId.done(
+                            function(warehouseId) {
+                                warehouseSelect.get(idx).val(warehouseId);
+                            }
+                        );
                     });
+                } else {
+                    selectedWarehouseId && selectedWarehouseId.done(
+                        function(warehouseId) {
+                            var setSelect = function(warehouseId, idx) {
+                                warehouseSelect.get(idx).val(warehouseId);
+                            };
+                            if (typeof(warehouseId) === 'Array') {
+                                warehouseId.forEach(setSelect);
+                            } else {
+                                setSelect(warehouseId, 0);
+                            }
+                        }
+                    );
+                }
             },
 
             fixupOrderDate: function() {
@@ -971,7 +991,11 @@ function runActivity(couchapp) {
                     var d = $.Deferred();
                     couchapp.db.openDoc(order_id, {
                         success: function(doc) {
-                            d.resolve(doc['warehouse-id']);
+                            if (doc['order-type'] === 'warehouse-transfer') {
+                                d.resolve([ doc['source-warehouse-id'], doc['warehouse-id']]);
+                            } else {
+                                d.resolve(doc['warehouse-id']);
+                            }
                         }
                     });
                     getWarehouseList().then( function(warehouseList) { context.fixupOrderWarehouseSelect(warehouseList, d.promise()) } );

@@ -296,14 +296,14 @@ function runActivity(couchapp) {
                     });
                 } else {
                     selectedWarehouseId && selectedWarehouseId.done(
-                        function(warehouseId) {
+                        function(warehouseIds) {
                             var setSelect = function(warehouseId, idx) {
-                                warehouseSelect.get(idx).val(warehouseId);
+                                $(warehouseSelect.get(idx)).val(warehouseId);
                             };
-                            if (typeof(warehouseId) === 'Array') {
-                                warehouseId.forEach(setSelect);
+                            if ($.isArray(warehouseIds)) {
+                                warehouseIds.forEach(setSelect);
                             } else {
-                                setSelect(warehouseId, 0);
+                                setSelect(warehouseIds, 0);
                             }
                         }
                     );

@@ -1015,7 +1015,8 @@ function runActivity(couchapp) {
         // The form posts to #/order/receive below VVV
         this.get('#/create-order/:order_type/', function(context) {
             context.deactivateOrderWidget();
-            var show_q = '_show/edit-order/?type=' + context.params.order_type;
+            var order_type = context.params.order_type,
+                show_q = '_show/edit-order/?type=' + order_type;
 
             $.get(show_q)
                 .then(function(content) {
@@ -1024,11 +1025,19 @@ function runActivity(couchapp) {
                     // Still need to supply today's date and fix up the warehouse select
                     getWarehouseList().then( context.fixupOrderWarehouseSelect );
                     context.fixupOrderDate();
-                    currentOrderWidget = new OrderWidget({
+                    if (order_type === 'warehouse-transfer') {
+                        currentOrderWidget = new InventoryWidget({
                                         couchapp: couchapp,
                                         context: context,
                                         activity: activity
                                 });
+                    } else {
+                        currentOrderWidget = new OrderWidget({
+                                        couchapp: couchapp,
+                                        context: context,
+                                        activity: activity
+                                });
+                    }
                 });
                     
         });

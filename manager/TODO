@@ -35,7 +35,6 @@ http://tablesorter.com/docs/
 Import item data from the old system
 
 Create shipment page:
-"scan" should be called "barcode"
 The top table (unfilled items) needs another column for how many to ship, in case you don't have
 enough to fill the order completely
 

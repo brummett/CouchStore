@@ -269,6 +269,10 @@ function runActivity(couchapp) {
                         return false;
                     }
                 });
+                modal.find('a.follow').click(function(e) {
+                    modal.modal('hide');
+                    return true;
+                });
                 modal.on('hidden', function() { modal.remove(); d.resolve(answer) });
                 return d.promise();
             },

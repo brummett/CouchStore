@@ -7,8 +7,6 @@ Make tests!
 
 Refactor the shipment-order-picker to use objects instead of already formatted strings
 
-In the Item History window, the "number" column should link to the edit-order page
-
 Make a check-box on the 'make a sale' page that would immediately mark the items as shipped
 
 daily sale summary report:

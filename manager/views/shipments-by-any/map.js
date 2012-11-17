@@ -9,7 +9,9 @@ function(doc) {
 
     if (order && order.hasShipments()) {
         orderNumber = order.orderNumber();
-        customerName = order.customerName();
+        customerName = order.orderType() === 'warehouse-transfer'
+                        ? order.warehouseName()
+                        :order.customerName();
 
         order.shipments().forEach(function(shipment, idx) {
             var shippedItems = 0,

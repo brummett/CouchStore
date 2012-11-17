@@ -137,7 +137,7 @@ Order.prototype.shippingCharge = function(s) {
 }
 
 Order.prototype.isShippable = function () {
-    if (this.orderType() === 'sale') {
+    if ((this.orderType() === 'sale') || (this.orderType() === 'warehouse-transfer')) {
         return true;
     } else {
         return false;

@@ -1074,7 +1074,7 @@ function runActivity(couchapp) {
                 quantity_fixup = function(n) { return 0 - n };  // sale items are negative
                 next_url = context.path;  // stay at the same URL
             } else if (order_type === 'warehouse-transfer') {
-                quantity_fixup = function(n) { return n };  // receive items are positive
+                quantity_fixup = function(n) { return n };  // transfer items are positive
                 next_url = '#/';   // Go back to the start page
                 keep_costs = false;
                 order_number = order_number || 'xfer-' + params['source-warehouse-id']

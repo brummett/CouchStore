@@ -24,11 +24,11 @@ function(doc) {
             order.shipments().forEach(function(shipment) {
                 var barcode;
                 for (barcode in shipment.items) {
-                    count += shipment.items[barcode];  // shipment counts are positive
+                    count -= shipment.items[barcode];  // shipment counts are positive
                 }
             });
         }
-        if (count < 0) {
+        if (count != 0) {
             count = Math.abs(count);
             emit([shipping.priority(doc), order_number],
                 { message: order_number + ' ' + count + ' items from '+ doc['warehouse-name'] + ' ' + doc['shipping-service-level'] + ' shipping',

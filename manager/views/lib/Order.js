@@ -157,4 +157,11 @@ Order.prototype.hasShipments = function () {
     return (('shipments' in this.__doc) && this.__doc.shipments.length);
 };
 
+Order.prototype.isObsolete = function(s) {
+    if (s !== undefined) {
+        this.__doc['is-obsolete'] = s;
+    }
+    return this.__doc['is-obsolete'];
+};
+
 module.exports = Order;

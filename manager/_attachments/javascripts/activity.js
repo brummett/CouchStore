@@ -1237,11 +1237,12 @@ function runActivity(couchapp) {
                     doc['description']  = context.params['description'];
                     doc['cost-cents']   = Money.toCents(cost);
                     doc['price-cents']  = Money.toCents(price);
+                    doc['is-obsolete']  = (context.params['isobsolete'] == 'on' ? true : false);
                 } else if (type == 'customer') {
                     doc['firstname'] = context.params['firstname'];
                     doc['lastname'] = context.params['lastname'];
                     doc['address'] = context.params['address'];
-                    doc['istaxable'] = (context.params['istaxable'] == 'on' ? 1 : 0);
+                    doc['is-taxable'] = (context.params['istaxable'] == 'on' ? true : false);
                     doc['phonenumber'] = context.params['phonenumber'];
                     doc['alternatephonenumber'] = context.params['alternatephonenumber'];
                     doc['email'] = context.params['email'];

@@ -449,6 +449,18 @@ function runActivity(couchapp) {
                 return d.promise();
             },
 
+            // Wire up the show-obsolete check box in the item lister and inventory report
+            toggleObsolete: function() {
+                $('input#show-obsolete').click(function(e) {
+                    var rows = $('tr.obsolete');
+                    if (e.target.checked) {
+                        rows.show();
+                    } else {
+                        rows.hide();
+                    }
+                });
+            },
+
             // Create and save an order-like document
             createOrderlikeDoc: function(config, params) {
                 var context = this,
@@ -1128,6 +1140,7 @@ function runActivity(couchapp) {
                 .then(function(content) {
                         context.$element().html(content);
 
+                        context.toggleObsolete();
                         // The physical inventories lister should show the list of proposed corrections, too
                         if (type == 'inventories') {
                             var list_q = '_list/proposed-inventory-correction/inventory-by-permanent-warehouse-barcode?group=true';

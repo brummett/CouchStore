@@ -2,6 +2,9 @@
 {{#showAddButton}}
     <a href="{{edit}}" id="addItem" class="btn"><i class="icon-plus"></i> Add {{itemType}}</a>
 {{/showAddButton}}
+{{#showObsoleteButton}}
+    <span>Show obsolete items <input type="checkbox" id="show-obsolete"></span>
+{{/showObsoleteButton}}
 {{> search-form}}
 
 <table id="item-list" class="table table-condensed">
@@ -18,7 +21,7 @@
             <tr><td><i>No results</i></td></tr>
         {{/items}}
         {{#items}}
-            <tr>
+            <tr {{#is-obsolete}} class="obsolete" style="display: none;"{{/is-obsolete}}>
                 **FIELDS**
                 <td>
                     <a href="{{edit}}{{_id}}" class="edit-item btn" {{^editable}}disabled{{/editable}}><i class="icon-edit"></i> Edit</a>

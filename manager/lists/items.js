@@ -83,6 +83,7 @@ function(head,req) {
         var data = {
                 itemType: itemType,
                 showAddButton: (itemType in addableThings),
+                showObsoleteButton: (itemType == 'items'),
                 items: [],
                 headers: headers[itemType],
                 path: '#/data/' + itemType + '/',

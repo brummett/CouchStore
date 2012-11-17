@@ -24,3 +24,8 @@ table.table-striped.item-table tr.is-unknown td {
 table.table-striped.item-table tr.is-satisfied td {
     opacity:0.4;
 }
+
+/* obsolete items in the item lister are slightly transparent */
+tr.obsolete {
+    opacity:0.7;
+}

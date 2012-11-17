@@ -38,8 +38,6 @@ Create shipment page:
 The top table (unfilled items) needs another column for how many to ship, in case you don't have
 enough to fill the order completely
 
-toggle for displaying/hiding inactive/obsolete items in the inventory report page and/or item lister
-
 Sale order page should validate the shipping charge input
 
 Resolve the difference between saveOrderDoc and SaveOrder

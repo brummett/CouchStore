@@ -1,6 +1,8 @@
 <h2>Inventory Report</h2>
 {{> search-form}}
 
+<span>Show obsolete items <input type="checkbox" id="show-obsolete"></span>
+
 <form class="form-inline">
     <label class="control-label" for="warehouse-chooser">Warehouses</label>
     <select id="warehouse-chooser" name="warehouse-chooser" multiple="multiple">
@@ -30,7 +32,9 @@
             <tr><td><i>No results</i></td></tr>
         {{/items}}
         {{#items}}
-            <tr class="inventory-row wh-{{warehouse}}" {{#hidden}}style="display:none;"{{/hidden}}>
+            <tr class="inventory-row" data-warehouse="{{warehouse}}" data-barcode="{{barcode}}"
+                {{#hidden}}style="display:none;"{{/hidden}}>
+
                 <td><a href="#/report/item-history/{{barcode}}">{{name}}</a></td>
                 <td>{{sku}}</td>
                 <td>{{barcode}}</td>

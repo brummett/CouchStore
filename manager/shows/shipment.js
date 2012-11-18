@@ -54,6 +54,7 @@ function(doc, req) {
             if (unfilledItems[barcode] != 0) {
                 data.unfilledItems.push( {  barcode: barcode,
                                             name: doc['item-names'][barcode],
+                                            'show-available': true,
                                             quantity: unfilledItems[barcode]
                                         });
             }

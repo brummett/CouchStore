@@ -10,6 +10,7 @@ function(doc) {
 
     if (doc.type == 'order') {
         if (doc['order-type'] === 'warehouse-transfer') {
+            // For warehouse transfers, the source warehouse items are decremented...
             for (barcode in doc.items) {
                 emit([1, doc['source-warehouse-name'], barcode],
                     {   count: (0 - doc.items[barcode]),
@@ -17,6 +18,7 @@ function(doc) {
                         sku: doc['item-skus'][barcode]
                     });
             }
+            //... and the the destination gets items incremented
         }
         for (barcode in doc.items) {
             emit([1, doc['warehouse-name'], barcode],

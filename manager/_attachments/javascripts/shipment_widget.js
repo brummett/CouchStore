@@ -30,6 +30,8 @@ function ShipmentWidget(params) {
     $('button.add-item', unfilledTable).click(unfilledItemClicked);
     $('button.add-item', shippingTable).click(shippingItemClicked);
 
+    initializeAvaliableCount();
+
     // When a barcode is scanned in
     barcodeScan.submit(function(e) {
         var barcode = barcodeInput.val(),
@@ -89,6 +91,31 @@ function ShipmentWidget(params) {
         }
         return input;
     };
+
+    // When the widget initialized, we need to find out what the current
+    // inventory count for each item is
+    function initializeAvaliableCount() {
+        var barcodes = {},
+            warehouse = $('form#order-form input[name="warehouse-name"]').val();
+            itemRows = $('table#unfilled-items tr.line-item');
+
+        itemRows.each(function() {
+            var elt = $(this),
+                barcode = elt.attr('data-barcode'),
+                requested = parseInt(elt.find('td.item-count').text());
+
+            if (! barcodes[barcode]) {
+                barcodes[barcode] = true;
+                couchapp.view('current-inventory-count-by-warehouse-barcode', {
+                    key: [warehouse, barcode],
+                    success: function(data) {
+                        var count = data.rows[0].value;
+                        elt.find('td.available-count').text(count);
+                    }
+                });
+            }
+        });
+    }
 
 
     // Object to manage the shipping and unfilled table data

@@ -109,8 +109,13 @@ function ShipmentWidget(params) {
                 couchapp.view('current-inventory-count-by-warehouse-barcode', {
                     key: [warehouse, barcode],
                     success: function(data) {
-                        var count = data.rows[0].value;
-                        elt.find('td.available-count').text(count);
+                        var available = data.rows[0].value;
+                        elt.find('td.available-count').text(available);
+                        if (available <= 0) {
+                            elt.addClass('quantity-danger');
+                        } else if (available < requested) {
+                            elt.addClass('quantity-warning');
+                        }
                     }
                 });
             }

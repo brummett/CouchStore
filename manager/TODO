@@ -9,6 +9,9 @@ Refactor the shipment-order-picker to use objects instead of already formatted s
 
 Make a check-box on the 'make a sale' page that would immediately mark the items as shipped
 
+'is-taxable' on orders needs to be true or false, not 1, 0, "", etc
+'shipping-charge' needs to be an integer number of cents
+
 daily sale summary report:
 order-source    order-number    sku     quantity    price-each  shipping-charge   shipping-cost  warehouse  is-taxable
 one line for each different sku
@@ -52,3 +55,6 @@ refactor the order and shipment widgets so the newly added item rows are _shows 
 
 Make a new couchapp object that uses the jQuery deferred system
 and lets you use lists and shows to fetch non-json data
+
+Packing lists for each shipment showing what's packed, what's backordered and
+what went in prior shipments

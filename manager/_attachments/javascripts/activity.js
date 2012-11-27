@@ -1424,49 +1424,49 @@ function runActivity(couchapp) {
                 params = [];
 
             if (context.params.start) {
-                context.params.start_key = context.todayAsString();
+                context.params.startey = context.todayAsString();
             }
-            // I'd rather the form just submitted itself, but CouchDB requires the start_key and end_key
+            // I'd rather the form just submitted itself, but CouchDB requires the startkey and endkey
             // be JSON encoded strings, which must have quotes around it, and the normal form submission
-            // process won't do that.  So, we need to reformat the start_key and end_key params before
+            // process won't do that.  So, we need to reformat the startkey and endkey params before
             // making the list request.
-            if (context.params.start_key || context.params.end_key) {
+            if (context.params.startkey || context.params.endkey) {
                 list_q += '?';
-                if (context.params.start_key) {
-                    params.push('start_key="' + encodeURIComponent(context.params.start_key)+'"');
+                if (context.params.startkey) {
+                    params.push('startkey="' + encodeURIComponent(context.params.startkey)+'"');
                 }
-                if (context.params.end_key) {
-                    params.push('end_key="' + encodeURIComponent(context.params.end_key)+'"');
+                if (context.params.endkey) {
+                    params.push('endkey="' + encodeURIComponent(context.params.endkey)+'"');
                 }
                 list_q += params.join('&');
             }
 
             context.$element().load(list_q, function() {
                 var form = context.$element().find('form#date-selector'),
-                    start_date = form.find('input[name="start_key"]'),
-                    end_date = form.find('input[name="end_key"]');
+                    start_date = form.find('input[name="startkey"]'),
+                    end_date = form.find('input[name="endkey"]');
 
                 start_date.change(function(e) {
-                    var start_key = start_date.val(),
-                        end_key = end_date.val();
+                    var startkey = start_date.val(),
+                        endkey = end_date.val();
 
-                    if (!end_key) {
-                        end_date.val(start_key);
+                    if (!endkey) {
+                        end_date.val(startkey);
                     }
                 });
 
                 form.submit(function(e) {
-                    var start_key = start_date.val(),
-                        end_key = end_date.val(),
+                    var startkey = start_date.val(),
+                        endkey = end_date.val(),
                         url,
                         params = [];
 
                     url = context.path.replace(/\?.*$/, '');  // Remove any params already there
-                    if (start_key) {
-                        params.push('start_key='+start_key);
+                    if (startkey) {
+                        params.push('startkey='+startkey);
                     }
-                    if (end_key) {
-                        params.push('end_key='+end_key);
+                    if (endkey) {
+                        params.push('endkey='+endkey);
                     }
                     if (params.length) {
                         url += '?' + params.join('&');

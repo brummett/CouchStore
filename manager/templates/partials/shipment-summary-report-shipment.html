@@ -14,46 +14,50 @@
     </div>
 
     <table class="table table-condensed"</table>
-    <tr>
-        <th>SKU</th>
-        <th>Quantity</th>
-        <th>Price Ea</th>
-        <th>Price</th>
-        <th>Name</th>
-    </tr>
-    {{#items}}
+    <thead>
         <tr>
-            <td>{{sku}}</td>
-            <td>{{quantity}}</td>
-            <td>${{price-each}}</td>
-            <td>${{quantity-price}}</td>
-            <td>{{name}}</td>
+            <th>SKU</th>
+            <th>Quantity</th>
+            <th>Price Ea</th>
+            <th>Price</th>
+            <th>Name</th>
         </tr>
-    {{/items}}
+    </thead>
+    <tbody>
+        {{#items}}
+            <tr>
+                <td>{{sku}}</td>
+                <td>{{quantity}}</td>
+                <td>${{price-each}}</td>
+                <td>${{quantity-price}}</td>
+                <td>{{name}}</td>
+            </tr>
+        {{/items}}
 
-    {{#is-first}}
-        <tr>
-            <td></td>
-            <td></td>
-            <td>Shipping charge</td>
-            <td>${{shipping-charge}}</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td>Tax</td>
-            <td>${{total-taxes}}</td>
-            <td></td>
-        </tr>
+        {{#is-first}}
+            <tr>
+                <td></td>
+                <td></td>
+                <td>Shipping charge</td>
+                <td>${{shipping-charge}}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td>Tax</td>
+                <td>${{total-taxes}}</td>
+                <td></td>
+            </tr>
 
-        <tr>
-            <td></td>
-            <td></td>
-            <td>Order Total</td>
-            <td>${{total-charge}}</td>
-            <td></td>
-        </tr>
-    {{/is-first}}
+            <tr>
+                <td></td>
+                <td></td>
+                <td>Order Total</td>
+                <td>${{total-charge}}</td>
+                <td></td>
+            </tr>
+        {{/is-first}}
+    </tbody>
     </table>
 </div>

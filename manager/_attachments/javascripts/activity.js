@@ -1282,77 +1282,28 @@ function runActivity(couchapp) {
                 // item is scanned, the user brings up the edit item form and changes
                 // the barcode.  This retains the original scanned thing
                 var scanned = context.params['scanned'];
-                if (context.params['_id']) {
-                    doc['_id'] = context.params['_id'];
-                    doc['_rev'] = context.params['_rev'];
-                }
-                var saveDoc = function(doc, success, error) {
-                    couchapp.db.saveDoc(doc, {
-                        success: function(data) {
-                            modal.modal('hide');
-                            activity.trigger(type + '-updated', { item: doc, scanned: scanned });
-                            showNotification('success', type + ' saved');
-                        },
-                        error: function(status, reason, message) {
-                            modal.modal('hide');
-                            showNotification('error', 'Problem saving ' + type + ': ' + message);
-                        }
-                    });
-                };
+
                 if (type == 'item') {
                     // Boolean options default to false
                     context.params['is-obsolete'] = context.params['is-obsolete'] || '';
-                    couchapp.update('item', context.params, {
-                        success: function(newDoc) {
-                            modal.modal('hide');
-                            activity.trigger(type + '-updated', { item: newDoc, scanned: scanned });
-                            showNotification('success', type + ' saved');
-                        },
-                        error: function(status, reason, message) {
-                            modal.modal('hide');
-                            showNotification('error', 'Problem saving ' + type + ': ' + message);
-                        }
-                    });
                 } else if (type == 'customer') {
                     context.params['is-taxable'] = context.params['is-taxable'] || '';
-                    couchapp.update('customer', context.params, {
-                        success: function(newDoc) {
-                            modal.modal('hide');
-                            activity.trigger(type + '-updated', { item: newDoc, scanned: scanned });
-                            showNotification('success', type + ' saved');
-                        },
-                        error: function(status, reason, message) {
-                            modal.modal('hide');
-                            showNotification('error', 'Problem saving ' + type + ': ' + message);
-                        }
-                    });
-
                 } else if (type == 'warehouse') {
-                    couchapp.update('warehouse', context.params, {
-                        success: function(newDoc) {
-                            modal.modal('hide');
-                            activity.trigger(type + '-updated', { item: newDoc, scanned: scanned });
-                            showNotification('success', type + ' saved');
-                        },
-                        error: function(status, reason, message) {
-                            modal.modal('hide');
-                            showNotification('error', 'Problem saving ' + type + ': ' + message);
-                        }
-                    });
+                    // nothing special for warehouses
                 }
                 $.log(doc);
 
-                //couchapp.db.saveDoc(doc, {
-                //    success: function(data) {
-                //        modal.modal('hide');
-                //        activity.trigger(type + '-updated', { item: doc, scanned: scanned });
-                //        showNotification('success', type + ' saved');
-                //    },
-                //    error: function(status, reason, message) {
-                //        modal.modal('hide');
-                //        showNotification('error', 'Problem saving ' + type + ': ' + message);
-                //    }
-                //});
+                couchapp.update(type, context.params, {
+                    success: function(newDoc) {
+                        modal.modal('hide');
+                        activity.trigger(type + '-updated', { item: newDoc, scanned: scanned });
+                        showNotification('success', type + ' saved');
+                    },
+                    error: function(status, reason, message) {
+                        modal.modal('hide');
+                        showNotification('error', 'Problem saving ' + type + ': ' + message);
+                    }
+                });
             };
 
             // Remove any errors from the last time they tried to submit

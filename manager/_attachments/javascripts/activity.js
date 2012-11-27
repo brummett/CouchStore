@@ -1423,6 +1423,9 @@ function runActivity(couchapp) {
             var list_q = '_list/shipment-summary-report/shipments-by-date',
                 params = [];
 
+            if (context.params.start) {
+                context.params.start_key = context.todayAsString();
+            }
             // I'd rather the form just submitted itself, but CouchDB requires the start_key and end_key
             // be JSON encoded strings, which must have quotes around it, and the normal form submission
             // process won't do that.  So, we need to reformat the start_key and end_key params before

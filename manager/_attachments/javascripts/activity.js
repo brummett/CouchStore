@@ -1286,16 +1286,32 @@ function runActivity(couchapp) {
                     doc['_id'] = context.params['_id'];
                     doc['_rev'] = context.params['_rev'];
                 }
+                var saveDoc = function(doc, success, error) {
+                    couchapp.db.saveDoc(doc, {
+                        success: function(data) {
+                            modal.modal('hide');
+                            activity.trigger(type + '-updated', { item: doc, scanned: scanned });
+                            showNotification('success', type + ' saved');
+                        },
+                        error: function(status, reason, message) {
+                            modal.modal('hide');
+                            showNotification('error', 'Problem saving ' + type + ': ' + message);
+                        }
+                    });
+                };
                 if (type == 'item') {
-                    var cost  = context.params['cost'] ? parseFloat(context.params['cost']) : 0
-                        price = context.params['price'] ? parseFloat(context.params['price']) : 0
-                    doc['barcode']      = context.params['barcode'];
-                    doc['name']         = context.params['name'];
-                    doc['sku']          = context.params['sku'];
-                    doc['description']  = context.params['description'];
-                    doc['cost-cents']   = Money.toCents(cost);
-                    doc['price-cents']  = Money.toCents(price);
-                    doc['is-obsolete']  = (context.params['isobsolete'] == 'on' ? true : false);
+                    context.params['is-obsolete'] = context.params['is-obsolete'] || '';
+                    couchapp.update('item', context.params, {
+                        success: function(newDoc) {
+                            modal.modal('hide');
+                            activity.trigger(type + '-updated', { item: newDoc, scanned: scanned });
+                            showNotification('success', type + ' saved');
+                        },
+                        error: function(status, reason, message) {
+                            modal.modal('hide');
+                            showNotification('error', 'Problem saving ' + type + ': ' + message);
+                        }
+                    });
                 } else if (type == 'customer') {
                     doc['firstname'] = context.params['firstname'];
                     doc['lastname'] = context.params['lastname'];
@@ -1305,6 +1321,7 @@ function runActivity(couchapp) {
                     doc['alternatephonenumber'] = context.params['alternatephonenumber'];
                     doc['email'] = context.params['email'];
                     doc['notes'] = context.params['notes'];
+                    saveDoc(doc, success, error);
                 } else if (type == 'warehouse') {
                     doc['name'] = context.params['name'];
                     doc['priority'] = context.params['priority'];
@@ -1313,20 +1330,21 @@ function runActivity(couchapp) {
                     doc['alternatephonenumber'] = context.params['alternatephonenumber'];
                     doc['email'] = context.params['email'];
                     doc['notes'] = context.params['notes'];
+                    saveDoc(doc, success, error);
                 }
                 $.log(doc);
 
-                couchapp.db.saveDoc(doc, {
-                    success: function(data) {
-                        modal.modal('hide');
-                        activity.trigger(type + '-updated', { item: doc, scanned: scanned });
-                        showNotification('success', type + ' saved');
-                    },
-                    error: function(status, reason, message) {
-                        modal.modal('hide');
-                        showNotification('error', 'Problem saving ' + type + ': ' + message);
-                    }
-                });
+                //couchapp.db.saveDoc(doc, {
+                //    success: function(data) {
+                //        modal.modal('hide');
+                //        activity.trigger(type + '-updated', { item: doc, scanned: scanned });
+                //        showNotification('success', type + ' saved');
+                //    },
+                //    error: function(status, reason, message) {
+                //        modal.modal('hide');
+                //        showNotification('error', 'Problem saving ' + type + ': ' + message);
+                //    }
+                //});
             };
 
             // Remove any errors from the last time they tried to submit

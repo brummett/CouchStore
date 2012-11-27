@@ -1430,14 +1430,41 @@ function runActivity(couchapp) {
             if (context.params.start_key || context.params.end_key) {
                 list_q += '?';
                 if (context.params.start_key) {
-                    params.push('start_key=' + encodeURIComponent(context.params.start_key));
+                    params.push('start_key="' + encodeURIComponent(context.params.start_key)+'"');
                 }
                 if (context.params.end_key) {
-                    params.push('end_key=' + encodeURIComponent(context.params.end_key));
+                    params.push('end_key="' + encodeURIComponent(context.params.end_key)+'"');
                 }
                 list_q += params.join('&');
             }
-            context.$element().load(list_q)
+
+            context.$element().load(list_q, function() {
+                var form = context.$element().find('form#date-selector'),
+                    start_date = form.find('input[name="start_key"]'),
+                    end_date = form.find('input[name="end_key"]');
+
+                form.submit(function(e) {
+                    var start_key = start_date.val(),
+                        end_key = end_date.val(),
+                        url,
+                        params = [];
+
+                    url = context.path.replace(/\?.*$/, '');  // Remove any params already there
+                    if (start_key) {
+                        params.push('start_key='+start_key);
+                    }
+                    if (end_key) {
+                        params.push('end_key='+end_key);
+                    }
+                    if (params.length) {
+                        url += '?' + params.join('&');
+                    }
+                    context.redirect(url);
+
+                    return false;
+                });
+
+            });
 
         });
 

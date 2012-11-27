@@ -13,7 +13,7 @@ function(doc, req) {
         data.barcode = doc.barcode;
         data.cost = doc['cost-cents'] ? Money.toDollars(doc['cost-cents']) : "0.00";
         data.price = doc['price-cents'] ? Money.toDollars(doc['price-cents']) : "0.00";
-        data.isobsolete = doc['is-obsolete'] ? 'checked="checked"' : '';
+        data['is-obsolete'] = doc['is-obsolete'] ? 'checked="checked"' : '';
         data.description = doc.description;
         data['add-edit-title'] = "Edit";
     } else {

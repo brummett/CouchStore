@@ -15,7 +15,9 @@ Order.newFromDoc = function(doc) {
         order.orderType   = function() { return orderType };
 
         return order;
-    } 
+    } else {
+        return undefined;
+    }
 }
 
 // An order's ID starts with 'order-'

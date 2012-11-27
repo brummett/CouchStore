@@ -12,12 +12,6 @@ Make a check-box on the 'make a sale' page that would immediately mark the items
 'is-taxable' on orders needs to be true or false, not 1, 0, "", etc
 'shipping-charge' needs to be an integer number of cents
 
-daily sale summary report:
-order-source    order-number    sku     quantity    price-each  shipping-charge   shipping-cost  warehouse  is-taxable
-one line for each different sku
-final line giving the total charged to the customer
-don't show shipping-charge for 2nd and later shipments
-
 In the receive/sale page, if you scan an item's barcode and later the item's sku, it will
 incorrectly put two line-items in the order table
 

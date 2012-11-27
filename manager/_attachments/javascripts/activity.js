@@ -1300,6 +1300,7 @@ function runActivity(couchapp) {
                     });
                 };
                 if (type == 'item') {
+                    // Boolean options default to false
                     context.params['is-obsolete'] = context.params['is-obsolete'] || '';
                     couchapp.update('item', context.params, {
                         success: function(newDoc) {
@@ -1313,15 +1314,19 @@ function runActivity(couchapp) {
                         }
                     });
                 } else if (type == 'customer') {
-                    doc['firstname'] = context.params['firstname'];
-                    doc['lastname'] = context.params['lastname'];
-                    doc['address'] = context.params['address'];
-                    doc['is-taxable'] = (context.params['istaxable'] == 'on' ? true : false);
-                    doc['phonenumber'] = context.params['phonenumber'];
-                    doc['alternatephonenumber'] = context.params['alternatephonenumber'];
-                    doc['email'] = context.params['email'];
-                    doc['notes'] = context.params['notes'];
-                    saveDoc(doc, success, error);
+                    context.params['is-taxable'] = context.params['is-taxable'] || '';
+                    couchapp.update('customer', context.params, {
+                        success: function(newDoc) {
+                            modal.modal('hide');
+                            activity.trigger(type + '-updated', { item: newDoc, scanned: scanned });
+                            showNotification('success', type + ' saved');
+                        },
+                        error: function(status, reason, message) {
+                            modal.modal('hide');
+                            showNotification('error', 'Problem saving ' + type + ': ' + message);
+                        }
+                    });
+
                 } else if (type == 'warehouse') {
                     doc['name'] = context.params['name'];
                     doc['priority'] = context.params['priority'];

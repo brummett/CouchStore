@@ -11,7 +11,7 @@ function(doc, req) {
         data.firstname = doc.firstname;
         data.lastname = doc.lastname;
         data.address = doc.address;
-        data.istaxable = doc.istaxable ? 'checked="checked"' : '';
+        data['is-taxable'] = doc['is-taxable'] ? 'checked="checked"' : '';
         data.phonenumber = doc.phonenumber;
         data.alternatephonenumber = doc.alternatephonenumber;
         data.email = doc.email;

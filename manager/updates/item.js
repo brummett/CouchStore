@@ -2,8 +2,6 @@
 function(doc,req) {
     var Updates = require('lib/updateHelpers');
 
-    var set_params = Updates.makeParamSetter(doc, req);
-
     if (! doc) {
         // Creating a new thing
         doc = { _id: req.uuid, type: 'item' };
@@ -12,7 +10,7 @@ function(doc,req) {
         throw({forbidden: doc._id+' is not an item'});
     }
 
-    var param;
+    var set_params = Updates.makeParamSetter(doc, req);
 
     // These are all strings
     set_params(['barcode', 'name', 'sku', 'description']);

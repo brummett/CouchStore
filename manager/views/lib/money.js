@@ -23,3 +23,9 @@ exports.isDollarsAndCents = function(dollars) {
     var matches = dollars.toString().match(dollarsAndCentsRegex);
     return (matches && matches.length);
 }
+
+var taxRate = 0.0625;
+exports.taxRate = taxRate;
+exports.afterTax = function(cents) {
+    return (cents + (cents * taxRate));
+}

@@ -1,19 +1,8 @@
 // update item
 function(doc,req) {
-    var Money = require('views/lib/money');
+    var Updates = require('lib/updateHelpers');
 
-    function set_param(name, valueMapper, nameMapper) {
-        // Get params from the get params first, then post params
-        function i(v) { return v; };
-        valueMapper = valueMapper ? valueMapper : i;
-        nameMapper = nameMapper ? nameMapper : i;
-
-        if (name in req.query) {
-            doc[nameMapper(name)] = valueMapper(req.query[name]);
-        } else if (name in req.form) {
-            doc[nameMapper(name)] = valueMapper(req.form[name]);
-        }
-    }
+    var set_param = Updates.makeParamSetter(doc, req);
 
     if (! doc) {
         // Creating a new thing
@@ -35,9 +24,7 @@ function(doc,req) {
     // These are floats to convert to integer cents
     ['cost', 'price'].forEach(function(name) {
         set_param(name,
-                function(value) {
-                    return Money.toCents(parseFloat(value));
-                },
+                Updates.dollars,
                 function(name) {
                     return name+'-cents';
                 });
@@ -46,12 +33,9 @@ function(doc,req) {
     // These are boolean
     ['is-obsolete'].forEach(function(name) {
         set_param(name,
-                function(value) { return !!value } );
+                Updates.boolean);
     });
                 
-
-log('**** updated item');
-log(doc);
 
     return [doc, JSON.stringify(doc)];
 

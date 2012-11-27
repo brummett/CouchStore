@@ -1443,6 +1443,15 @@ function runActivity(couchapp) {
                     start_date = form.find('input[name="start_key"]'),
                     end_date = form.find('input[name="end_key"]');
 
+                start_date.change(function(e) {
+                    var start_key = start_date.val(),
+                        end_key = end_date.val();
+
+                    if (!end_key) {
+                        end_date.val(start_key);
+                    }
+                });
+
                 form.submit(function(e) {
                     var start_key = start_date.val(),
                         end_key = end_date.val(),

@@ -71,7 +71,7 @@ function(doc) {
                     'quantity-price': quan_price
                 });
             }
-            emit(order.date(), shipment_data);
+            emit(shipment.date, shipment_data);
         }
     });
 }

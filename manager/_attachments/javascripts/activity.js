@@ -1328,14 +1328,17 @@ function runActivity(couchapp) {
                     });
 
                 } else if (type == 'warehouse') {
-                    doc['name'] = context.params['name'];
-                    doc['priority'] = context.params['priority'];
-                    doc['address'] = context.params['address'];
-                    doc['phonenumber'] = context.params['phonenumber'];
-                    doc['alternatephonenumber'] = context.params['alternatephonenumber'];
-                    doc['email'] = context.params['email'];
-                    doc['notes'] = context.params['notes'];
-                    saveDoc(doc, success, error);
+                    couchapp.update('warehouse', context.params, {
+                        success: function(newDoc) {
+                            modal.modal('hide');
+                            activity.trigger(type + '-updated', { item: newDoc, scanned: scanned });
+                            showNotification('success', type + ' saved');
+                        },
+                        error: function(status, reason, message) {
+                            modal.modal('hide');
+                            showNotification('error', 'Problem saving ' + type + ': ' + message);
+                        }
+                    });
                 }
                 $.log(doc);
 

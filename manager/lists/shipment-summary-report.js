@@ -8,12 +8,15 @@ function(head, req) {
 
     provides('html', function() {
         var row,
-            rowTemplate = ddoc.templates.partials['shipment-summary-report-shipment'];
+            rowTemplate = ddoc.templates.partials['shipment-summary-report-shipment'],
+            wasRows = false;
 
         send(Mustache.to_html(ddoc.templates['shipment-summary-report'],
                                 { start_key: req.query.start_key, end_key: req.query.end_key }));
 
         while (row = getRow()) {
+            wasRows = true;
+
             row.value['shipping-date'] = row.key;
             row.value['shipping-cost'] = Money.toDollars(row.value['shipping-cost']);
             row.value['total-taxes'] = Money.toDollars(row.value['total-taxes']);
@@ -26,7 +29,7 @@ function(head, req) {
             });
             send(Mustache.to_html(rowTemplate, row.value));
         }
-        return ' ';
+        return wasRows ? ' ' : '<h3>No shipments within that date range';
     });
 
 }

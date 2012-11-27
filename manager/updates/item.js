@@ -2,7 +2,7 @@
 function(doc,req) {
     var Updates = require('lib/updateHelpers');
 
-    var set_param = Updates.makeParamSetter(doc, req);
+    var set_params = Updates.makeParamSetter(doc, req);
 
     if (! doc) {
         // Creating a new thing
@@ -15,26 +15,20 @@ function(doc,req) {
     var param;
 
     // These are all strings
-    ['barcode', 'name', 'sku', 'description'].forEach(function(name) { set_param(name) });
+    set_params(['barcode', 'name', 'sku', 'description']);
 
     // These are integers
-    ['cost-cents', 'price-cents'].forEach(function(name) {
-        set_param(name, parseInt);
-    });
+    set_params(['cost-cents', 'price-cents'], parseInt);
     // These are floats to convert to integer cents
-    ['cost', 'price'].forEach(function(name) {
-        set_param(name,
+    set_params(['cost','price'],
                 Updates.dollars,
                 function(name) {
                     return name+'-cents';
                 });
-    });
 
     // These are boolean
-    ['is-obsolete'].forEach(function(name) {
-        set_param(name,
+    set_params(['is-obsolete'],
                 Updates.boolean);
-    });
                 
 
     return [doc, JSON.stringify(doc)];

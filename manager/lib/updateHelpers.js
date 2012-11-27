@@ -6,15 +6,17 @@ var identity = function(v) { return v };
 
 exports.makeParamSetter = function(doc, req) {
     // Get params from the get params first, then post params
-    return function(name, valueMapper, nameMapper) {
+    return function(nameList, valueMapper, nameMapper) {
         valueMapper = valueMapper ? valueMapper : identity;
         nameMapper = nameMapper ? nameMapper : identity;
 
-        if (name in req.query) {
-            doc[nameMapper(name)] = valueMapper(req.query[name]);
-        } else if (name in req.form) {
-            doc[nameMapper(name)] = valueMapper(req.form[name]);
-        }
+        nameList.forEach(function(name) {
+            if (name in req.query) {
+                doc[nameMapper(name)] = valueMapper(req.query[name]);
+            } else if (name in req.form) {
+                doc[nameMapper(name)] = valueMapper(req.form[name]);
+            }
+        });
     };
 };
 

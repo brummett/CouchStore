@@ -8,6 +8,8 @@
         <span>Date {{shipping-date}}</span>
         <span>Source {{order-source}}</span>
         <span>Warehouse {{warehouse}}</span>
+    </div>
+    <div>
         <span>Shipping Cost ${{shipping-cost}}</span>
     </div>
 
@@ -44,14 +46,14 @@
             <td>${{total-taxes}}</td>
             <td></td>
         </tr>
-    {{/is-first}}
 
-    <tr>
-        <td></td>
-        <td></td>
-        <td>Order Total</td>
-        <td>${{total-charge}}</td>
-        <td></td>
-    </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td>Order Total</td>
+            <td>${{total-charge}}</td>
+            <td></td>
+        </tr>
+    {{/is-first}}
     </table>
 </div>

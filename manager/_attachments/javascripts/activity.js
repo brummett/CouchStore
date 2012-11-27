@@ -2,6 +2,51 @@ function runActivity(couchapp) {
     // return true if running in the Zombie.js test harness
     var isZombie = /Zombie.js/.test(navigator.userAgent);
 
+    // Make a new function for running _update handlers
+    // Adapted from jquery.couch.js code
+    if (! couchapp.update) {
+        function toJSON(obj) {
+            return obj !== null ? JSON.stringify(obj) : null;
+        }
+        function encodeOptions(options) {
+            // Convert an object into form data
+            var buf = [];
+            if (typeof(options) === "object" && options !== null) {
+                for (var name in options) {
+                    if ($.inArray(name, ["error", "success", "beforeSuccess", "akaxStart"]) >= 0)
+                        continue;
+                    var value = options[name];
+                    if ($.inArray(name, ["key", "startkey", "endkey"]) >= 0) {
+                        value = toJSON(value);
+                    }
+                    buf.push(encodeURIComponent(name) + "=" + encodeURIComponent(value));
+                }
+            }
+            return buf.length ? buf.join("&") : "";
+        }
+        couchapp.update = function(name, data, options) {
+            var docid = data._id ? data._id : null;
+            var options = options || {};
+            var type = 'POST';
+            var url = '/' + this.db.name + '/' + this.design.doc_id + '/_update/' + name;
+
+            if (docid) {
+                type = 'PUT';
+                url = url + '/' + docid;
+                delete data._id;
+            }
+            delete data._rev;
+
+            $.ajax( $.extend({  type: type,
+                                url: url,
+                                async: true,
+                                dataType: 'json',
+                                data: data,
+                                contentType: 'application/x-www-form-urlencoded',
+                            }, options));
+        };
+    }
+
     function fade(elt, delay, then) {
         delay = delay === undefined ? 5000 : delay;
         if (isZombie) {

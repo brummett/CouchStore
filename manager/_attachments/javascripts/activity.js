@@ -1418,6 +1418,29 @@ function runActivity(couchapp) {
             });
         });
 
+        this.get('#/report/shipment-summary/', function(context) {
+            context.deactivateOrderWidget();
+            var list_q = '_list/shipment-summary-report/shipments-by-date',
+                params = [];
+
+            // I'd rather the form just submitted itself, but CouchDB requires the start_key and end_key
+            // be JSON encoded strings, which must have quotes around it, and the normal form submission
+            // process won't do that.  So, we need to reformat the start_key and end_key params before
+            // making the list request.
+            if (context.params.start_key || context.params.end_key) {
+                list_q += '?';
+                if (context.params.start_key) {
+                    params.push('start_key=' + encodeURIComponent(context.params.start_key));
+                }
+                if (context.params.end_key) {
+                    params.push('end_key=' + encodeURIComponent(context.params.end_key));
+                }
+                list_q += params.join('&');
+            }
+            context.$element().load(list_q)
+
+        });
+
 
     });
 

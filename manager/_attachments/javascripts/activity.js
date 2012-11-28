@@ -757,44 +757,30 @@ function runActivity(couchapp) {
 
         this.get('#/delete/shipment/:orderId/:shipment', function(context) {
             context.deactivateOrderWidget();
-            var orderNumber = context.params.orderId.substr(6),
+            var docid = context.params.orderId,
+                orderNumber = docid.substr(6),
                 shipment = context.params.shipment;
-            couchapp.db.openDoc(context.params.orderId, {
-                success: gotOrderDoc,
-                error: function() {
-                    showNotification('error', 'Could not find an order with order number ' + orderNumber);
-                }
-            });
 
-            function gotOrderDoc(doc) {
-                if ( (! ( 'shipments' in doc)) || (shipment >= doc.shipments.length)) {
-                    showNotification('error', 'Order ' + orderNumber
-                                                + ' has no shipment ' + shipment);
-                    return;
-                }
-                var message = 'Are you sure you want to delete shipment '
+            var message = 'Are you sure you want to delete shipment '
                                + shipment + ' from order ' + orderNumber;
-                var answer = context.newdialogModal('Delete Shipment',
+            var answer = context.newdialogModal('Delete Shipment',
                                                     message,
                                                     ['Ok', 'Cancel']);
-                answer.done(function(answer) {
-                    if (answer == 'Ok') {
-                        doc.shipments.splice(shipment, 1);  // Remove the shipment
-                        couchapp.db.saveDoc(doc, {
-                            success: function() {
-                                showNotification('success', 'Shipment deleted');
-                            },
-                            error: function(status, reason, message) {
-                                showNotification('error', 'Could not delete shipment: '+message);
-                            }
-                        });
-                    }
-                });
-                answer.always(function() {
-                        window.history.back();
-                });
-            }
-
+            answer.done(function(answer) {
+                if (answer == 'Ok') {
+                    couchapp.update('delete-shipment', { _id: docid, s: shipment }, {
+                        success: function() {
+                            showNotification('success', 'Shipment deleted');
+                        },
+                        error: function(status, reason, message) {
+                            showNotification('error', 'Could not delete shipment: '+message);
+                        }
+                    });
+                }
+            });
+            answer.always(function() {
+                window.history.back();
+            });
         });
 
         // called when a shipment form is submitted to define a shipment

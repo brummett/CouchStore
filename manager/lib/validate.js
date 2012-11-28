@@ -11,7 +11,8 @@ var validators = {
         function(o) { o.require('firstname'); }
     ],
     warehouse: [
-        function(o) { o.require('name'); }
+        function(o) { o.require('name'); },
+        function(o) { o.require('address'); }
     ],
     order: [
         function(o) { o.require('order-type'); },

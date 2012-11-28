@@ -1240,8 +1240,7 @@ function runActivity(couchapp) {
         });
 
         this.post('#/edit/(.*)/(.*)', function(context) {
-            var validationError = 0,
-                type = context.params['splat'][0],
+            var type = context.params['splat'][0],
                 this_id = context.params['splat'][1],
                 modal = $('.modal');
 
@@ -1258,39 +1257,7 @@ function runActivity(couchapp) {
                     .after('<span class="help-inline label label-important"><i class="icon-exclamation-sign icon-white"></i>&nbsp;'
                             + err.reason + '</span>');
             };
-            var markError = function(field, message) {
-                var fieldset = $('fieldset#' + field + '-field');
-                fieldset.addClass('error');
-                $('[name=' + field + ']', fieldset).after('<span class="help-inline label label-important"><i class="icon-exclamation-sign icon-white"></i>&nbsp;'
-                                            + message + '</span>');
-            };
-            var checkFieldHasValue = function(field) {
-                var value = context.params[field];
-                if ((value == undefined) || (value == '')) {
-                    markError(field, 'Required');
-                    validationError = 1;
-                }
-            };
-            var checkDuplicateField = function(field, callback) {
-                var value = context.params[field];
-                couchapp.view(type + 's-by-'+field, {
-                    key: value,
-                    success: function(data) {
-                        if (data.rows.length && data.rows[0].id != this_id) {
-                            // Found an item with the form's sku/barcode and it's a different doc id
-                            markError(field, 'Duplicate');
-                            validationError = 1;
-                        }
-                        callback();
-                    }
-                });
-            };
             var saveItem = function(context) {
-                if (validationError) {
-                    $.log('not saving because of errors');
-                    return false;
-                }
-                var doc = { type: type };
                 // scanned is used in the receive/sale order page when an unknown
                 // item is scanned, the user brings up the edit item form and changes
                 // the barcode.  This retains the original scanned thing
@@ -1304,7 +1271,6 @@ function runActivity(couchapp) {
                 } else if (type == 'warehouse') {
                     // nothing special for warehouses
                 }
-                $.log(doc);
 
                 couchapp.update(type, context.params, {
                     success: function(newDoc) {
@@ -1324,10 +1290,14 @@ function runActivity(couchapp) {
 
             var savable = jQuery.Deferred();
             savable.done(function() { saveItem(context) });
-            if (type == 'item') {
-                try { validator.validateAll(noteError); }
-                catch(err) { savable.reject()};
 
+            try { validator.validateAll(noteError) }
+            catch(err) { savable.reject() };
+
+            if (savable.state() === 'rejected') {
+                return;
+            }
+            if (type == 'item') {
                 var checkdupsCount = 2;
                 ['barcode','sku'].forEach(function(param) {
                     validator.unique(param)
@@ -1336,22 +1306,23 @@ function runActivity(couchapp) {
                             savable.reject();
                         })
                         .done(function() {
-                            if (--checkdupsCount) {
+                            if (--checkdupsCount === 0) {
                                 savable.resolve();
                             }
                         });
                 });
                        
             } else if (type == 'customer') {
-                checkFieldHasValue('firstname');
-                checkFieldHasValue('lastname');
-                saveItem(context);
+                savable.resolve();
             } else if (type == 'warehouse') {
-                checkFieldHasValue('name');
-                checkFieldHasValue('address');
-                checkDuplicateField('name',
-                    function() { saveItem(context) }
-                );
+                validator.unique('name')
+                    .fail(function(err) {
+                        noteError(err);
+                        savable.reject();
+                    })
+                    .done(function() {
+                        savable.resolve();
+                    });
             }
                 
         });

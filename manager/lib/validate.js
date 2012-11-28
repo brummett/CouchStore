@@ -5,10 +5,6 @@ function Validator(newDoc, oldDoc, userCtx) {
 
     var that = this;
 
-    if (toJSON === undefined) {
-        toJSON = function(obj) { JSON.stringify(obj) };
-    }
-
     this.require = function(field, message) {
         if (newDoc[field] === undefined)
             throw({ forbidden: (message || ('Document must have a "'+field+'" value')),
@@ -24,7 +20,8 @@ function Validator(newDoc, oldDoc, userCtx) {
     };
 
     this.unchanged = function(field, message) {
-        if (oldDoc && toJSON(oldDoc[field]) !== toJSON(newDoc[field]))
+        if (oldDoc && JSON.stringify(oldDoc[field]) !== JSON.stringify(newDoc[field])) {
+            that.isValid = false;
             throw({ forbidden: (message || ('Field '+field+' cannot be changed')),
                     field: field,
                     reason: 'Changed' });

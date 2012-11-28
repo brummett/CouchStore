@@ -569,6 +569,9 @@ function runActivity(couchapp) {
                             success: function(warehouseDoc) {
                                 orderDoc['warehouse-name'] = warehouseDoc.name;
                                 context.saveOrder(orderDoc, whenDone);
+                            },
+                            error: function(status, reason, message) {
+                                showNotification(error, 'There was no warehouse with document ID "'+orderDoc['warehouse-id']);
                             }
                         });
                     }

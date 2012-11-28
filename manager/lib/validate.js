@@ -6,17 +6,21 @@ function Validator(newDoc, oldDoc, userCtx) {
     var that = this;
 
     this.require = function(field, message) {
-        if (newDoc[field] === undefined)
+        if ((newDoc[field] == undefined) || (newDoc[field] == '')) {
+            that.isValid = false;
             throw({ forbidden: (message || ('Document must have a "'+field+'" value')),
                     field: field,
                     reason: 'Required' });
+        }
     };
 
     this.exists = function(field, message) {
-        if (! (field in newDoc))
+        if (! (field in newDoc)) {
+            that.isValid = false;
             throw({ forbidden: (message || ('Document must have a '+field+' field')),
                     field: field,
                     reason: 'Required' });
+        }
     };
 
     this.unchanged = function(field, message) {
@@ -25,11 +29,48 @@ function Validator(newDoc, oldDoc, userCtx) {
             throw({ forbidden: (message || ('Field '+field+' cannot be changed')),
                     field: field,
                     reason: 'Changed' });
+        }
     };
 
     this.enforce = function(bool, message) {
-        if (!bool)
+        if (!bool) {
+            that.isValid = false;
             throw({ forbidden: (message || 'Boolean assertion failed') });
+        }
+    };
+
+    // Needs JQuery and the couchapp attribute set
+    this.unique = function(field, message) {
+        if ((jQuery === undefined) || (that.couchapp === undefined)) {
+            return true;
+        }
+
+        var d = jQuery.Deferred();
+
+        var value = newDoc[field];
+        that.couchapp.view((newDoc.type)+'s-by-'+field, {
+            key: value,
+            success: function(data) {
+                if (data.rows.length === 0) {
+                    d.resolve();
+                } else {
+                    data.rows.forEach(function(row) {
+                        if (row.id !== newDoc._id) {
+                            d.reject({ forbidden: (message || (field + ' must be unique for ' + newDoc.type + ' documents')),
+                                        field: field,
+                                        reason: 'Duplicate' });
+                        }
+                    });
+                    d.resolve();
+                }
+            },
+            error: function(status, reason, message) {
+                d.reject({ forbidden: message,
+                            field: field,
+                            reason: 'Duplicate check failed'});
+            }
+        });
+        return d.promise();
     };
 
 
@@ -41,6 +82,7 @@ function Validator(newDoc, oldDoc, userCtx) {
         for (barcode in newDoc.items) {
             // quantities must be non-zero
             if (! newDoc.items[barcode]) {
+                that.isValid = false;
                 throw({ forbidden: 'Quantity for barcode ' + barcode + ' must be non-zero'});
             }
 
@@ -48,6 +90,7 @@ function Validator(newDoc, oldDoc, userCtx) {
             for (i = 0; i < fields.length; i++) {
                 other = fields[i];
                 if (! (barcode in newDoc[ other ])) {
+                    that.isValid = false;
                     throw({ forbidden: 'Barcode ' + barcode + ' appears in the quantity list but not the ' + other + ' list'});
                 }
             }
@@ -57,6 +100,7 @@ function Validator(newDoc, oldDoc, userCtx) {
             other = fields[i];
             for (barcode in newDoc[ other ]) {
                 if (! (barcode in newDoc.items)) {
+                    that.isValid = false;
                     throw({ forbidden: 'Barcode ' + barcode + ' appears in the ' + other + ' list but not the quantity list'});
                 }
             }
@@ -82,6 +126,7 @@ function Validator(newDoc, oldDoc, userCtx) {
         for (barcode in newDoc['item-costs']) {
             // item-costs must be an integer (cents)
             if (Math.round(newDoc['item-costs'][barcode]) != newDoc['item-costs'][barcode]) {
+                that.isValid = false;
                 throw({ forbidden: 'Cost for barcode ' + barcode + ' must be an integer number of cents'});
             }
         }
@@ -167,6 +212,7 @@ function Validator(newDoc, oldDoc, userCtx) {
     this.validate = function() {
         var validator = that[ validators[ newDoc.type ] ];
         validator();
+        that.isValid = true;
     };
 }
 

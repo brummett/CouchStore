@@ -4,6 +4,17 @@ var Money = require('views/lib/money');
 
 var identity = function(v) { return v };
 
+var valueFor = function(name, req) {
+    if (name in req.query) {
+        return req.query[name];
+    } else if (name in req.form) {
+        return req.form[name];
+    } else {
+        return null;
+    }
+};
+exports.valueFor = valueFor;
+
 exports.makeParamSetter = function(doc, req) {
     // Get params from the get params first, then post params
     return function(nameList, valueMapper, nameMapper) {
@@ -11,10 +22,9 @@ exports.makeParamSetter = function(doc, req) {
         nameMapper = nameMapper ? nameMapper : identity;
 
         nameList.forEach(function(name) {
-            if (name in req.query) {
-                doc[nameMapper(name)] = valueMapper(req.query[name]);
-            } else if (name in req.form) {
-                doc[nameMapper(name)] = valueMapper(req.form[name]);
+            var value = valueFor(name, req);
+            if (value !== null) {
+                doc[nameMapper(name)] = valueMapper(value);
             }
         });
     };

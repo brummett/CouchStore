@@ -119,7 +119,7 @@ function runActivity(couchapp) {
                 $.couch.session({
                     success: function(session) {
                         if (session.userCtx && session.userCtx.name) {
-                            var prevName = loggedInUser;
+                            var prevName = loggedInUser.name;
                             loggedInUser = session.userCtx;
                             if (! loggedInUser || (loggedInUser.name != prevName)) {
                                 // changed from loggout out to logged in, or switched user
@@ -914,7 +914,7 @@ function runActivity(couchapp) {
                 remove_on_error.forEach(function(orderDoc) {
                     couchapp.db.removeDoc(orderDoc);
                 });
-                showNotification('error', lessage);
+                showNotification('error', message);
             });
 
             // Start the process!

@@ -1,8 +1,6 @@
 Switch to using sammy.nested_params for parsing all the scan-*-quan, scan-*-name, etc
 params from orders
 
-The Make a Shipment page: the dropdown box has goofy numbers of items!?
-
 Eliminate warehouse-id from the order docs and just store warehouse-name instead
 
 Make tests!

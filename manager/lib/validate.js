@@ -1,6 +1,43 @@
 // validate.js
 // Helpers for validating documents
 
+var validators = {
+    item: [
+        function(o) { o.require('barcode'); },
+        function(o) { o.require('name'); },
+        function(o) { o.require('sku'); }
+    ],
+    customer: [
+        function(o) { o.require('firstname'); }
+    ],
+    warehouse: [
+        function(o) { o.require('name'); }
+    ],
+    order: [
+        function(o) { o.require('order-type'); },
+        function(o) { o.orderRequireCustomerName() },
+        function(o) { o.require('date'); },
+        function(o) { o.require('warehouse-name'); },
+        function(o) { o.require('items'); },
+        function(o) { o.require('item-names'); },
+        function(o) { o.require('item-skus'); },
+        function(o) { o.unchanged('date'); },
+        function(o) { o.validateOrderItemCosts(); },
+        function(o) { o.validateShipments() }
+    ],
+    inventory: [
+        function(o) { o.require('date'); },
+        function(o) { o.require('warehouse-name'); },
+        function(o) { o.require('warehouse-id'); },
+        function(o) { o.require('items'); },
+        function(o) { o.require('item-names'); },
+        function(o) { o.require('item-skus'); },
+        function(o) { o.unchanged('date'); },
+        function(o) { o.validate_items_against(['item-names', 'item-skus']); }
+    ]
+};
+
+
 function Validator(newDoc, oldDoc, userCtx) {
 
     var that = this;
@@ -107,22 +144,14 @@ function Validator(newDoc, oldDoc, userCtx) {
         }
     }
 
-    this.validateOrder = function() {
-        var barcode;
-
-        that.require('order-type');
+    this.orderRequireCustomerName = function() {
         if (newDoc['order-type'] != 'warehouse-transfer') {
             // warehouse transfers don't have customers
             that.require('customer-name');
         }
-        that.require('date');
-        that.require('warehouse-name');
-        that.require('items');
-        that.require('item-names');
-        that.require('item-skus');
+    };
 
-        that.unchanged('date');
-
+    this.validateOrderItemCosts = function() {
         for (barcode in newDoc['item-costs']) {
             // item-costs must be an integer (cents)
             if (Math.round(newDoc['item-costs'][barcode]) != newDoc['item-costs'][barcode]) {
@@ -141,26 +170,6 @@ function Validator(newDoc, oldDoc, userCtx) {
             that.require('item-costs');
             that.validate_items_against(['item-costs', 'item-names', 'item-skus']);
         }
-
-        if ('shipments' in newDoc) {
-            that.validateShipments();
-        }
-    };
-
-    this.validateItem = function() {
-        that.validators = [
-            function() { that.require('barcode'); },
-            function() { that.require('name'); },
-            function() { that.require('sku'); }
-        ];
-    };
-
-    this.validateCustomer = function() {
-        that.require('firstname');
-    };
-
-    this.validateWarehouse = function() {
-        that.require('name');
     };
 
     this.validateShipments = function() {
@@ -168,6 +177,10 @@ function Validator(newDoc, oldDoc, userCtx) {
             i,
             thisShipment,
             count = {};
+
+        if (! ('shipments' in newDoc)) {
+            return true;
+        }
 
         for (barcode in newDoc.items) {
             count[barcode] = Math.abs(newDoc.items[barcode]);
@@ -191,34 +204,20 @@ function Validator(newDoc, oldDoc, userCtx) {
     };
 
     this.validateInventory = function() {
-        that.require('date');
-        that.require('warehouse-name');
-        that.require('warehouse-id');
-        that.require('items');
-        that.require('item-names');
-        that.require('item-skus');
-
-        that.unchanged('date');
-
-        that.validate_items_against(['item-names', 'item-skus']);
-    };
-
-    var validators = {
-        item: 'validateItem',
-        customer: 'validateCustomer',
-        warehouse: 'validateWarehouse',
-        order: 'validateOrder',
-        inventory: 'validateInventory'
-    };
+   };
 
     this.validate = function() {
         if ((that.validators === undefined) || (that.validators.length === 0)) {
-            var initializer = that[ validators[ newDoc.type ] ];
-            initializer();
+            // Copy from the outer validators list for the appropriate type
+            that.validators = [];
+            validators[newDoc.type].forEach(function(f) {
+                that.validators.push(f);
+            });
         }
 
         while(that.validators.length) {
-            that.validators.shift().call();
+            var f = that.validators.shift();
+            f(that);
         }
         if (that.isValid === undefined) {
             that.isValid = true;

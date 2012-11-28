@@ -788,74 +788,30 @@ function runActivity(couchapp) {
 
         // called when a shipment form is submitted to define a shipment
         this.post('#/shipment/', function(context) {
-            var orderId = 'order-' + context.params['order-number'];
+            var orderId = 'order-' + context.params['order-number'],
+                params = $.extend({ _id: orderId, s: context.params['shipment'] }, context.params);
 
-            couchapp.db.openDoc(orderId, {
-                success: gotOrderDoc,
-                error: function() {
-                    showNotification('error',
-                                    'There is no order with order-number ' + context.params['order-number']);
-                }
-            });
-            
-            function gotOrderDoc(doc) {
-                var items = {},
-                    thisShipment,
-                    prop,
-                    matches;
-                // Go through the params and look for quantities
-                for (prop in context.params) {
-                    matches = /scan-(\d+)-quan/.exec(prop);
-                    if (matches && matches.length) {
-                        items[matches[1]] = parseInt(context.params[prop]);
-                        continue;
-                    }
-                }
-                doc.shipments = doc.shipments || [];
-                doc.items = doc.items || {};
+            delete params['order-number'];
+            delete params['shipment'];
 
-                if (context.params.shipment) {
-                    // Altering a previously defined shipment
-                    thisShipment = doc.shipments[context.params.shipment];
-                    thisShipment.date = context.params['date'];
-                    thisShipment.items = items;
-                } else {
-                    // Saving a new shipment
-                    thisShipment = { date: context.params['date'], items: items };
-                    doc.shipments.push(thisShipment);
-                }
-
-                if (thisShipment.box) {
-                    saveOrderDoc(doc, thisShipment.box);
-                } else {
-                    context.getNextBoxId()
-                            .then( function(boxID) { addBoxIdToLatestShipment(doc, boxID) });
-                }
-            }
-
-            function addBoxIdToLatestShipment(doc, boxID) {
-                doc.shipments[ doc.shipments.length - 1 ].box = boxID;
-                saveOrderDoc(doc, boxID);
-            }
-
-            function saveOrderDoc(doc, boxID) {
-                couchapp.db.saveDoc(doc, {
-                    success: function() {
-                        context.dialogModal('Shipment saved', 'Shipment for order ' + orderId
-                                            + ' is box ' + boxID)
-                            .then(function() {
-                                showNotification('success', 'Shipment saved');
-                                context.redirect('#/shipment/');
-                            });
-                    },
-                    error: function(status, reason, message) {
-                            showNotification('error', 'Could not save shipment: ' + message);
-                    }
+            context.getNextBoxId()
+                .then( function(boxID) {
+                    params.box = boxID;
+                    couchapp.update('shipment', params, {
+                        success: function() {
+                            context.dialogModal('Shipment saved', 'Shipment for order ' + orderId
+                                                + ' is box ' + boxID)
+                                .then(function() {
+                                    showNotification('success', 'Shipment saved');
+                                    context.redirect('#/shipment/');
+                                });
+                        },
+                        error: function(status, reason, message) {
+                                showNotification('error', 'Could not save shipment: ' + message);
+                        }
+                    });
                 });
-            }
-                
         });
-
 
         // Presents a form to the user to start an inventory correction
         this.get('#/edit/inventory/(.*)', function(context) {

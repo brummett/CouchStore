@@ -43,6 +43,34 @@ Order.prototype.quantityForBarcode = function(barcode) {
     return this.__doc.items[barcode];
 }
 
+Order.prototype.unshippedQuantityForBarcode = function(barcode) {
+    var count = this.quantityForBarcode(barcode);
+    if (count !== null) {
+        if (this.orderType() === 'sale') {
+            // For sale orders, the quantity is negative
+            count = Math.abs(count);
+        }
+
+        if (this.hasShipments()) {
+            // shipment counts are positive
+            this.shipments().forEach(function(shipment) {
+                for (var barcode in shipment.items) {
+                    count -= shipment.items[barcode];
+                }
+            });
+        }
+    }
+    return count;
+}
+
+Order.prototype.unshippedQuantity = function() {
+    var count = 0;
+    for (var barcode in this.__doc.items) {
+        count += this.unshippedQuantityForBarcode(barcode);
+    }
+    return count;
+}
+
 Order.prototype.nameForBarcode = function(barcode) {
     if (!('item-names' in this.__doc)) return null;
     return this.__doc['item-names'][barcode];

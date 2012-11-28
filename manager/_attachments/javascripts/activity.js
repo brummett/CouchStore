@@ -901,68 +901,67 @@ function runActivity(couchapp) {
 
         this.post('#/inventory-commit/', function(context) {
             var todaysDate = context.todayAsString(),
-                stop_from_errors = false,
-                is_last_doc = false,
-                remove_on_error = [],   // In case of problems, remove these already-saved docs
-                d = $.Deferred();
+                remove_on_error = [],  // In case of problems, remove these already-saved corrections
+                done = jQuery.Deferred();
 
-            d.done(function() {
+            couchapp.list('proposed-inventory-correction', 'inventory-by-permanent-warehouse-barcode', {
+                group: true,
+                success: processRows,
+                error: function(status, reason, message) {
+                    done.reject('Cannot get inventory correnctions: '+message);
+                }
+            });
+
+            done.done(function() {
                 showNotification('success', 'Inventory changes applied successfully');
                 context.redirect('#/');
             });
-            d.fail(function(message) {
+            done.fail(function(message) {
                 remove_on_error.forEach(function(orderDoc) {
                     couchapp.db.removeDoc(orderDoc);
                 });
                 showNotification('error', message);
             });
 
-            // Start the process!
-            couchapp.list('proposed-inventory-correction', 'inventory-by-permanent-warehouse-barcode', {
-                group: true,
-                success: processRows,
-                error: function(status, reason, message) {
-                    stop_from_errors = true;
-                    d.reject('Cannot get inventory corrections: '+message);
-                }
-            });
             function processRows(warehouses) {
-                var warehouse,
-                    barcode,
-                    thisItem,
-                    invDoc;
+                var warehouse, barcode, updateParams,
+                    warehouseCount = 0;
+
+                for (warehouse in warehouses) {
+                    warehouseCount++;
+                }
 
                 // FIXME - we could probably move this conversion code into the list
                 for (warehouse in warehouses) {
-                    invDoc = {
+                    updateParams = {
                         _id: 'order-' + warehouse + '-inv-' + todaysDate,
-                        type: 'order',
-                        'order-type': 'inventory-correction',
-                        date: todaysDate,
-                        'warehouse-name': warehouse,
-                        'customer-name': loggedInUser,
-                        items: {},
-                        'item-skus': {},
-                        'item-names': {}
-                    };
+                            date: todaysDate,
+                            'warehouse-name': warehouse,
+                            'customer-name': loggedInUser.name,
+                        };
                     for (barcode in warehouses[warehouse]) {
                         thisItem = warehouses[warehouse][barcode];
-                        invDoc.items[barcode] = thisItem.count;
-                        invDoc['item-skus'][barcode] = thisItem.sku;
-                        invDoc['item-names'][barcode] = thisItem.name;
+                        updateParams['scan-'+barcode+'-quan'] = thisItem.count;
+                        updateParams['scan-'+barcode+'-sku']  = thisItem.sku;
+                        updateParams['scan-'+barcode+'-name'] = thisItem.name;
                     }
-                    if (stop_from_errors) return;
-                    couchapp.db.saveDoc(invDoc, {
-                        error: function(status, reason, message) {
-                            stop_from_errors = true;
-                            d.reject('Cannot save inventory correction for '+warehouse+': '+message);
-                        }
-                    });
+                    (function(warehouse) {
+                        couchapp.update('inventory-correction', updateParams, {
+                            success: function(doc) {
+                                remove_on_error.push(doc);
+                                if (--warehouseCount === 0) {
+                                    removePartialInventories();
+                                }
+                            },
+                            error: function(status, reason, message) {
+                                done.reject('Cannot save inventory correction for '+warehouse+': '+message);
+                            }
+                        });
+                    })(warehouse);
                 }
-                removePartialInventories();
-            }
+            } // end processRows
 
-            var left_to_delete = 0;
+            var left_to_delete = -1;
             function removePartialInventories() {
                 couchapp.db.allDocs({
                     startkey: 'inv-',
@@ -972,26 +971,21 @@ function runActivity(couchapp) {
                         data.rows.forEach(removeThisPartialInventory);
                     },
                     error: function(status, reason, message) {
-                        stop_from_errors = true;
-                        d.reject('Cannot get list of partial inventories: '+message);
+                        done.reject('Cannot get list of partial inventories: '+message);
                     }
                 });
             }
 
             function removeThisPartialInventory(row) {
-                if (stop_from_errors) return;
-
                 var remove = { _id: row.id, _rev: row.value.rev };
                 couchapp.db.removeDoc(remove, {
                     success: function() {
-                        left_to_delete--;
-                        if (left_to_delete <= 0) {
-                            d.resolve();
+                        if (--left_to_delete === 0) {
+                            done.resolve();
                         }
                     },
                     error: function(status, reason, message) {
-                        stop_from_errors = true;
-                        d.reject('Cannot remove partial inventory doc '+row.id);
+                        done.reject('Cannot remove partial inventory doc '+row.id);
                     }
                 });
             }

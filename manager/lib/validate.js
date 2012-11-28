@@ -29,7 +29,6 @@ var validators = {
     inventory: [
         function(o) { o.require('date'); },
         function(o) { o.require('warehouse-name'); },
-        function(o) { o.require('warehouse-id'); },
         function(o) { o.require('items'); },
         function(o) { o.require('item-names'); },
         function(o) { o.require('item-skus'); },
@@ -167,7 +166,7 @@ function Validator(newDoc, oldDoc, userCtx) {
             that.validate_items_against(['item-names', 'item-skus']);
         } else {
             that.require('customer-id');
-            that.require('warehouse-id');
+            that.require('warehouse-name');
             that.require('item-costs');
             that.validate_items_against(['item-costs', 'item-names', 'item-skus']);
         }

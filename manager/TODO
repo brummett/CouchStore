@@ -1,8 +1,6 @@
 Switch to using sammy.nested_params for parsing all the scan-*-quan, scan-*-name, etc
 params from orders
 
-Eliminate warehouse-id from the order docs and just store warehouse-name instead
-
 Make tests!
 
 Make a check-box on the 'make a sale' page that would immediately mark the items as shipped

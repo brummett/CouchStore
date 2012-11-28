@@ -343,7 +343,7 @@ function runActivity(couchapp) {
             },
  
 
-            fixupOrderWarehouseSelect: function(warehouseList, selectedWarehouseId) {
+            fixupOrderWarehouseSelect: function(warehouseList, selectedWarehouseName) {
                 // The order show functions don't have access to all the warehouse docs, and
                 // the select input is empty.  After we get the order's HTML, we need to fill
                 // in the warehouse select
@@ -351,28 +351,28 @@ function runActivity(couchapp) {
                     warehouseSelect = $('select.warehouse-picker');
 
                 $.each(warehouseList, function(idx, warehouse) {
-                    html += '<option value="' + warehouse.id + '">' + warehouse.value + '</option>';
+                    html += '<option value="' + warehouse.value + '">' + warehouse.value + '</option>';
                 });
                 warehouseSelect.append(html);
 
                 if (typeof(selectedWarehouseId) === 'Array') {
-                    selectedWarehouseId.forEach(function(warehouseId, idx) {
-                        warehouseId && warehouseId.done(
-                            function(warehouseId) {
-                                warehouseSelect.get(idx).val(warehouseId);
+                    selectedWarehouseName.forEach(function(warehouseName, idx) {
+                        warehouseName && warehouseName.done(
+                            function(warehouseName) {
+                                warehouseSelect.get(idx).val(warehouseName);
                             }
                         );
                     });
                 } else {
-                    selectedWarehouseId && selectedWarehouseId.done(
-                        function(warehouseIds) {
-                            var setSelect = function(warehouseId, idx) {
-                                $(warehouseSelect.get(idx)).val(warehouseId);
+                    selectedWarehouseName && selectedWarehouseName.done(
+                        function(warehouseNames) {
+                            var setSelect = function(warehouseName, idx) {
+                                $(warehouseSelect.get(idx)).val(warehouseName);
                             };
-                            if ($.isArray(warehouseIds)) {
-                                warehouseIds.forEach(setSelect);
+                            if ($.isArray(warehouseNames)) {
+                                warehouseNames.forEach(setSelect);
                             } else {
-                                setSelect(warehouseIds, 0);
+                                setSelect(warehouseNames, 0);
                             }
                         }
                     );
@@ -567,8 +567,8 @@ function runActivity(couchapp) {
                 }
                 
                 // Copy some params to the order doc directly
-                var copy_props =  ['date','customer-name','customer-id','warehouse-id',
-                                    'source-warehouse-id',
+                var copy_props =  ['date','customer-name','customer-id','warehouse-name',
+                                    'source-warehouse-name',
                                     'shipping-service-level', 'order-source','is-taxable','_rev',
                                     'shipping-charge','section', 'customer-address'],
                     i;
@@ -583,36 +583,11 @@ function runActivity(couchapp) {
                 // Find out what the warehouse's name is given its ID
                 var whenDone = $.Deferred();
 
-                function getWarehouseAndSaveOrder() {
-                    var getWarehouseName = function() {
-                        couchapp.db.openDoc(orderDoc['warehouse-id'], {
-                            success: function(warehouseDoc) {
-                                orderDoc['warehouse-name'] = warehouseDoc.name;
-                                context.saveOrder(orderDoc, whenDone);
-                            },
-                            error: function(status, reason, message) {
-                                showNotification(error, 'There was no warehouse with document ID "'+orderDoc['warehouse-id']);
-                            }
-                        });
-                    }
-    
-                    if (orderDoc['order-type'] === 'warehouse-transfer') {
-                        couchapp.db.openDoc(orderDoc['source-warehouse-id'], {
-                            success: function(srcWarehouseDoc) {
-                                orderDoc['source-warehouse-name'] = srcWarehouseDoc.name;
-                                getWarehouseName();
-                            }
-                        });
-                    } else {
-                        getWarehouseName();
-                    }
-                };
-
                 if (keep_costs) {
                     context.updateOrdersItems(orderDoc)
-                        .then( getWarehouseAndSaveOrder );
+                        .then( function() { context.saveOrder(orderDoc, whenDone) });
                 } else {
-                    getWarehouseAndSaveOrder();
+                    context.saveOrder(orderDoc, whenDone);
                 }
                 
                 return whenDone.promise();
@@ -1010,9 +985,9 @@ function runActivity(couchapp) {
                     couchapp.db.openDoc(order_id, {
                         success: function(doc) {
                             if (doc['order-type'] === 'warehouse-transfer') {
-                                d.resolve([ doc['source-warehouse-id'], doc['warehouse-id']]);
+                                d.resolve([ doc['source-warehouse-name'], doc['warehouse-name']]);
                             } else {
-                                d.resolve(doc['warehouse-id']);
+                                d.resolve(doc['warehouse-name']);
                             }
                         }
                     });
@@ -1081,8 +1056,8 @@ function runActivity(couchapp) {
                 quantity_fixup = function(n) { return n };  // transfer items are positive
                 next_url = '#/';   // Go back to the start page
                 keep_costs = false;
-                order_number = order_number || 'xfer-' + params['source-warehouse-id']
-                                                + '-' + params['warehouse-id']
+                order_number = order_number || 'xfer-' + params['source-warehouse-name']
+                                                + '-' + params['warehouse-name']
                                                 + '-' + params['date'];
             } else {
                 showNotification('error', 'Unknown type of order: '+order_type);

@@ -106,14 +106,6 @@ Order.prototype.warehouseName = function(name) {
     return this.__doc['warehouse-name'];
 }
 
-Order.prototype.warehouseId = function(id) {
-    if (id !== undefined) {
-        // Maybe we should have a way to link the name and warehouse id?
-        this.__doc['warehouse-id'] = id;
-    }
-    return this.__doc['warehouse-id'];
-}
-
 Order.prototype.customerName = function(name) {
     if (name !== undefined) {
         // Maybe we should have a way to link the name and customer id?

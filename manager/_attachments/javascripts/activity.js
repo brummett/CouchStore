@@ -678,29 +678,24 @@ function runActivity(couchapp) {
 
         this.post('#/confirm-shipment/:orderNumber/:shipment', function(context) {
             var params = context.params,
-                cost = Money.toCents(params['shipping-cost']);
+                cost = Money.toCents(params['shipping-cost']),
+                docid = 'order-'+params.orderNumber;
 
-            couchapp.db.openDoc('order-' + params.orderNumber, {
-                success: function(doc) {
-                    doc.shipments[params.shipment]['tracking-number']   = params['tracking-number'];
-                    doc.shipments[params.shipment]['shipping-cost']     = cost;
-                    doc.shipments[params.shipment]['weight']            = params['weight'];
-                    doc.shipments[params.shipment]['size']              = params['size'];
-
-                    couchapp.db.saveDoc(doc, {
-                        success: function() {
-                            showNotification('success', 'Shipment confirmed');
-                            context.redirect('#/confirm-shipment/');
-                        },
-                        error: function(status, reason, message) {
+            couchapp.update('confirm-shipment', {   _id: docid,
+                                                    s: params.shipment,
+                                                    'tracking-number': params['tracking-number'],
+                                                    'shipping-cost': cost,
+                                                    'weight': params.weight,
+                                                    'size':  params.size },
+                        {
+                            success: function() {
+                                showNotification('success', 'Shipment confirmed');
+                                context.redirect('#/confirm-shipment/');
+                            },
+                            error: function(status, reason, message) {
                                 showNotification('error', 'Could not confirm shipment: ' + message);
-                        }
-                    });
-                },
-                error: function( status, reason, message) {
-                                showNotification('error', 'There is no order number ' + orderNumber);
-                }
-            });
+                            }
+                        });
         });
 
         // When called without an order-number, it presents a list of sale orders with unshipped items

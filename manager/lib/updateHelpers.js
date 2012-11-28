@@ -30,6 +30,37 @@ exports.makeParamSetter = function(doc, req) {
     };
 };
 
+// Given typical form data for an order, extract the quantities, names, etc
+// from the data
+exports.extractItemInfo = function(props) {
+
+    var getPatternFrom = function(regex, props, valueMapper) {
+        var prop, matches,
+            data = {};
+
+        if (! valueMapper) {
+            valueMapper = function(v) { return v };
+        }
+        for (prop in props) {
+            matches = regex.exec(prop);
+            if (matches && matches.length) {
+                data[matches[1]] = valueMapper(props[prop]);
+            }
+        }
+        return data;
+    };
+
+    var quantities  = getPatternFrom(/scan-(.*?)-quan/, props, parseInt),
+        costs       = getPatternFrom(/scan-(.*?)-cost/, props, function(v) { Money.toCents(v) });
+        names       = getPatternFrom(/scan-(.*?)-name/, props);
+        skus        = getPatternFrom(/scan-(.*?)-sku/, props);
+
+    return {    quantities: quantities,
+                costs: costs,
+                names: names,
+                skus: skus };
+};
+
 exports.boolean = function (v) { return !!v };
 exports.integer = function(v) { return parseInt(v); }
 exports.float = function(v) { return parseFloat(v); };

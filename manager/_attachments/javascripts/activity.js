@@ -1245,6 +1245,19 @@ function runActivity(couchapp) {
                 this_id = context.params['splat'][1],
                 modal = $('.modal');
 
+            var Validator = couchapp.require('lib/validate');
+            context.params.type = type;
+            var validator = new Validator.Validator(context.params);
+
+            validator.couchapp = couchapp;
+
+            var noteError = function(err) {
+                var fieldset = $('fieldset#' + err.field + '-field');
+                fieldset.addClass('error');
+                $('[name=' + err.field + ']', fieldset)
+                    .after('<span class="help-inline label label-important"><i class="icon-exclamation-sign icon-white"></i>&nbsp;'
+                            + err.reason + '</span>');
+            };
             var markError = function(field, message) {
                 var fieldset = $('fieldset#' + field + '-field');
                 fieldset.addClass('error');
@@ -1309,16 +1322,39 @@ function runActivity(couchapp) {
             // Remove any errors from the last time they tried to submit
             $('fieldset.error span.help-inline', context.$element()).remove();
 
+            var savable = jQuery.Deferred();
+            savable.done(function() { saveItem(context) });
             if (type == 'item') {
-                checkFieldHasValue('sku');
-                checkFieldHasValue('barcode');
-                checkFieldHasValue('name');
-
-                checkDuplicateField('barcode',
-                    function() { checkDuplicateField('sku',
-                        function() { saveItem(context) }
-                    )}
-                );
+                ['sku','barcode','name'].forEach(function(param) {
+                    try { validator.require(param) }
+                    catch(err) { noteError(err) };
+                });
+                //checkDuplicateField('barcode',
+                //    function() { checkDuplicateField('sku',
+                //        function() { saveItem(context) }
+                //    )}
+                //);
+                //var d = validator.unique('barcode');
+                //d.fail(function(err) { noteError(err); savable.reject();});
+                //d.done(function() {
+                //    validator.unique('sku')
+                //        .done(function() { d.resolve(); savable.resolve() })
+                //        .fail(function(err) { d.reject(err); savable.reject(); });
+                //});
+                var checkdupsCount = 2;
+                ['barcode','sku'].forEach(function(param) {
+                    validator.unique(param)
+                        .fail(function(err) {
+                            noteError(err);
+                            savable.reject();
+                        })
+                        .done(function() {
+                            if (--checkdupsCount) {
+                                savable.resolve();
+                            }
+                        });
+                });
+                       
             } else if (type == 'customer') {
                 checkFieldHasValue('firstname');
                 checkFieldHasValue('lastname');

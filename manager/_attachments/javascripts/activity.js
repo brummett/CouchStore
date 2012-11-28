@@ -1325,22 +1325,9 @@ function runActivity(couchapp) {
             var savable = jQuery.Deferred();
             savable.done(function() { saveItem(context) });
             if (type == 'item') {
-                ['sku','barcode','name'].forEach(function(param) {
-                    try { validator.require(param) }
-                    catch(err) { noteError(err) };
-                });
-                //checkDuplicateField('barcode',
-                //    function() { checkDuplicateField('sku',
-                //        function() { saveItem(context) }
-                //    )}
-                //);
-                //var d = validator.unique('barcode');
-                //d.fail(function(err) { noteError(err); savable.reject();});
-                //d.done(function() {
-                //    validator.unique('sku')
-                //        .done(function() { d.resolve(); savable.resolve() })
-                //        .fail(function(err) { d.reject(err); savable.reject(); });
-                //});
+                try { validator.validateAll(noteError); }
+                catch(err) { savable.reject()};
+
                 var checkdupsCount = 2;
                 ['barcode','sku'].forEach(function(param) {
                     validator.unique(param)

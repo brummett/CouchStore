@@ -148,9 +148,11 @@ function Validator(newDoc, oldDoc, userCtx) {
     };
 
     this.validateItem = function() {
-        that.require('barcode');
-        that.require('name');
-        that.require('sku');
+        that.validators = [
+            function() { that.require('barcode'); },
+            function() { that.require('name'); },
+            function() { that.require('sku'); }
+        ];
     };
 
     this.validateCustomer = function() {
@@ -210,10 +212,35 @@ function Validator(newDoc, oldDoc, userCtx) {
     };
 
     this.validate = function() {
-        var validator = that[ validators[ newDoc.type ] ];
-        validator();
-        that.isValid = true;
+        if ((that.validators === undefined) || (that.validators.length === 0)) {
+            var initializer = that[ validators[ newDoc.type ] ];
+            initializer();
+        }
+
+        while(that.validators.length) {
+            that.validators.shift().call();
+        }
+        if (that.isValid === undefined) {
+            that.isValid = true;
+        }
     };
+
+    this.isStillValidating = function() {
+        return ((that.validators === undefined) || that.validators.length);
+    };
+
+    this.validateAll = function(error) {
+        var lastErr;
+        error = error || function() {};
+        while(that.isStillValidating()) {
+            try { that.validate() }
+            catch(err) { error(err); lastErr = err };
+        }
+        if (lastErr) {
+            throw(err);
+        }
+    };
+
 }
 
 exports.Validator = Validator;

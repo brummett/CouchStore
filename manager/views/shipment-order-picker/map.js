@@ -16,8 +16,10 @@ function(doc) {
 
         if (count != 0) {
             emit([shipping.priority(doc), order_number],
-                { message: order_number + ' ' + count + ' items from '+ doc['warehouse-name'] + ' ' + doc['shipping-service-level'] + ' shipping',
-                  isBackordered: order.hasShipments()
+                {   count: count,
+                    warehouse: doc['warehouse-name'],
+                    shipping: doc['shipping-service-level'],
+                    isBackordered: order.hasShipments()
                 });
         }
     }

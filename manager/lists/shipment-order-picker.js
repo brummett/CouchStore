@@ -7,11 +7,19 @@ function(head,req) {
         row;
 
     provides('html', function() {
-        var typeaheadData = [];
+        var typeaheadData = [],
+            orderNumber;
         while( row = getRow() ) {
-            data.firstOrderNumber = data.firstOrderNumber || row.id.substr(6);
-            data.orders.push({ id: row.id, isBackordered: row.value.isBackordered, message: row.value.message});
-            typeaheadData.push(row.value.message);
+            orderNumber = row.key[1];
+            data.firstOrderNumber = data.firstOrderNumber || orderNumber;
+            data.orders.push({  id: row.id,
+                                isBackordered: row.value.isBackordered,
+                                'order-number': orderNumber,
+                                count: row.value.count,
+                                warehouse: row.value.warehouse,
+                                shipping: row.value.shipping
+                            });
+            typeaheadData.push(orderNumber);
         }
         data.typeaheadSource = JSON.stringify(typeaheadData);
 

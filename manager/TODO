@@ -5,8 +5,6 @@ Eliminate warehouse-id from the order docs and just store warehouse-name instead
 
 Make tests!
 
-Refactor the shipment-order-picker to use objects instead of already formatted strings
-
 Make a check-box on the 'make a sale' page that would immediately mark the items as shipped
 
 'is-taxable' on orders needs to be true or false, not 1, 0, "", etc

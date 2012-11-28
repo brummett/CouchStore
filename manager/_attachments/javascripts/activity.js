@@ -393,9 +393,9 @@ function runActivity(couchapp) {
 
             // This updates the price/cost of all items in the order
             updateOrdersItems: function(orderDoc) {
-                var cost_price_key = orderDoc['order-type'] == 'receive' ? 'cost-cents' : 'price-cents',
+                var update_method = orderDoc['order-type'] === 'receive' ? 'item-cost-cents' : 'item-price-cents',
                     items_to_update = {},
-                    barcode,
+                    context = this,
                     d = $.Deferred();
 
                 if ('_rev' in orderDoc) {
@@ -410,44 +410,33 @@ function runActivity(couchapp) {
                     }
                     couchapp.view('items-by-barcode', {
                         keys: Object.keys(items_to_update),
-                        include_docs: true,
                         success: function(data) {
                             var i = 0,
-                                itemDoc,
                                 barcode,
-                                whenComplete = 'resolve',
+                                docid,
                                 waitingOn = data.rows.length;
 
-                            // After processing an item below, they call done()
-                            function done(success) {
-                                if (! success) {
-                                    // A single failure means don't save the order
-                                    whenComplete = 'reject';
+                            d.progress(function() {
+                                if (--waitingOn === 0 ) {
+                                    d.resolve();
                                 }
-                                if (--waitingOn == 0) {
-                                    d[whenComplete]();
-                                }
-                            }
+                            });
+
                             for (i = 0; i < data.rows.length; i++) {
-                                itemDoc = data.rows[i].doc;
-                                barcode = itemDoc.barcode;
-                                (function(i, newCost, itemDoc) {
-                                    if ((newCost != 0) && (newCost != itemDoc[cost_price_key])) {
-                                    // The incoming order has a different cost/price
-                                        itemDoc[cost_price_key] = newCost;
-                                        couchapp.db.saveDoc(itemDoc, {
-                                            success: function() {
-                                                done(true);
-                                            },
-                                            error: function(status, reason, message) {
-                                                context.showNotification('error', 'Problem updating ' + cost_price_key + ' for item ' + itemDoc.desc + ': ' + message);
-                                                done(false);
-                                            }
-                                        });
-                                    } else {
-                                        done(true);
+                                barcode = data.rows[i].key;
+                                docid = data.rows[i].id;
+                                couchapp.update( update_method, { _id: docid, v: orderDoc['item-costs'][barcode] }, {
+                                    success: function() {
+                                        d.notify();
+                                    },
+                                    error: function(status, reason, message) {
+                                        var itemName = orderDoc['item-names'][barcode];
+                                        context.showNotification(
+                                                'error',
+                                                'Problem updating ' + cost_price_key + ' for item ' + itemName + ': ' + message);
+                                        d.reject();
                                     }
-                                })(i, orderDoc['item-costs'][barcode], itemDoc);
+                                });
                             }
                         }
                     });

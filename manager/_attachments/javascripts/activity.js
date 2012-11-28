@@ -22,13 +22,13 @@ function runActivity(couchapp) {
                     buf.push(encodeURIComponent(name) + "=" + encodeURIComponent(value));
                 }
             }
-            return buf.length ? buf.join("&") : "";
+            return buf.length ? "?" + buf.join("&") : "";
         }
         couchapp.update = function(name, data, options) {
             var docid = data._id ? data._id : null;
             var options = options || {};
             var type = 'POST';
-            var url = '/' + this.db.name + '/' + this.design.doc_id + '/_update/' + name;
+            var url = '/' + this.db.name + '/' + this.design.doc_id + '/_update/' + name + encodeOptions(options);
 
             if (docid) {
                 type = 'PUT';
@@ -45,7 +45,27 @@ function runActivity(couchapp) {
                                 contentType: 'application/x-www-form-urlencoded',
                             }, options));
         };
-    }
+        // list() has a bug where the success, error methods don't get passed down to
+        // the ultimate ajax () call
+        couchapp.list = function(list, view, options) {
+            options = options || {};
+            var type = 'GET';
+            var data = null;
+            var url = this.db.uri + '/' + this.design.doc_id + '/_list/' + list + '/' + view + encodeOptions(options);
+            if (options['keys']) {
+                type = 'POST';
+                var keys = options['keys'];
+                delete options['keys'];
+                data = JSON.stringify({ keys: keys });
+            }
+            $.ajax( $.extend({
+                url: url,
+                type: type,
+                async: true,
+                dataType: 'json'
+                }, options));
+        }
+    };
 
     function fade(elt, delay, then) {
         delay = delay === undefined ? 5000 : delay;

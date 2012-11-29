@@ -11,12 +11,13 @@ function(head, req) {
             rowTemplate = ddoc.templates.partials['shipment-summary-report-shipment'],
             wasRows = false;
 
-        // start_key and end_key params will have quotes around them that needs to be removed
-        start_key = req.query.start_key ? req.query.start_key.replace(/"|'/g, '') : '';
-        end_key = req.query.end_key ? req.query.end_key.replace(/"|'/g, '') : '';
+        // startkey and endkey params will have quotes around them that needs to be removed
+        startkey = req.query.startkey ? req.query.startkey.replace(/"|'/g, '') : '';
+        endkey = req.query.endkey ? req.query.endkey.replace(/"|'/g, '') : '';
 
         send(Mustache.to_html(ddoc.templates['shipment-summary-report'],
-                                { start_key: start_key, end_key: end_key }));
+                                { startkey: startkey, endkey: endkey },
+                            ddoc.templates.partials));
 
         while (row = getRow()) {
             wasRows = true;

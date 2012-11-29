@@ -92,6 +92,9 @@ function(doc, req) {
                 json: { reason: 'Order ' + orderNumber + ' has no shipment ' + shipment }
             };
         }
+    } else {
+        // Creating a new shipment
+        data.date = req.query.date;
     }
 
     return Mustache.to_html(ddoc.templates['shipment'], data, ddoc.templates.partials);

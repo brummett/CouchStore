@@ -379,11 +379,6 @@ function runActivity(couchapp) {
                 }
             },
 
-            fixupOrderDate: function() {
-                $('input#date').val(this.todayAsString());
-            },
- 
-
             // FIXME - orders _do_ have the names now - remove this
             fixupOrderItemNames: function() {
                 // The order show functions don't have access to all the item docs, so
@@ -629,12 +624,12 @@ function runActivity(couchapp) {
                 // Presents a sale order to the user and allows them to select unshipped items to send
                 // out in this shipment
                 var orderNumber = context.params['order-number'],
-                    orderId = 'order-' + orderNumber;
+                    orderId = 'order-' + orderNumber,
+                    show_q = '_show/shipment/'+orderId+'?date='+context.todayAsString();
             
-                $.get('_show/shipment/' + orderId)
+                $.get(show_q)
                     .done(function(content) {
                         context.$element().html(content);
-                        context.fixupOrderDate();
                         ShipmentWidget({
                             couchapp: couchapp,
                             context: context,
@@ -729,9 +724,9 @@ function runActivity(couchapp) {
             if (inv_id) {
                 show_q += '/' + inv_id;
             }
+            show_q = show_q + '?date='+context.todayAsString();
             function runOrderWidget() {
                 getWarehouseList().then( context.fixupOrderWarehouseSelect );
-                context.fixupOrderDate();
                 new InventoryWidget({   couchapp: couchapp,
                                     context: context,
                                     activity: activity,
@@ -909,7 +904,7 @@ function runActivity(couchapp) {
         this.get('#/create-order/:order_type/', function(context) {
             context.deactivateOrderWidget();
             var order_type = context.params.order_type,
-                show_q = '_show/edit-order/?type=' + order_type;
+                show_q = '_show/edit-order/?type=' + order_type + '&date='+context.todayAsString();
 
             $.get(show_q)
                 .then(function(content) {
@@ -917,7 +912,6 @@ function runActivity(couchapp) {
 
                     // Still need to supply today's date and fix up the warehouse select
                     getWarehouseList().then( context.fixupOrderWarehouseSelect );
-                    context.fixupOrderDate();
                     if (order_type === 'warehouse-transfer') {
                         currentOrderWidget = new InventoryWidget({
                                         couchapp: couchapp,

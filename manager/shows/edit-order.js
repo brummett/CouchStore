@@ -90,7 +90,7 @@ function(doc, req) {
 
         data.action = '#/create-order/' + req.query.type + '/';
         data.title = 'New ' +req.query.type + ' order';
-        data.date = '';
+        data.date = req.query.date;
         data.orderNumber = '';
         data.customer = '';
         data.customerId = '';

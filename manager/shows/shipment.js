@@ -11,92 +11,87 @@ function(doc, req) {
         thisShipment,
         barcode = '';
 
-    if (doc) {
-        order = Order.newFromDoc(doc);
+    if (! doc) {
+        return {
+            code: 404,
+            json: { reason: 'Unknown order number' }
+        };
 
-        if ( ! order ) {
-            return {
-                code: 403,
-                json: { reason: 'Document is a '+doc.type+', expected an order' }
-            };
-        }
+    }
 
-        data.action = '#/shipment/'
-        data.title = 'Create shipment';
+    order = Order.newFromDoc(doc);
 
-        data._rev                   = doc._rev;
-        data.orderType              = order.orderType();
-        data.orderNumber            = order.orderNumber();
-        data.warehouseName          = order.warehouseName();
-        data.customerName           = order.customerName();
-        data.shippingServiceLevel   = order.shippingServiceLevel();
-        data.orderSource            = order.orderSource();
+    if ( ! order ) {
+        return {
+            code: 403,
+            json: { reason: 'Document is a '+doc.type+', expected an order' }
+        };
+    }
 
-        data.shippingCharge = order.shippingCharge() ? Money.toDollars(order.shippingCharge()) : '0.00';
+    data.action = '#/shipment/'
+    data.title = 'Create shipment';
 
-        // How many items we ultimately need to ship out
-        unfilledItems = {};
-        order.barcodes().forEach(function(barcode) {
-            unfilledItems[barcode] = Math.abs(order.quantityForBarcode(barcode));
+    data._rev                   = doc._rev;
+    data.orderType              = order.orderType();
+    data.orderNumber            = order.orderNumber();
+    data.warehouseName          = order.warehouseName();
+    data.customerName           = order.customerName();
+    data.shippingServiceLevel   = order.shippingServiceLevel();
+    data.orderSource            = order.orderSource();
+
+    data.shippingCharge = order.shippingCharge() ? Money.toDollars(order.shippingCharge()) : '0.00';
+
+    // How many items we ultimately need to ship out
+    unfilledItems = {};
+    order.barcodes().forEach(function(barcode) {
+        unfilledItems[barcode] = Math.abs(order.quantityForBarcode(barcode));
+    });
+    // Deduct items already shipped
+    if ('shipments' in doc) {
+        order.shipments().forEach(function(shipment) {
+            var barcode;
+            for (barcode in shipment.items) {
+                unfilledItems[barcode] -= shipment.items[barcode];
+            }
         });
-        // Deduct items already shipped
-        if ('shipments' in doc) {
-            order.shipments().forEach(function(shipment) {
-                var barcode;
-                for (barcode in shipment.items) {
-                    unfilledItems[barcode] -= shipment.items[barcode];
+    }
+    // Only include non-zero items to avoid cluttering up the interface
+    data.unfilledItems = [];
+    for (barcode in unfilledItems) {
+        if (unfilledItems[barcode] != 0) {
+            data.unfilledItems.push( {  barcode: barcode,
+                                        name: doc['item-names'][barcode],
+                                        'show-available': true,
+                                        quantity: unfilledItems[barcode]
+                                    });
+        }
+    }
+
+    // Items already part of this shipment
+    data.shippingItems = [];
+    if ('shipment' in req.query) {
+        var shipment = req.query.shipment;
+        if (doc.shipments[shipment]) {
+            thisShipment = doc.shipments[shipment];
+            // An already existing shipment
+            data.title = 'Edit shipment';
+            data.date = thisShipment.date;
+            data.shipment = shipment;
+
+            for (barcode in thisShipment.items) {
+                if (thisShipment.items[barcode] != 0 ) {
+                    data.shippingItems.push( {  barcode: barcode,
+                                                name: doc['item-names'][barcode],
+                                                quantity: Math.abs(thisShipment.items[barcode])
+                                            } );
                 }
-            });
-        }
-        // Only include non-zero items to avoid cluttering up the interface
-        data.unfilledItems = [];
-        for (barcode in unfilledItems) {
-            if (unfilledItems[barcode] != 0) {
-                data.unfilledItems.push( {  barcode: barcode,
-                                            name: doc['item-names'][barcode],
-                                            'show-available': true,
-                                            quantity: unfilledItems[barcode]
-                                        });
             }
-        }
-
-        // Items already part of this shipment
-        data.shippingItems = [];
-        if ('shipment' in req.query) {
-            var shipment = req.query.shipment;
-            if (doc.shipments[shipment]) {
-                thisShipment = doc.shipments[shipment];
-                // An already existing shipment
-                data.title = 'Edit shipment';
-                data.date = thisShipment.date;
-                data.shipment = shipment;
-
-                for (barcode in thisShipment.items) {
-                    if (thisShipment.items[barcode] != 0 ) {
-                        data.shippingItems.push( {  barcode: barcode,
-                                                    name: doc['item-names'][barcode],
-                                                    quantity: Math.abs(thisShipment.items[barcode])
-                                                } );
-                    }
-                }
-            } else {
-                return {
-                    code: 404,
-                    json: { reason: 'Order ' + orderNumber + ' has no shipment ' + shipment }
-                };
-            }
-        }
-
-    } else {
-        if (! req.query.type) {
+        } else {
             return {
                 code: 404,
-                json: { reason: 'Unknown order number' }
+                json: { reason: 'Order ' + orderNumber + ' has no shipment ' + shipment }
             };
         }
-
-        templateName = 'shipment-order-picker';
-
     }
 
     return Mustache.to_html(ddoc.templates['shipment'], data, ddoc.templates.partials);

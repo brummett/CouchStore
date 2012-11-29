@@ -13,7 +13,7 @@ function(doc, req) {
         if ( doc.type != 'inventory' ) {
             return {
                 code: 403,
-                json: { reason: 'Document is a '+doc.type+', expected an order' }
+                json: { reason: 'Document is a '+doc.type+', expected an inventory' }
             };
         }
 

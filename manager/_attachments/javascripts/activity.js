@@ -744,14 +744,14 @@ function runActivity(couchapp) {
         // Submit a partial inventory correction
         this.post('#/edit/inventory/(.*)', function(context) {
             var params = context.params.toHash(),
-                section = context.params['splat'][0] || context.params['section'],
-                quantity_fixup,
-                next_url = '#/';
+                docId = context.params['splat'][0] || context.params['_id'] || '',
+                section = context.params.section,
+                next_url = '#/'
 
-            couchapp.update('partial-inventory', params, {
+            couchapp.update('partial-inventory/'+docId, params, {
                 success: function(orderDoc) {
                     context.showNotification('success', 'Inventory for section ' + orderDoc.section + ' saved!');
-                        activity.trigger('inventory-updated', orderDoc);
+                    activity.trigger('inventory-updated', orderDoc);
                     context.$element().empty();
                     context.redirect(next_url);
                 },

@@ -151,7 +151,7 @@ Order.prototype.orderSource = function(s) {
     return this.__doc['order-source'];
 }
 
-Order.prototype.shippingChargeCents = function(s) {
+Order.prototype.shippingCharge = function(s) {
     if (s !== undefined) {
         this.__doc['shipping-charge-cents'] = s;
     }

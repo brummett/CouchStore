@@ -3,18 +3,22 @@
 
 var validators = {
     item: [
+        function(o) { o.unchanged('type', 'Cannot change the type of an entity') },
         function(o) { o.require('barcode'); },
         function(o) { o.require('name'); },
         function(o) { o.require('sku'); }
     ],
     customer: [
+        function(o) { o.unchanged('type', 'Cannot change the type of an entity') },
         function(o) { o.require('firstname'); }
     ],
     warehouse: [
+        function(o) { o.unchanged('type', 'Cannot change the type of an entity') },
         function(o) { o.require('name'); },
         function(o) { o.require('address'); }
     ],
     order: [
+        function(o) { o.unchanged('type', 'Cannot change the type of an entity') },
         function(o) { o.require('order-type'); },
         function(o) { o.orderRequireCustomerName() },
         function(o) { o.require('date'); },
@@ -27,6 +31,7 @@ var validators = {
         function(o) { o.validateShipments() }
     ],
     inventory: [
+        function(o) { o.unchanged('type', 'Cannot change the type of an entity') },
         function(o) { o.require('date'); },
         function(o) { o.require('warehouse-name'); },
         function(o) { o.require('items'); },

@@ -37,7 +37,8 @@ var validators = {
         function(o) { o.require('items'); },
         function(o) { o.require('item-names'); },
         function(o) { o.require('item-skus'); },
-        function(o) { o.unchanged('date'); },
+        function(o) { o.require('section'); },
+        function(o) { o.unchanged('section'); },
         function(o) { o.validate_items_against(['item-names', 'item-skus']); }
     ]
 };

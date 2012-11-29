@@ -285,8 +285,14 @@ OrderWidget.prototype.copyCostsToForm = function copyCostsToForm() {
     $('input.unit-cost', widget.orderTable).each(function(idx, input) {
         input = $(input);
         var tr = input.parents('tr');
-        widget.orderForm.append('<input name="' + tr.attr('id') + '-cost" class="unit-cost" '
-                                + 'type="hidden" value="' + input.val() + '">');
+        var expected_name = tr.attr('id') + '-cost';
+        var cost_input = widget.orderForm.find('input[name="'+expected_name+'"]');
+        if (cost_input.length) {
+            cost_input.val( input.val() );
+        } else {
+            widget.orderForm.append('<input name="' + expected_name +'" class="unit-cost" '
+                                    + 'type="hidden" value="' + input.val() + '">');
+        }
     });
 };
 

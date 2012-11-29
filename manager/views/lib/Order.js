@@ -151,11 +151,11 @@ Order.prototype.orderSource = function(s) {
     return this.__doc['order-source'];
 }
 
-Order.prototype.shippingCharge = function(s) {
+Order.prototype.shippingChargeCents = function(s) {
     if (s !== undefined) {
-        this.__doc['shipping-charge'] = s;
+        this.__doc['shipping-charge-cents'] = s;
     }
-    return this.__doc['shipping-charge'];
+    return this.__doc['shipping-charge-cents'];
 }
 
 Order.prototype.isShippable = function () {

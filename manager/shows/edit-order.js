@@ -45,7 +45,8 @@ function(doc, req) {
         data.customerName   = order.customerName();
         data.customerId     = order.customerId();
         data.customerAddress = order.customerAddress();
-        data.isTaxable      = order.isTaxable()
+        data.isTaxable      = order.isTaxable();
+        data.shippingCharge = Money.toDollars(order.shippingChargeCents());
         data._rev = doc._rev;
 
         // Set the right ship service level

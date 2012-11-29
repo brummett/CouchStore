@@ -960,9 +960,10 @@ function runActivity(couchapp) {
                 list_q += '?search-query=' + encodeURIComponent(search);
             }
 
-            // we'd rather use couchapp.list, but it only supports getting JSON data :(
-            $.get(list_q)
-                .then(function(content) {
+            couchapp.list('items', view, {
+                'search-query': search,
+                dataType: 'html',
+                success: function(content) {
                         context.$element().html(content);
 
                         context.toggleObsolete();
@@ -980,10 +981,11 @@ function runActivity(couchapp) {
                             });
                         }
                     },
+                error:
                     function(result) {
                         showNotification('error', 'Error getting data for '+type+ ': ' + $.parseJSON(result.responseText).reason);
                     }
-                );
+                });
         });
 
         this.get('#/edit/(.*)/(.*)', function(context) {

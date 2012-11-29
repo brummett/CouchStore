@@ -13,7 +13,7 @@ function InventoryReport(params) {
 
     this.obsoleteChooser = this.context.$element('input#show-obsolete');
 
-    this.markObsoleteItems();
+    this.markUpItems();
 
     var obsoleteClicked = function(e) {
         this.showRows();
@@ -24,8 +24,9 @@ function InventoryReport(params) {
 };
 
 // Adds the class 'obsolete' to all the rows with obsolete items
-// looks up each row by its barcode to find out if it's obsolete
-InventoryReport.prototype.markObsoleteItems = function() {
+// looks up each row by its barcode to find out if it's obsolete.
+// Also fills in the 'Edit' button action to edit the item
+InventoryReport.prototype.markUpItems = function() {
     var widget = this,
         couchapp = this.couchapp,
         tableRows = $('tr.inventory-row'),
@@ -46,10 +47,17 @@ InventoryReport.prototype.markObsoleteItems = function() {
             include_docs: true,
             success: function(data) {
                 data.rows.forEach(function(row) {
-                    var doc = row.doc;
+                    var doc = row.doc,
+                        thisTr = widget.dataTableRows.filter('[data-barcode="'+doc.barcode+'"]'),
+                        editLink = thisTr.find('a.edit-item'),
+                        href = editLink.attr('href');
+
+                    if (href.charAt(href.length - 1) == '/') {
+                        // the template hasn't filled in the item ID link completely yet
+                        editLink.attr('href', editLink.attr('href') + row.id);
+                    }
                     if (doc['is-obsolete']) {
-                        widget.dataTableRows.filter('[data-barcode="'+doc.barcode+'"]')
-                            .addClass('obsolete');
+                        thisTr.addClass('obsolete');
                     }
                 });
                 widget.showRows();

@@ -390,7 +390,7 @@ OrderWidget.prototype.getTableRowForScan = function getTableRowForScan(scan) {
         // Didn't find a row by id, maybe by name?
         // This can happen if an unknown item was scanned and when the user filled in the 
         // info, the scanned string wasn't the barcode, and later they scanned the barcode
-        tr = this.orderTable.find('tr[name=scan-'+scan+']');
+        tr = this.orderTable.find('tr[name="scan-'+scan+'"]');
     }
 
     if (tr.length) {

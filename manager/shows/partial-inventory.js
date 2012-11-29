@@ -5,7 +5,7 @@ function(doc, req) {
         i = 0,
         barcode = '';
 
-    data.action = '#/inventory/'
+    data.action = '#/edit/inventory/';
     data.title = 'Count Inventory';
     data.allowDelete = true;
 

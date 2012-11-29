@@ -467,19 +467,6 @@ function runActivity(couchapp) {
                 return d.promise();
             },
 
-            //XsaveOrder: function(orderDoc, d) {
-            //    d = d || $.Deferred();
-            //    couchapp.db.saveDoc(orderDoc, {
-           //         success: function() {
-           //             d.resolve()
-           //         },
-           //         error: function(status, reason, message) {
-           //             d.reject(status, reason, message);
-           //         }
-           //     });
-           //     return d.promise();
-           // },
-
             // Today's date as a string
             todayAsString: function() {
                 var now = new Date,
@@ -517,43 +504,6 @@ function runActivity(couchapp) {
                     }
                 });
             },
-
-            // Create and save an order-like document
-//            createOrderlikeDoc: function(params) {
-//                var context = this,
-//                    whenDone = $.Deferred(),
-//                couchapp.update('order', params, {
-//                    success: function(doc) {
-//                        d.resolve(doc);
-//                extract_items();
-//                orderDoc.items = items;
-//                orderDoc['item-names'] = item_names;
-//                orderDoc['item-skus']  = item_skus;
-//                if (keep_costs) {
-//                    orderDoc['item-costs'] = item_costs;
-//                }
-//                
-//                // Copy some params to the order doc directly
-//                var copy_props =  ['date','customer-name','customer-id','warehouse-name',
-//                                    'source-warehouse-name',
-//                                    'shipping-service-level', 'order-source','is-taxable','_rev',
-//                                    'shipping-charge','section', 'customer-address'],
-//                    i;
-//                for (i = 0; i < copy_props.length; i++) {
-//                    if (copy_props[i] in params) {
-//                        orderDoc[copy_props[i]] = params[copy_props[i]];
-//                    }
-//                }
-//
-//                if (keep_costs) {
-//                    context.updateOrdersItems(orderDoc)
-//                        .then( function() { context.saveOrder(orderDoc, whenDone) });
-//                } else {
-//                    context.saveOrder(orderDoc, whenDone);
-//                }
-//                
-//                return whenDone.promise();
-//            }
 
         });
 
@@ -792,36 +742,24 @@ function runActivity(couchapp) {
         });
 
         // Submit a partial inventory correction
-        this.post('#/inventory/(.*)', function(context) {
-            var params = context.params,
-                section = params['splat'][0] || params['section'],
+        this.post('#/edit/inventory/(.*)', function(context) {
+            var params = context.params.toHash(),
+                section = context.params['splat'][0] || context.params['section'],
                 quantity_fixup,
-                orderDoc = { _id: 'inv-' + section, type: 'inventory' },
                 next_url = '#/';
 
-            quantity_fixup = function(n) { return n };  // receive items are positive
-
-            var whenDone = context.createOrderlikeDoc({
-                                            keep_costs: false,
-                                            quantity_fixup: quantity_fixup,
-                                            order_doc: orderDoc,
-                                            next_url: next_url,
-                                        },
-                                        params);
-            whenDone.done(
-                function() {
-                    context.showNotification('success', 'Inventory for section ' + section + ' saved!');
+            couchapp.update('partial-inventory', params, {
+                success: function(orderDoc) {
+                    context.showNotification('success', 'Inventory for section ' + orderDoc.section + ' saved!');
                         activity.trigger('inventory-updated', orderDoc);
                     context.$element().empty();
                     context.redirect(next_url);
-                });
-            whenDone.fail(
-               function(status, reason, message) {
+                },
+               error: function(status, reason, message) {
                     $.log('Problem saving inventory for section  '+ section +"\nmessage: " + message + "\nstatus: " + status + "\nreason: "+reason);
                     context.showNotification('error' , 'Problem saving inventory for section ' + section + ': ' + message);
-                });
-
- 
+                }
+            });
         });
 
         // Used to apply the accumulated partial physical inventories into one "order" per

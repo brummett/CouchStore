@@ -10,7 +10,9 @@
     <div class="control-group">
         <label class="control-label" for="Section">Section</label>
         <div class="controls">
-            <input type="text" value="{{section}}" name="section" id="section" class="input-small span2">
+            <input type="text" name="section"
+                    id="section" {{#section}}value={{section}} readonly="true"{{/section}}
+                    class="input-small span2 {{#section}} uneditable-input{{/section}}">
         </div>
     </div>
 

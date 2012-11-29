@@ -964,28 +964,27 @@ function runActivity(couchapp) {
                 'search-query': search,
                 dataType: 'html',
                 success: function(content) {
-                        context.$element().html(content);
+                    context.$element().html(content);
 
-                        context.toggleObsolete();
-                        // The physical inventories lister should show the list of proposed corrections, too
-                        if (type == 'inventories') {
-                            couchapp.list('proposed-inventory-correction', 'inventory-by-permanent-warehouse-barcode', {
-                                group: true,
-                                dataType: 'html',
-                                success: function(content) {
-                                    context.$element().append(content);
-                                },
-                                error: function(status, reason, message) {
-                                    showNotification('error', "Can't get physical inventory list: "+message);
-                                }
-                            });
-                        }
-                    },
-                error:
-                    function(result) {
-                        showNotification('error', 'Error getting data for '+type+ ': ' + $.parseJSON(result.responseText).reason);
+                    context.toggleObsolete();
+                    // The physical inventories lister should show the list of proposed corrections, too
+                    if (type == 'inventories') {
+                        couchapp.list('proposed-inventory-correction', 'inventory-by-permanent-warehouse-barcode', {
+                            group: true,
+                            dataType: 'html',
+                            success: function(content) {
+                                context.$element().append(content);
+                            },
+                            error: function(status, reason, message) {
+                                showNotification('error', "Can't get physical inventory list: "+message);
+                            }
+                        });
                     }
-                });
+                },
+                error: function(result) {
+                    showNotification('error', 'Error getting data for '+type+ ': ' + $.parseJSON(result.responseText).reason);
+                }
+            });
         });
 
         this.get('#/edit/(.*)/(.*)', function(context) {

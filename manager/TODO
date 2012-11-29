@@ -1,3 +1,7 @@
+Change the throw()s in update functions to return data structure like:
+    { code: 403, json: { reason: 'broke!', message: 'arg' }}
+see: shows/shipment.js
+
 Switch to using sammy.nested_params for parsing all the scan-*-quan, scan-*-name, etc
 params from orders
 

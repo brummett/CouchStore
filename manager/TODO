@@ -32,8 +32,6 @@ Import item data from the old system
 
 Sale order page should validate the shipping charge input
 
-Resolve the difference between saveOrderDoc and SaveOrder
-
 After editing a sale/receive order from the data->orders page, it should go back
 to the data->orders page
 -------------------------------------------------------------------------------

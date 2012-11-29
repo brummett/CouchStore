@@ -379,33 +379,6 @@ function runActivity(couchapp) {
                 }
             },
 
-            // FIXME - orders _do_ have the names now - remove this
-            fixupOrderItemNames: function() {
-                // The order show functions don't have access to all the item docs, so
-                // we need to go through all the item table rows and fill in names for them
-                var trs = $('tr.line-item');
-                var barcodes = [];
-                trs.each(function(idx, tr) {
-                    barcodes.push($(tr).attr('id').substr(5));   // Their IDs start with 'scan-'
-                });
-
-                var d = $.Deferred();
-                couchapp.view('items-by-barcode', {
-                                keys: barcodes,
-                                include_docs: true,
-                                success: function(data) {
-                                    var tr, i, row;
-                                    for ( i = 0; i < data.rows.length; i++) {
-                                        // Find the tr for this barcode, and the name td inside that
-                                        var td = $('tr.line-item#scan-' + data.rows[i].key + ' td.item-name');
-                                        td.text(data.rows[i].doc.name);
-                                    }
-                                    d.resolve(true);
-                                }
-                        });
-                return d.promise();
-            },
-
             // This updates the price/cost of all items in the order
             updateOrdersItems: function(orderDoc) {
                 var update_method = orderDoc['order-type'] === 'receive' ? 'item-cost-cents' : 'item-price-cents',
@@ -875,7 +848,7 @@ function runActivity(couchapp) {
                 .then(function(content) {
                     context.$element().html(content);
 
-                    // We still need to fixup the warehouse and item names
+                    // We still need to fixup the warehouse
                     var d = $.Deferred();
                     couchapp.db.openDoc(order_id, {
                         success: function(doc) {
@@ -887,14 +860,11 @@ function runActivity(couchapp) {
                         }
                     });
                     getWarehouseList().then( function(warehouseList) { context.fixupOrderWarehouseSelect(warehouseList, d.promise()) } );
-                    context.fixupOrderItemNames()
-                        .then(function() {
-                            currentOrderWidget = new OrderWidget({
+                    currentOrderWidget = new OrderWidget({
                                                 couchapp: couchapp,
                                                 context: context,
                                                 activity: activity
                                         });
-                        });
                 });
         });
 

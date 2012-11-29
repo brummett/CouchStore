@@ -51,7 +51,7 @@ exports.extractItemInfo = function(props) {
     };
 
     var quantities  = getPatternFrom(/scan-(.*?)-quan/, props, parseInt),
-        costs       = getPatternFrom(/scan-(.*?)-cost/, props, function(v) { Money.toCents(v) });
+        costs       = getPatternFrom(/scan-(.*?)-cost/, props, Money.toCents);
         names       = getPatternFrom(/scan-(.*?)-name/, props);
         skus        = getPatternFrom(/scan-(.*?)-sku/, props);
 

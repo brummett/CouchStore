@@ -421,6 +421,9 @@ function runActivity(couchapp) {
                 if ('_rev' in orderDoc) {
                     // Don't update item costs/prices when editing an exiting order
                     d.resolve();
+                } else if (orderDoc['order-type'] === 'warehouse-transfer') {
+                    // transfer orders don't have price/cost
+                    d.resolve();
                 } else {
                     // Go through the items list and update the cost/price of them
                     if ('items' in orderDoc) {
@@ -464,18 +467,18 @@ function runActivity(couchapp) {
                 return d.promise();
             },
 
-            saveOrder: function(orderDoc, d) {
-                d = d || $.Deferred();
-                couchapp.db.saveDoc(orderDoc, {
-                    success: function() {
-                        d.resolve()
-                    },
-                    error: function(status, reason, message) {
-                        d.reject(status, reason, message);
-                    }
-                });
-                return d.promise();
-            },
+            //XsaveOrder: function(orderDoc, d) {
+            //    d = d || $.Deferred();
+            //    couchapp.db.saveDoc(orderDoc, {
+           //         success: function() {
+           //             d.resolve()
+           //         },
+           //         error: function(status, reason, message) {
+           //             d.reject(status, reason, message);
+           //         }
+           //     });
+           //     return d.promise();
+           // },
 
             // Today's date as a string
             todayAsString: function() {
@@ -516,82 +519,41 @@ function runActivity(couchapp) {
             },
 
             // Create and save an order-like document
-            createOrderlikeDoc: function(config, params) {
-                var context = this,
-                    d = $.Deferred(),
-                    keep_costs = config.keep_costs,  // Orders save costs, inventories do not
-                    quantity_fixup = config.quantity_fixup,  // sales will negate the quantity, receives and inventories will not
-                    orderDoc = config.order_doc,
-                    next_url = config.next_url,
-                    order_number = params['order-number'],
-                    items = {},
-                    item_costs = {},
-                    item_names = {},
-                    item_skus = {};
-
-                function extract_items() {
-                    var prop = '',
-                    matches;
-                    for (prop in params) {
-                        matches = /scan-(.*?)-quan/.exec(prop);
-                        if (matches && matches.length) {
-                            items[matches[1]] = quantity_fixup(parseInt(params[prop]));
-                            continue;
-                        }
-                        if (keep_costs) {
-                            matches = /scan-(.*?)-cost/.exec(prop);
-                            if (matches && matches.length) {
-                                item_costs[matches[1]] = Money.toCents(params[prop]);
-                                continue;
-                            }
-                        }
-                        matches = /scan-(.*?)-name/.exec(prop);
-                        if (matches && matches.length) {
-                            item_names[matches[1]] = params[prop];
-                            continue;
-                        }
-                        matches = /scan-(.*?)-sku/.exec(prop);
-                        if (matches && matches.length) {
-                            item_skus[matches[1]] = params[prop];
-                            continue;
-                        }
-                    }
-                };
-
-                extract_items();
-                orderDoc.items = items;
-                orderDoc['item-names'] = item_names;
-                orderDoc['item-skus']  = item_skus;
-                if (keep_costs) {
-                    orderDoc['item-costs'] = item_costs;
-                }
-                
-                // Copy some params to the order doc directly
-                var copy_props =  ['date','customer-name','customer-id','warehouse-name',
-                                    'source-warehouse-name',
-                                    'shipping-service-level', 'order-source','is-taxable','_rev',
-                                    'shipping-charge','section', 'customer-address'],
-                    i;
-                for (i = 0; i < copy_props.length; i++) {
-                    if (copy_props[i] in params) {
-                        orderDoc[copy_props[i]] = params[copy_props[i]];
-                    }
-                }
-
-                $.log(orderDoc);
-
-                // Find out what the warehouse's name is given its ID
-                var whenDone = $.Deferred();
-
-                if (keep_costs) {
-                    context.updateOrdersItems(orderDoc)
-                        .then( function() { context.saveOrder(orderDoc, whenDone) });
-                } else {
-                    context.saveOrder(orderDoc, whenDone);
-                }
-                
-                return whenDone.promise();
-            }
+//            createOrderlikeDoc: function(params) {
+//                var context = this,
+//                    whenDone = $.Deferred(),
+//                couchapp.update('order', params, {
+//                    success: function(doc) {
+//                        d.resolve(doc);
+//                extract_items();
+//                orderDoc.items = items;
+//                orderDoc['item-names'] = item_names;
+//                orderDoc['item-skus']  = item_skus;
+//                if (keep_costs) {
+//                    orderDoc['item-costs'] = item_costs;
+//                }
+//                
+//                // Copy some params to the order doc directly
+//                var copy_props =  ['date','customer-name','customer-id','warehouse-name',
+//                                    'source-warehouse-name',
+//                                    'shipping-service-level', 'order-source','is-taxable','_rev',
+//                                    'shipping-charge','section', 'customer-address'],
+//                    i;
+//                for (i = 0; i < copy_props.length; i++) {
+//                    if (copy_props[i] in params) {
+//                        orderDoc[copy_props[i]] = params[copy_props[i]];
+//                    }
+//                }
+//
+//                if (keep_costs) {
+//                    context.updateOrdersItems(orderDoc)
+//                        .then( function() { context.saveOrder(orderDoc, whenDone) });
+//                } else {
+//                    context.saveOrder(orderDoc, whenDone);
+//                }
+//                
+//                return whenDone.promise();
+//            }
 
         });
 
@@ -1038,24 +1000,19 @@ function runActivity(couchapp) {
         // Called when the user submits an order to the system
         // order_type is receive or sale
         this.post('#/create-order/(.*)/(.*)', function(context) {
-            var params = context.params,
-                order_type = params['splat'][0],
-                order_number = params['splat'][1] || params['order-number'],
-                quantity_fixup,
-                orderDoc,
-                keep_costs = true,
+            var params = context.params.toHash(),
+                order_type = context.params['splat'][0],
+                order_number = context.params['splat'][1] || context.params['order-number'],
+                updateOrdersItems = true,
                 next_url;
 
-            if (order_type == 'receive') {
-                quantity_fixup = function(n) { return n };  // receive items are positive
+            if (order_type === 'receive') {
                 next_url = '#/';   // Go back to the start page
-            } else if (order_type == 'sale') {
-                quantity_fixup = function(n) { return 0 - n };  // sale items are negative
+            } else if (order_type === 'sale') {
                 next_url = context.path;  // stay at the same URL
             } else if (order_type === 'warehouse-transfer') {
-                quantity_fixup = function(n) { return n };  // transfer items are positive
                 next_url = '#/';   // Go back to the start page
-                keep_costs = false;
+                updateOrdersItems = false;
                 order_number = order_number || 'xfer-' + params['source-warehouse-name']
                                                 + '-' + params['warehouse-name']
                                                 + '-' + params['date'];
@@ -1063,27 +1020,30 @@ function runActivity(couchapp) {
                 showNotification('error', 'Unknown type of order: '+order_type);
                 return;
             }
-            orderDoc = { _id: 'order-' + order_number, type: 'order' };
-            orderDoc['order-type'] = order_type;
 
-            var whenDone = context.createOrderlikeDoc({
-                                            keep_costs: keep_costs,
-                                            quantity_fixup: quantity_fixup,
-                                            order_doc: orderDoc,
-                                            next_url: next_url,
-                                        },
-                                        params);
+            params._id = 'order-' + order_number;
+            params['order-type'] = order_type;
+
+            var whenDone = jQuery.Deferred();
+            couchapp.update('order', params, {
+                success: whenDone.resolve.bind(whenDone),
+                error: whenDone.reject.bind(whenDone)
+            });
+
             whenDone.done(
-                function() {
-                    context.showNotification('success', 'Order ' + order_number + ' saved!');
-                        activity.trigger('order-updated', orderDoc);
-                    context.$element().empty();
-                    context.redirect(next_url);
+                function(orderDoc) {
+                    context.updateOrdersItems(orderDoc)
+                        .then( function() {
+                            context.showNotification('success', 'Order ' + order_number + ' saved!');
+                            activity.trigger('order-updated', orderDoc);
+                            context.$element().empty();
+                            context.redirect(next_url);
+                        });
                 });
             whenDone.fail(
                function(status, reason, message) {
-                    $.log('Problem saving order '+ orderDoc._id +"\nmessage: " + message + "\nstatus: " + status + "\nreason: "+reason);
-                    context.showNotification('error' , 'Problem saving order ' + orderDoc._id + ': ' + message);
+                    $.log('Problem saving order '+ order_number +"\nmessage: " + message + "\nstatus: " + status + "\nreason: "+reason);
+                    context.showNotification('error' , 'Problem saving order ' + order_number + ': ' + message);
                 });
         });
 

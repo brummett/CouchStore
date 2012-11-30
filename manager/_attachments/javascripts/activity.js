@@ -1255,6 +1255,52 @@ function runActivity(couchapp) {
 
         });
 
+        this.get('#/report/purchase/', function(context) {
+            context.deactivateOrderWidget();
+
+            
+
+        });
+
+        // Show a report if items sorted by how many were sold between two dates
+        this.get('#/report/popular-items/', function(context) {
+            context.deactivateOrderWidget();
+
+            var view,
+                options = { action: window.location.hash.replace(/\?.*$/,''),
+                            dataType: 'html' };
+
+            if (context.params.start) {
+                var date = new Date;
+                date.setMonth( date.getMonth() - 1);
+                options.startkey = context.dateAsString(date);  // start with the last months' sales
+                options.endkey = context.dateAsString();
+            } else {
+                options.startkey = context.params.startkey || false;
+                options.endkey = context.params.endkey || {};
+            }
+            if (context.params['order-source']) {
+                view = 'item-count-by-ordersource-selldate';
+                options.startkey = [ context.params['order-source'], options.startkey ];
+                options.endkey = [ context.params['order-source'], options.endkey ];
+            } else {
+                view = 'item-count-by-selldate';
+            }
+
+            if (context.params['least-popular']) {
+                options['least-popular'] = true;
+            }
+
+            options.success = function(content) {
+                context.$element().html(content);
+            }
+            options.error = function(code, error, message) {
+                showNotification('error', "Can't query popular items: "+message);
+            }
+
+            // Note - we could also pass along startkey, limit in context.params for paging
+            couchapp.list('popular-items-report', view, options);
+        });
 
     });
 

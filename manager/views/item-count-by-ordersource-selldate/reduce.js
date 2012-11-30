@@ -1,4 +1,4 @@
-// item-count-by-selldate-barcode reduce
+// item-count-by-ordersource-selldate reduce
 function(keys, values, rereduce) {
     var retval = [ ],
         seen = {},

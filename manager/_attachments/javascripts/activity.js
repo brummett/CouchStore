@@ -436,8 +436,8 @@ function runActivity(couchapp) {
             },
 
             // Today's date as a string
-            todayAsString: function() {
-                var now = new Date,
+            dateAsString: function(now) {
+                var now = now || new Date;
                     month = now.getMonth() + 1,
                     dateStr = now.getFullYear() + '-'
                             + (month < 10 ? '0' : '') + month + '-'
@@ -451,7 +451,7 @@ function runActivity(couchapp) {
 
                 couchapp.view('shipment-box-ids', {
                     descending: true,
-                    startkey: [this.todayAsString(), ''],
+                    startkey: [this.dateAsString(), ''],
                     limit: 1,
                     success: function(data) {
                         var boxID = data.rows.length ? (data.rows[0].key[1] + 1) : 1;
@@ -598,7 +598,7 @@ function runActivity(couchapp) {
                 // out in this shipment
                 var orderNumber = context.params['order-number'],
                     orderId = 'order-' + orderNumber,
-                    show_q = '_show/shipment/'+orderId+'?date='+context.todayAsString();
+                    show_q = '_show/shipment/'+orderId+'?date='+context.dateAsString();
             
                 $.get(show_q)
                     .done(function(content) {
@@ -697,7 +697,7 @@ function runActivity(couchapp) {
             if (inv_id) {
                 show_q += '/' + inv_id;
             }
-            show_q = show_q + '?date='+context.todayAsString();
+            show_q = show_q + '?date='+context.dateAsString();
             function runOrderWidget() {
                 getWarehouseList().then( context.fixupOrderWarehouseSelect );
                 new InventoryWidget({   couchapp: couchapp,
@@ -743,7 +743,7 @@ function runActivity(couchapp) {
         });
 
         this.post('#/inventory-commit/', function(context) {
-            var todaysDate = context.todayAsString(),
+            var todaysDate = context.dateAsString(),
                 remove_on_error = [],  // In case of problems, remove these already-saved corrections
                 done = jQuery.Deferred();
 
@@ -874,7 +874,7 @@ function runActivity(couchapp) {
         this.get('#/create-order/:order_type/', function(context) {
             context.deactivateOrderWidget();
             var order_type = context.params.order_type,
-                show_q = '_show/edit-order/?type=' + order_type + '&date='+context.todayAsString();
+                show_q = '_show/edit-order/?type=' + order_type + '&date='+context.dateAsString();
 
             $.get(show_q)
                 .then(function(content) {
@@ -1199,7 +1199,7 @@ function runActivity(couchapp) {
                 params = [];
 
             if (context.params.start) {
-                context.params.startey = context.todayAsString();
+                context.params.startey = context.dateAsString();
             }
             // I'd rather the form just submitted itself, but CouchDB requires the startkey and endkey
             // be JSON encoded strings, which must have quotes around it, and the normal form submission

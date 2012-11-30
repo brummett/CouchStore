@@ -1,3 +1,5 @@
+For the receive/sale/etc forms, automatically highlite the first text entry box
+
 Change the throw()s in update functions to return data structure like:
     { code: 403, json: { reason: 'broke!', message: 'arg' }}
 see: shows/shipment.js

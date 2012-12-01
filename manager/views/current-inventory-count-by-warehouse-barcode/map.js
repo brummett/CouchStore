@@ -23,7 +23,7 @@ function(doc) {
             emit([warehouse, barcode], order.quantityForBarcode(barcode));
         });
 
-    } else if (order.isShippable()) {
+    } else if (order.isShippable() && order.shipments()) {
         order.shipments().forEach(function(shipment) {
             var barcode;
             for (barcode in shipment.items) {

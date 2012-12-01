@@ -59,7 +59,15 @@ function(head,req) {
 
         data['least-popular'] = req.query['least-popular'];
         data.action = req.query.action;
-        data['order-sources'] = Shipping.sources;
+
+        data['order-sources'] = [ { name: 'All', value: '' } ]
+        Shipping.sources.forEach(function(source) {
+            var node = { name: source, value: source };
+            if (req.query['order-source'] === source) {
+                node.selected = 'SELECTED';
+            }
+            data['order-sources'].push(node);
+        });
 
         return Mustache.to_html(ddoc.templates['popular-items-report'], data, ddoc.templates.partials);
     });

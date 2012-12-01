@@ -1268,7 +1268,8 @@ function runActivity(couchapp) {
 
             var view,
                 options = { action: window.location.hash.replace(/\?.*$/,''),
-                            dataType: 'html' };
+                            dataType: 'html',
+                            'order-source': context.params['order-source'] };
 
             if (context.params.start) {
                 var date = new Date;

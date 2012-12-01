@@ -8,9 +8,8 @@
         <div class="span3">
             <label class="control-label" for="warehouse-name">Order source</label>
             <select name="order-source" id="order-source">
-                <option SELECTED value="">All</option>
                 {{#order-sources}}
-                    <option value="{{.}}">{{.}}</option>
+                    <option {{selected}} value="{{value}}">{{name}}</option>
                 {{/order-sources}}
             </select>
         </div>

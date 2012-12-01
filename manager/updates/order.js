@@ -39,8 +39,8 @@ function(doc, req) {
 
     if (doc['order-type'] === 'sale') {
         // sale orders have negative quantities
-        for (var barcode in itemData.items) {
-            itemData.items[barcode] = 0 - Math.abs(itemData.items[barcode]);
+        for (var barcode in itemData.quantities) {
+            itemData.quantities[barcode] = 0 - Math.abs(itemData.quantities[barcode]);
         }
     }
     doc['items'] = itemData.quantities;

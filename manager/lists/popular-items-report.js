@@ -48,15 +48,13 @@ function(head,req) {
     provides('html', function() {
         var data = { items: items };
 
-log(req.query);
-log('req startkey '+ req.query.startkey);
-        data.startkey = (req.query.startkey instanceof Array) ? req.query.startkey[1] : req.query.startkey;
-log('data startkey '+data.endkey);
-        data.endkey = (req.query.endkey instanceof Array) ? req.query.endkey[1] : req.query.endkey;
-log(data);
+        // Hack!  typeof() and instanceof don't seem to work right on Arrays
+        // We'll cheat and say it's an array if it has a "push" attribute. 
+        // stirngs don't have push
+        data.startkey = (req.query.startkey.push) ? req.query.startkey[1] : req.query.startkey;
+        data.endkey = (req.query.endkey.push) ? req.query.endkey[1] : req.query.endkey;
         // start_key and end_key params will have quotes around them that needs to be removed
         data.startkey = data.startkey ? data.startkey.replace(/"|'/g, '') : '';
-log('munged data startkey '+data.endkey);
         data.endkey = data.endkey ? data.endkey.replace(/"|'/g, '') : '';
 
         data['least-popular'] = req.query['least-popular'];

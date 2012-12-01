@@ -18,26 +18,35 @@ function(head,req) {
     var ddoc = this,
         Mustache = require('vendor/couchapp/lib/mustache'),
         Shipping = require('views/lib/shipping-priority'),
-        row,
-        data = {};
+        row, value,
+        items = [], seen = {};
 
-    // The view should not get called with group or group_level, so there
-    // should only ever be one row
-    row = getRow();
-    row = row || { value: [] };
-    data.items = row.value.sort( req.query['least-popular']
-                                ? function(a,b) { return a.count - b.count }
-                                : function(a,b) { return b.count - a.count } );
+    // I'd rather this was done in the reduce, but after you get more than 30 or 40
+    // sold items, it starts failing because the reduce values grow too quickly
+    while (row = getRow() ) {
+        value = row.value;
+        if (seen[ value.barcode ]) {
+            seen[ value.barcode ].count += value.count;
+        } else {
+            seen[ value.barcode ] = value;
+            items.push(value);
+        }
+    }
+
+    items.sort( req.query['least-popular']
+                ? function(a,b) { return a.count - b.count }
+                : function(a,b) { return b.count - a.count } );
 
     if (req.query['list-limit'] !== undefined) {
-        data.items = data.items.slice(0, req.query['list-limit']);
+        items = items.slice(0, req.query['list-limit']);
     }
 
     provides('json', function() {
-        return JSON.stringify(data.items);
+        return JSON.stringify(items);
     });
 
     provides('html', function() {
+        var data = { items: items };
 
 log(req.query);
 log('req startkey '+ req.query.startkey);

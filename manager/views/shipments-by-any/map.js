@@ -19,7 +19,7 @@ function(doc) {
                 results = { 'order-number': orderNumber,
                             'customer-name': customerName,
                             shipment: idx,
-                            date: order.date(),
+                            date: shipment.date,
                             'shipped-items': 0 };
 
             for (barcode in shipment.items) {

@@ -1281,11 +1281,11 @@ function runActivity(couchapp) {
                 options.endkey = context.params.endkey || {};
             }
             if (context.params['order-source']) {
-                view = 'item-count-by-ordersource-selldate';
+                view = 'sold-count-by-ordersource-selldate';
                 options.startkey = [ context.params['order-source'], options.startkey ];
                 options.endkey = [ context.params['order-source'], options.endkey ];
             } else {
-                view = 'item-count-by-selldate';
+                view = 'sold-count-by-selldate';
             }
 
             if (context.params['least-popular']) {

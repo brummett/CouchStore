@@ -1196,63 +1196,63 @@ function runActivity(couchapp) {
 
         this.get('#/report/shipment-summary/', function(context) {
             context.deactivateOrderWidget();
-            var list_q = '_list/shipment-summary-report/shipments-by-date',
-                params = [];
+            var options = { dataType: 'html' };
 
             if (context.params.start) {
-                context.params.startey = context.dateAsString();
-            }
-            // I'd rather the form just submitted itself, but CouchDB requires the startkey and endkey
-            // be JSON encoded strings, which must have quotes around it, and the normal form submission
-            // process won't do that.  So, we need to reformat the startkey and endkey params before
-            // making the list request.
-            if (context.params.startkey || context.params.endkey) {
-                list_q += '?';
+                options.startkey = context.dateAsString();
+                options.endkey = context.dateAsString();
+            } else {
                 if (context.params.startkey) {
-                    params.push('startkey="' + encodeURIComponent(context.params.startkey)+'"');
+                    options.startkey = context.params.startkey;
                 }
                 if (context.params.endkey) {
-                    params.push('endkey="' + encodeURIComponent(context.params.endkey)+'"');
+                    options.endkey = context.params.endkey;
                 }
-                list_q += params.join('&');
             }
+            couchapp.list('shipment-summary-report','shipments-by-date',
+                $.extend(options, {
+                error: function(code, error, message) {
+                    showNotification('error', "Can't get shipment summary report: "+message);
+                },
+                success: function(content) {
+                    context.$element().html(content);
 
-            context.$element().load(list_q, function() {
-                var form = context.$element().find('form#date-selector'),
-                    start_date = form.find('input[name="startkey"]'),
-                    end_date = form.find('input[name="endkey"]');
+                    var form = context.$element().find('form#date-selector'),
+                        start_date = form.find('input[name="startkey"]'),
+                        end_date = form.find('input[name="endkey"]');
 
-                start_date.change(function(e) {
-                    var startkey = start_date.val(),
-                        endkey = end_date.val();
+                    start_date.change(function(e) {
+                        var startkey = start_date.val(),
+                            endkey = end_date.val();
 
-                    if (!endkey) {
-                        end_date.val(startkey);
-                    }
-                });
+                        if (!endkey) {
+                            end_date.val(startkey);
+                        }
+                    });
 
-                form.submit(function(e) {
-                    var startkey = start_date.val(),
-                        endkey = end_date.val(),
-                        url,
-                        params = [];
+                    form.submit(function(e) {
+                        var startkey = start_date.val(),
+                            endkey = end_date.val(),
+                            url,
+                            params = [];
 
-                    url = context.path.replace(/\?.*$/, '');  // Remove any params already there
-                    if (startkey) {
-                        params.push('startkey='+startkey);
-                    }
-                    if (endkey) {
-                        params.push('endkey='+endkey);
-                    }
-                    if (params.length) {
-                        url += '?' + params.join('&');
-                    }
-                    context.redirect(url);
+                        url = context.path.replace(/\?.*$/, '');  // Remove any params already there
+                        if (startkey) {
+                            params.push('startkey='+startkey);
+                        }
+                        if (endkey) {
+                            params.push('endkey='+endkey);
+                        }
+                        if (params.length) {
+                            url += '?' + params.join('&');
+                        }
+                        context.redirect(url);
 
-                    return false;
-                });
+                        return false;
+                    });
 
-            });
+                }})
+            );
 
         });
 

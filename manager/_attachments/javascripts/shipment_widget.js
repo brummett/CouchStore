@@ -109,7 +109,7 @@ function ShipmentWidget(params) {
                 couchapp.view('current-inventory-count-by-warehouse-barcode', {
                     key: [warehouse, barcode],
                     success: function(data) {
-                        var available = data.rows[0].value;
+                        var available = data.rows[0] ? data.rows[0].value : 0;
                         elt.find('td.available-count').text(available);
                         if (available <= 0) {
                             elt.addClass('quantity-danger');

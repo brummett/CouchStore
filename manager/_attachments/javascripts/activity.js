@@ -451,10 +451,11 @@ function runActivity(couchapp) {
 
                 couchapp.view('shipment-box-ids', {
                     descending: true,
-                    startkey: [this.dateAsString(), ''],
+                    startkey: [this.dateAsString(), {}],
+                    endkey: [this.dateAsString()],
                     limit: 1,
                     success: function(data) {
-                        var boxID = data.rows.length ? (data.rows[0].key[1] + 1) : 1;
+                        var boxID = data.rows.length ? (parseInt(data.rows[0].key[1]) + 1) : 1;
                         d.resolve(boxID);
                     }
                 });

@@ -235,6 +235,9 @@ function runActivity(couchapp) {
 
         this.use('Template');
         this.use('Title');
+        this.setTitle(function(title) {
+            return title + ' \\\\\\ CouchStore';
+        });
 
         var Money = couchapp.require('views/lib/money');
         var currentOrderWidget;
@@ -528,6 +531,7 @@ function runActivity(couchapp) {
 
         this.get('#/', function(context) {
             context.deactivateOrderWidget();
+            this.title('Home');
             context.$element().empty();
         });
 
@@ -536,6 +540,8 @@ function runActivity(couchapp) {
         // order-number and shipment as a param
         this.get('#/confirm-shipment/', function(context) {
             context.deactivateOrderWidget();
+            this.title('Confirm a Shipment');
+
             if (! ('shipment-id' in context.params)) {
                 // No shipment, show the list of shipments to pick form
                 var list_q = '_list/confirm-shipment-order-picker/unconfirmed-shipments';
@@ -582,6 +588,7 @@ function runActivity(couchapp) {
         // param.
         this.get('#/shipment/', function(context) {
             context.deactivateOrderWidget();
+            this.title('Make a Shipment');
             if (! ('order-number' in context.params)) {
                 // No order-number, show the list of orders to pick from
 
@@ -620,6 +627,7 @@ function runActivity(couchapp) {
         // Called to edit a previously defined shipment
         this.get('#/edit/shipment/:orderId/:shipmentId', function(context) {
             context.deactivateOrderWidget();
+            this.title('Edit Shipment');
             var show_q = '_show/shipment/' + context.params.orderId;
             context.$element()
                 .load(show_q + '?shipment=' + encodeURIComponent(context.params.shipmentId),
@@ -692,6 +700,7 @@ function runActivity(couchapp) {
         // Presents a form to the user to start an inventory correction
         this.get('#/edit/inventory/(.*)', function(context) {
             context.deactivateOrderWidget();
+            this.title('Edit Partial Physical Inventory');
             var inv_id = context.params['splat'][0],
                 show_q = '_show/partial-inventory';
 
@@ -735,6 +744,7 @@ function runActivity(couchapp) {
         // warehouse that will make the item counts correct
         this.get('#/inventory-commit/', function(context) {
             context.deactivateOrderWidget();
+            this.title('Commit Physical Inventory');
             var content = $.mustache(couchapp.ddoc.templates['confirm-inventory-corrections'],
                                     { action: '#/inventory-commit/' },
                                     couchapp.ddoc.templates.partials);
@@ -838,6 +848,7 @@ function runActivity(couchapp) {
         // Presents a form to the user to edit an already existing order
         this.get('#/edit/order/(.*)', function(context) {
             context.deactivateOrderWidget();
+            this.title('Edit Order');
             var order_id = context.params['splat'][0],
                 show_q = '_show/edit-order';
 
@@ -874,6 +885,7 @@ function runActivity(couchapp) {
         // The form posts to #/order/receive below VVV
         this.get('#/create-order/:order_type/', function(context) {
             context.deactivateOrderWidget();
+            this.title('Create Order');
             var order_type = context.params.order_type,
                 show_q = '_show/edit-order/?type=' + order_type + '&date='+context.dateAsString();
 
@@ -956,6 +968,8 @@ function runActivity(couchapp) {
                 type    = context.params['type'],
                 view    = type + '-by-any',
                 list_q  = '_list/items/' + view;
+
+            this.title('List '+type);
 
             if (search) {
                 list_q += '?search-query=' + encodeURIComponent(search);
@@ -1151,6 +1165,7 @@ function runActivity(couchapp) {
 
         this.get('#/report/inventory/', function(context) {
             context.deactivateOrderWidget();
+            this.title('Current Inventory Report');
             var search = context.params['search-query']
                 list_q = '_list/current-inventory-report/inventory-by-permanent-warehouse-barcode?group=true&startkey=[1]';
 
@@ -1206,6 +1221,8 @@ function runActivity(couchapp) {
                     options.endkey = context.params.endkey;
                 }
             }
+            this.title('Shipment Summary Report ' + options.startkey + ' to ' + options.endkey);
+
             couchapp.list('shipment-summary-report','shipments-by-date',
                 $.extend(options, {
                 error: function(code, error, message) {
@@ -1255,6 +1272,7 @@ function runActivity(couchapp) {
 
         this.get('#/report/purchase/', function(context) {
             context.deactivateOrderWidget();
+            this.title('Suggested Purchase Report');
 
             
 
@@ -1289,6 +1307,9 @@ function runActivity(couchapp) {
             if (context.params['least-popular']) {
                 options['least-popular'] = true;
             }
+
+            this.title((options['least-popular'] ? 'Least' : '')
+                        + ' Popular Items Report ' + options.startkey + ' to ' + options.endkey);
 
             options.success = function(content) {
                 context.$element().html(content);

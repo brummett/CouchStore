@@ -34,7 +34,7 @@ function(head, req) {
             });
             send(Mustache.to_html(rowTemplate, row.value));
         }
-        return wasRows ? ' ' : '<h3>No shipments within that date range';
+        return wasRows ? ' ' : '<h3>No shipments within that date range</h3>';
     });
 
 }

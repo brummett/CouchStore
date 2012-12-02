@@ -69,6 +69,5 @@ table#unfilled-items tr.quantity-danger td {
     button { display: none }
     .navbar { display: none }
     .keep-together { page-break-before: auto }
-    .keep-together * { page-break-after: avoid }
-    .keep-together *:last-child { page-break-after: auto }
+    .keep-together div { page-break-before: avoid }
 }

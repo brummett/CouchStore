@@ -46,6 +46,8 @@ function(doc) {
         if (shipment['tracking-number']) {
 
             shipment_data = {
+                'customer-name': order.customerName(),
+                'customer-address': order.customerAddress(),
                 'order-source': order.orderSource(),
                 'order-number': order.orderNumber(),
                 'warehouse': order.warehouseName(),

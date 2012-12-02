@@ -1,19 +1,32 @@
 <hr></hr>
 
 <div class="keep-together">
-    <div>
-        <span>Order {{order-number}}</span>
-    </div>
-    <div>
-        <span>Date {{shipping-date}}</span>
-        <span>Source {{order-source}}</span>
-        <span>Warehouse {{warehouse}}</span>
-    </div>
-    <div>
-        <span>Shipping Cost ${{shipping-cost}}</span>
+    <div class="row">
+        <div class="span4">
+            <div>
+                <span>Order {{order-number}}</span>
+            </div>
+            <div>
+                <span>Date {{shipping-date}}</span>
+                <span>Source {{order-source}}</span>
+                <span>Warehouse {{warehouse}}</span>
+            </div>
+            <div>
+                <span>Shipping Cost ${{shipping-cost}}</span>
+            </div>
+        </div>
+        <div class="span4">
+            <div>
+                <span>{{customer-name}}</span>
+            </div>
+            <div>
+                <pre>{{customer-address}}</pre>
+            </div>
+        </div>
+        <div class="span4"></div>
     </div>
 
-    <table class="table table-condensed"</table>
+    <div><table class="table table-condensed"</table>
     <thead>
         <tr>
             <th>SKU</th>
@@ -59,5 +72,5 @@
             </tr>
         {{/is-first}}
     </tbody>
-    </table>
+    </table></div>
 </div>

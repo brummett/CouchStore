@@ -61,7 +61,13 @@ exports.extractItemInfo = function(props) {
                 skus: skus };
 };
 
-exports.boolean = function (v) { return !!v };
+exports.boolean = function (v) {
+    if (v === "false") {
+        return false;
+    } else {
+        return !!v
+    }
+};
 exports.integer = function(v) { return parseInt(v); }
 exports.float = function(v) { return parseFloat(v); };
 exports.dollars = function(v) { return Money.toCents(v) };

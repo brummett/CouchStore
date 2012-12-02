@@ -28,7 +28,7 @@ function(doc) {
             var quantity = shipment.items[barcode],
                 this_item_price = order.costForBarcode(barcode) * quantity;
 
-            if (order.isTaxable) {
+            if (order.isTaxable()) {
                 totalTaxes += Money.taxRate * this_item_price;
                 this_item_price = Money.afterTax(this_item_price);
             }

@@ -1168,18 +1168,14 @@ function runActivity(couchapp) {
 
         this.get('#/report/item-history/:barcode', function(context) {
             context.deactivateOrderWidget();
-            var list_q = '_list/item-history/item-history-by-barcode-date';
-
+            var options = { dataType : 'html' };
             if ('barcode' in context.params) {
-                list_q += '?startkey=' + encodeURIComponent(JSON.stringify([context.params.barcode]))
-                        + '&endkey=' + encodeURIComponent(JSON.stringify([context.params.barcode,{}]));
+                options.startkey = [context.params.barcode];
+                options.endkey = [context.params.barcode,{}];
             }
 
-            $.ajax({
-                url: list_q,
-                type: 'GET',
-                async: true,
-                dataType: 'html',
+            couchapp.list('item-history', 'item-history-by-barcode-date',
+                $.extend(options, {
                 success: function(content) {
                     var answer = context.newdialogModal('Item History',
                                                         $(content),
@@ -1191,7 +1187,8 @@ function runActivity(couchapp) {
                 error: function(code, error, message) {
                     showNotification('error', 'History not available: '+message);
                 }
-            });
+                })
+            );
         });
 
         this.get('#/report/shipment-summary/', function(context) {

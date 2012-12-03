@@ -95,7 +95,7 @@
       var resolved = resolveModule(name, name.split('/'), parents, ddoc);
       var source = resolved[0]; 
       parents = resolved[1];
-      var s = "var func = function (module, exports, require) { " + source + " };";
+      var s = "var func = function (module, exports, require) {\n" + source + "\n};";
       try {
         eval(s);
         func.apply(ddoc, [module, exports, function(name) {return require(name, parents)}]);

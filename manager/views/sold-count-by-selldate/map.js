@@ -8,7 +8,7 @@ function(doc) {
 
     order.barcodes().forEach(function(barcode) {
         emit(order.date(),
-              { count: order.quantityForBarcode(barcode),
+              { count: Math.abs(order.quantityForBarcode(barcode)),
                 barcode: barcode,
                 name: order.nameForBarcode(barcode),
                 sku: order.skuForBarcode(barcode)

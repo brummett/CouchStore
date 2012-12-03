@@ -6,7 +6,7 @@ function(doc) {
 
     if (order) {
         order.barcodes().forEach(function(barcode) {
-            emit([barcode, order.date],
+            emit([barcode, order.date()],
                     {   name:           order.nameForBarcode(barcode),
                         sku:            order.skuForBarcode(barcode),
                         count:          order.quantityForBarcode(barcode),

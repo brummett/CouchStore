@@ -53,6 +53,8 @@ function(doc) {
                 'warehouse': order.warehouseName(),
                 'is-taxable': order.isTaxable(),
                 'shipment-number': idx,
+                'tracking-number': shipment['tracking-number'],
+                'carrier': shipment['carrier'],
                 'shipping-charge': order.shippingCharge(),
                 'shipping-cost': shipment['shipping-cost'],
                 'total-charge': totalCharged,

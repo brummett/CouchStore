@@ -20,6 +20,7 @@ function(doc, req) {
         data.section = doc.section;
         data.date = doc.date;
         data.warehouseName = doc['warehouse-name'];
+        data._id = doc._id;
         data._rev = doc._rev;
 
         data.items = [];

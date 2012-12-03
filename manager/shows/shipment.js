@@ -1,3 +1,4 @@
+// shipment show
 function(doc, req) {
     var ddoc = this,
         Mustache = require('vendor/couchapp/lib/mustache'),
@@ -77,6 +78,8 @@ function(doc, req) {
             data.title = 'Edit shipment';
             data.date = thisShipment.date;
             data.shipment = shipment;
+            data.size = thisShipment.size;
+            data.weight = thisShipment.weight;
 
             for (barcode in thisShipment.items) {
                 if (thisShipment.items[barcode] != 0 ) {

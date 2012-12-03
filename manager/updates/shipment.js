@@ -38,6 +38,8 @@ function(doc,req) {
 
     thisShipment.date = Updates.valueFor('date', req);
     thisShipment.box = Updates.valueFor('box', req);
+    thisShipment.size = Updates.valueFor('size', req);
+    thisShipment.weight = Updates.valueFor('weight', req);
     thisShipment.items = items;
 
     return [doc, JSON.stringify({ success: true })];

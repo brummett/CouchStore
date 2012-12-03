@@ -51,6 +51,20 @@
         </div>
     </div>
 
+    <div class="control-group">
+        <label class="control-label" for="weight">Weight</label>
+        <div class="controls">
+            <input type="text" name="weight" id="weight" value="{{weight}}">
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="size">Size</label>
+        <div class="controls">
+            <input type="text" name="size" id="size" value="{{size}}">
+        </div>
+    </div>
+
     {{#shipping-items}}
         <input type="hidden" name="scan-{{barcode}}-quan" id="scan-{{barcode}}-quan" data-barcode="{{barcode}}" value="{{quantity}}">
     {{/shipping-items}}

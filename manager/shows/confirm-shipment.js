@@ -28,6 +28,8 @@ function(doc, req) {
                 // Editing an existing shipment
                 data['title'] = 'Confirm a shipment';
                 data['box'] = thisShipment.box;
+                data['size'] = thisShipment.size;
+                data['weight'] = thisShipment.weight;
                 data['tracking-number'] = thisShipment['tracking-number'];
                 data['shipping-cost'] = thisShipment['shipping-cost'];
 

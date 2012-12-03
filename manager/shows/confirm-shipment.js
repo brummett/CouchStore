@@ -4,6 +4,7 @@ function(doc, req) {
         Mustache = require('vendor/couchapp/lib/mustache'),
         Money = require('views/lib/money'),
         Order = require('views/lib/Order'),
+        Shipping = require('views/lib/shipping-priority'),
         order = Order.newFromDoc(doc),
         data = {},
         thisShipment,
@@ -47,6 +48,11 @@ function(doc, req) {
         data['shipping-service-level'] = order.shippingServiceLevel();
 
         data['shipping-charge'] = order.shippingCharge() ? Money.toDollars(order.shippingCharge()) : '0.00';
+
+        data.carriers = [];
+        Shipping.carriers.forEach(function(name) {
+            data.carriers.push({name: name});
+        });
 
     } else {
         if (! req.query.type) {

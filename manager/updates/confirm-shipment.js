@@ -14,7 +14,8 @@ function(doc,req) {
     doc.shipments[shipmentNum]['tracking-number']   = Updates.valueFor('tracking-number', req);
     doc.shipments[shipmentNum]['shipping-cost']     = parseInt(Updates.valueFor('shipping-cost', req));
     doc.shipments[shipmentNum]['weight']            = Updates.valueFor('weight', req) || '';
-    doc.shipments[shipmentNum]['size']              = Updates.valueFor('size', req) || ''
+    doc.shipments[shipmentNum]['size']              = Updates.valueFor('size', req) || '';
+    doc.shipments[shipmentNum]['carrier']           = Updates.valueFor('carrier', req);
 
     return [doc, JSON.stringify({ success: true })];
 }

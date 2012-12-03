@@ -1,5 +1,6 @@
 var sources = [ 'walk-in', 'web', 'amazon', 'phone', 'ebay', 'buy.com'];
 var levels = ['overnight', 'expedited', 'standard' ];
+var carriers = ['US Post Office','UPS','FedEx', 'Other'];
 
 var i;
 var sourcePriority = {};
@@ -18,6 +19,7 @@ var priority = function priority(doc) {
 
 exports.priority = priority;
 exports.sources = sources;
+exports.carriers = carriers;
 exports.levels = levels;
 exports.sourcePriority = sourcePriority;
 exports.levelPriority = levelPriority;

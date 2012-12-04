@@ -1,6 +1,21 @@
 <tr class="line-item" id="scan-{{barcode}}" data-barcode="{{barcode}}">
     <td><div>
-            <button class="add-item btn btn-mini btn-info" data-barcode="{{barcode}}"><i class="icon-ok-sign icon-white"></i></button>
+            <button class="add-item btn btn-mini btn-info" data-barcode="{{barcode}}">
+                {{#add}}
+                    <i class="icon-plus-sign icon-white"></i>
+                {{/add}}
+                {{#remove}}
+                    <i class="icon-minus-sign icon-white"></i>
+                {{/remove}}
+            </button>
+            <button class="add-all-item btn btn-mini btn-info" data-barcode="{{barcode}}">
+                {{#add}}
+                    <i class="icon-ok-sign icon-white"></i>
+                {{/add}}
+                {{#remove}}
+                    <i class="icon-remove-sign icon-white"></i>
+                {{/remove}}
+            </button>
         </div>
     </td>
     <td class="item-count">{{quantity}}</td>

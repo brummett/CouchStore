@@ -63,7 +63,8 @@ function(doc, req) {
             data.unfilledItems.push( {  barcode: barcode,
                                         name: doc['item-names'][barcode],
                                         'show-available': true,
-                                        quantity: unfilledItems[barcode]
+                                        quantity: unfilledItems[barcode],
+                                        add: true
                                     });
         }
     }

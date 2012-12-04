@@ -28,7 +28,9 @@ function ShipmentWidget(params) {
 
     // Connect any already-existing item rows' button callbacks
     $('button.add-item', unfilledTable).click(unfilledItemClicked);
+    $('button.add-all-item', unfilledTable).click(unfilledAllItemsClicked);
     $('button.add-item', shippingTable).click(shippingItemClicked);
+    $('button.add-all-item', shippingTable).click(unfilledAllItemsClicked);
 
     initializeAvaliableCount();
 
@@ -66,14 +68,32 @@ function ShipmentWidget(params) {
         moveOneItem(barcode, unfilledManager, shippingManager);
     }
 
+    function unfilledAllItemsClicked(e) {
+        var barcode = $(e.currentTarget).attr('data-barcode');
+        moveAllItems(barcode, unfilledManager, shippingManager);
+    }
+
     function shippingItemClicked(e) {
         var barcode = $(e.currentTarget).attr('data-barcode');
         moveOneItem(barcode, shippingManager, unfilledManager);
+    }
+
+    function shippingAllItemsClicked(e) {
+        var barcode = $(e.currentTarget).attr('data-barcode');
+        moveAllItems(barcode, shippingManager, unfilledManager);
     }
         
     function moveOneItem(barcode, source, dest) {
         var name;
         if (source.removeItem(barcode)) {
+            name = source.itemName(barcode);
+            dest.addItem(barcode, name);
+        }
+    }
+
+    function moveAllItems(barcode, source, dest) {
+        var name;
+        while(source.removeItem(barcode)) {
             name = source.itemName(barcode);
             dest.addItem(barcode, name);
         }
@@ -170,11 +190,18 @@ function ShipmentWidget(params) {
                             quantity: 0,
                             name: name
                         };
+
+            if (this.table == unfilledTable) {
+                data.add = true;
+            } else {
+                data.remove = true;
+            }
                         
             tr = $($.mustache(couchapp.ddoc.templates.partials['shipment-item-row'], data));
             this.table.append(tr);
             
             tr.find('button.add-item').click( this.table == unfilledTable ? unfilledItemClicked : shippingItemClicked );
+            tr.find('button.add-all-item').click( this.table == unfilledTable ? unfilledAllItemsClicked : shippingAllItemsClicked );
         } else {
             tr = this.trForBarcode(barcode);
         }

@@ -244,7 +244,7 @@ function runActivity(couchapp) {
             dialogModal: function(title, message, buttons) {
                 var d = $.Deferred(),
                     buttons = buttons || ['Ok'],  // Have at least one button labeled 'Ok'
-                    answer, i, modal, elt,
+                    i, modal, elt,
                     data = { title: title, buttons: buttons };
 
                 // Normalize the buttons
@@ -283,10 +283,10 @@ function runActivity(couchapp) {
                 modal.click(function(e) {
                     var elt = $(e.srcElement);
                     if (elt.is('button')) {
-                        answer = elt.attr('value');
+                        d.resolve(elt.attr('value'));
                     }
                 });
-                modal.on('hidden', function() { modal.remove(); d.resolve(answer) });
+                modal.on('hidden', function() { modal.remove(); });
                 return d.promise();
             },
  

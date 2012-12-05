@@ -2,4 +2,4 @@
 <td>{{customer-name}}</td>
 <td>{{shipped-items}}</td>
 <td>{{date}}</td>
-<td>{{tracking-number}}</td>
+<td>{{tracking-number}}{{^tracking-number}}<a href="#/confirm-shipment/?shipment-id={{shipment}}-{{order-number}}" class="btn btn-warning"><i class="icon-ok icon-white"></i> Confirm</a>{{/tracking-number}}</td>

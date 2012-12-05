@@ -22,25 +22,6 @@ function(head,req) {
                                         && (key.toString().toLowerCase().indexOf(search) > -1); }
                 : function(key) { return 1; };
                     
-    var headers = { items: [ 'Name', 'Sku','Barcode' ],
-                    customers: ['Name', 'Email','Phone'],
-                    warehouses: ['Name','Email','Phone'],
-                    orders: ['Order-Number', 'Customer-Name', 'Order-Type', 'Unfilled-Items', 'Shipped-Items'],
-                    shipments: ['Order-Number', 'Customer-Name', 'Shipped-Items', 'Date', 'Tracking-Number'],
-                    inventories: ['Warehouse', 'Section', 'Kinds', 'Items']
-                   };
-    var template = ddoc.templates['data-lister'];
-
-    // Fixup the template for the proeper fields
-    // Mustache dosen't seem to allow rendering of nested arrays
-    var replacement = '<td>',
-        i = 0;
-    for (i = 0; i < headers[itemType].length; i++) {
-        replacement += '{{' + headers[itemType][i].toLowerCase() + '}}</td><td>';
-    }
-    replacement += '</td>';
-    template = template.replace('**FIELDS**', replacement);
-
     var isDuplicate = ( function() {
         var shown = {};
         return function(row) {
@@ -80,12 +61,16 @@ function(head,req) {
     };
 
     provides('html', function() {
+        // Pick the right header/row partial for the item type
+        var partials = ddoc.templates.partials;
+        partials.headers = ddoc.templates.partials[itemType].headers;
+        partials.row = ddoc.templates.partials[itemType].row;
+
         var data = {
                 itemType: itemType,
                 showAddButton: (itemType in addableThings),
                 showObsoleteButton: (itemType == 'items'),
                 items: [],
-                headers: headers[itemType],
                 path: '#/data/' + itemType + '/',
                 edit: '#/edit/' + singular + '/',
                 delete: '#/delete/' + singular + '/'
@@ -99,7 +84,7 @@ function(head,req) {
         }
 
         data['search-query'] = search;
-        return Mustache.to_html(template, data, ddoc.templates.partials);
+        return Mustache.to_html(ddoc.templates['data-lister'], data, partials);
     });
 
 }

@@ -10,9 +10,7 @@
 <table id="item-list" class="table table-condensed">
     <thead>
     <tr>
-        {{#headers}}
-            <th>{{.}}</th>
-        {{/headers}}
+        {{> headers}}
     </tr>
     </thead>
 
@@ -22,7 +20,7 @@
         {{/items}}
         {{#items}}
             <tr {{#is-obsolete}} class="obsolete" style="display: none;"{{/is-obsolete}}>
-                **FIELDS**
+                {{> row}}
                 <td>
                     <a href="{{edit}}{{_id}}" class="edit-item btn" {{^editable}}disabled{{/editable}}><i class="icon-edit"></i> Edit</a>
                     <a href="{{delete}}{{_id}}" class="delete-item btn btn-danger"><i class="icon-trash icon-white"></i> Remove</a>

@@ -598,7 +598,7 @@ function runActivity(couchapp) {
                                                     message,
                                                     [{ label: 'Delete', class: 'danger' }, 'Cancel']);
             answer.done(function(answer) {
-                if (answer == 'Ok') {
+                if (answer == 'Delete') {
                     couchapp.update('delete-shipment', { _id: docid, s: shipment }, {
                         success: function() {
                             window.history.back();
@@ -609,6 +609,8 @@ function runActivity(couchapp) {
                             showNotification('error', 'Could not delete shipment: '+message);
                         }
                     });
+                } else {
+                    window.history.back();
                 }
             });
         });

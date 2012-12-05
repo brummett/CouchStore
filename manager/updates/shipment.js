@@ -29,7 +29,11 @@ function(doc,req) {
     if (shipmentNum === null) {
         // Creating a new shipment
         thisShipment = { };
-        doc.shipments = [ thisShipment ];
+        if (doc.shipments === undefined) {
+            doc.shipments = [ thisShipment ];
+        } else {
+            doc.shipments.push(thisShipment);
+        }
 
     } else {
         // updating a shipment

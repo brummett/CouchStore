@@ -86,6 +86,7 @@ function(doc, req) {
                 if (thisShipment.items[barcode] != 0 ) {
                     data.shippingItems.push( {  barcode: barcode,
                                                 name: doc['item-names'][barcode],
+                                                remove: true,
                                                 quantity: Math.abs(thisShipment.items[barcode])
                                             } );
                 }

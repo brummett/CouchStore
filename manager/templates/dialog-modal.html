@@ -1,6 +1,6 @@
-<div id="dialog-modal" class="modal hide fade">
+<div id="dialog-modal" class="modal hide fade" tabindex="-1">
         <div class="modal-header">
-            <button class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h3>{{title}}</h3>
         </div>
         <div class="modal-body">
@@ -8,9 +8,18 @@
         </div>
 
         <div class="modal-footer">
-            <form>
-            <button type="submit" id="cancel" class="btn" data-dismiss="modal">Ok</button>
-            </form>
+            <button type="submit"
+                    data-dismiss="modal"
+                    name="{{firstButton}}"
+                    value="{{firstButton}}"
+                    id="{{firstButton}}"
+                    class="btn btn-primary">{{firstButton}}</button>
+            {{#buttons}}
+                <button value="{{.}}"
+                        id="{{.}}"
+                        data-dismiss="modal"
+                        class="btn">{{.}}</button>
+            {{/buttons}}
         </div>
     </form>
 </div>

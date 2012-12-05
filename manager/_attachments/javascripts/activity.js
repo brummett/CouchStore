@@ -241,17 +241,7 @@ function runActivity(couchapp) {
                 return d.promise();
             },
 
-            dialogModal: function(title, message) {
-                var d = $.Deferred();
-                var modal = $.mustache(couchapp.ddoc.templates['dialog-modal'],
-                                            { title: title, message: message });
-                modal = $(modal).appendTo(this.$element())
-                                .modal({backdrop: true, keyboard: true, show: true});
-                modal.on('hidden', function() { modal.remove(); d.resolve(true) });
-                return d.promise();
-            },
-
-            newdialogModal: function(title, message, buttons) {
+            dialogModal: function(title, message, buttons) {
                 var d = $.Deferred(),
                     answer,
                     firstButton = ((!buttons) || (buttons.length == 0)) ? 'Ok' : buttons.shift(),
@@ -264,28 +254,17 @@ function runActivity(couchapp) {
                     data.message = message;
                 }
 
-                modal = $.mustache(couchapp.ddoc.templates['newdialog-modal'], data);
+                modal = $.mustache(couchapp.ddoc.templates['dialog-modal'], data);
                 modal = $(modal).appendTo(this.$element())
                                 .modal({backdrop: true, keyboard: true, show: true});
                 if (elt) {
                     modal.find('div.modal-body').append(elt);
                 }
-                modal.find('form').submit(function() {
-                    answer = firstButton
-                    modal.modal('hide');
-                    return false;
-                })
-                .click(function(e) {
+                modal.click(function(e) {
                     var elt = $(e.srcElement);
                     if (elt.is('button')) {
                         answer = elt.attr('value');
-                        modal.modal('hide');
-                        return false;
                     }
-                });
-                modal.find('a.follow').click(function(e) {
-                    modal.modal('hide');
-                    return true;
                 });
                 modal.on('hidden', function() { modal.remove(); d.resolve(answer) });
                 return d.promise();
@@ -595,23 +574,22 @@ function runActivity(couchapp) {
 
             var message = 'Are you sure you want to delete shipment '
                                + shipment + ' from order ' + orderNumber;
-            var answer = context.newdialogModal('Delete Shipment',
+            var answer = context.dialogModal('Delete Shipment',
                                                     message,
                                                     ['Ok', 'Cancel']);
             answer.done(function(answer) {
                 if (answer == 'Ok') {
                     couchapp.update('delete-shipment', { _id: docid, s: shipment }, {
                         success: function() {
+                            window.history.back();
                             showNotification('success', 'Shipment deleted');
                         },
                         error: function(status, reason, message) {
+                            window.history.back();
                             showNotification('error', 'Could not delete shipment: '+message);
                         }
                     });
                 }
-            });
-            answer.always(function() {
-                window.history.back();
             });
         });
 
@@ -628,8 +606,9 @@ function runActivity(couchapp) {
                     params.box = boxID;
                     couchapp.update('shipment', params, {
                         success: function() {
-                            context.dialogModal('Shipment saved', 'Shipment for order ' + orderId
-                                                + ' is box ' + boxID)
+                            context.dialogModal('Shipment saved',
+                                                    'Shipment for order ' + orderId
+                                                    + ' is box ' + boxID)
                                 .then(function() {
                                     showNotification('success', 'Shipment saved');
                                     context.redirect('#/shipment/');
@@ -1140,7 +1119,7 @@ function runActivity(couchapp) {
             couchapp.list('item-history', 'item-history-by-barcode-date',
                 $.extend(options, {
                 success: function(content) {
-                    var answer = context.newdialogModal('Item History',
+                    var answer = context.dialogModal('Item History',
                                                         $(content),
                                                         ['Ok']);
                     answer.always(function() {

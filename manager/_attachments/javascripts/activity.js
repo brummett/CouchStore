@@ -624,7 +624,9 @@ function runActivity(couchapp) {
         // called when a shipment form is submitted to define a shipment
         this.post('#/shipment/', function(context) {
             var orderId = 'order-' + context.params['order-number'],
-                params = $.extend({ _id: orderId, s: context.params['shipment'] }, context.params);
+                params = $.extend({ _id: orderId,
+                                s: context.params['shipment'] },
+                                context.params.toHash());
 
             delete params['order-number'];
             delete params['shipment'];

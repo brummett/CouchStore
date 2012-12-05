@@ -403,7 +403,13 @@ function runActivity(couchapp) {
                     endkey: [this.dateAsString()],
                     limit: 1,
                     success: function(data) {
-                        var boxID = data.rows.length ? (parseInt(data.rows[0].key[1]) + 1) : 1;
+                        var boxID = data.rows.length ? parseInt(data.rows[0].key[1]) : false;
+                        if (boxID) {
+                            boxID++;
+                        } else {
+                            boxID = 1;
+                        }
+
                         d.resolve(boxID);
                     }
                 });

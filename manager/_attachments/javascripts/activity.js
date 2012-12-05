@@ -596,7 +596,7 @@ function runActivity(couchapp) {
                                + shipment + ' from order ' + orderNumber;
             var answer = context.dialogModal('Delete Shipment',
                                                     message,
-                                                    ['Ok', 'Cancel']);
+                                                    [{ label: 'Delete', class: 'danger' }, 'Cancel']);
             answer.done(function(answer) {
                 if (answer == 'Ok') {
                     couchapp.update('delete-shipment', { _id: docid, s: shipment }, {

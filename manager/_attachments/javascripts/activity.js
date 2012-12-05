@@ -243,11 +243,31 @@ function runActivity(couchapp) {
 
             dialogModal: function(title, message, buttons) {
                 var d = $.Deferred(),
-                    answer,
-                    firstButton = ((!buttons) || (buttons.length == 0)) ? 'Ok' : buttons.shift(),
-                    modal, elt,
-                    data = { title: title, firstButton: firstButton, buttons: buttons };
+                    buttons = buttons || ['Ok'],  // Have at least one button labeled 'Ok'
+                    answer, i, modal, elt,
+                    data = { title: title, buttons: buttons };
 
+                // Normalize the buttons
+                for (i = 0; i < buttons.length; i++) {
+                    // Convert simple string to an object
+                    if (typeof buttons[i] === 'string') {
+                        buttons[i] = { label: buttons[i] };
+                    }
+                    // Default value is the same as the label
+                    if (buttons[i].value === undefined) {
+                        buttons[i].value = buttons[i].label;
+                    }
+                    // The first button defaults to Bootstrap class "primary"
+                    if ((buttons[i].class === undefined) && (i === 0)) {
+                        buttons[i].class = 'btn-primary';
+                    } else if ((buttons[i].class) && (! /^btn-/.test(buttons[i].class))) {
+                        buttons[i].class = 'btn-' + buttons[i].class;
+                    }
+                    // The first button defaults to type 'submit'
+                    if (buttons[i].type === undefined) {
+                        buttons[i].type = (i === 0) ? 'submit' : 'button';
+                    }
+                }
                 if (typeof(message) == 'object') {
                     elt = message;   // This seems cheesy....
                 } else {

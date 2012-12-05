@@ -8,18 +8,13 @@
         </div>
 
         <div class="modal-footer">
-            <button type="submit"
-                    data-dismiss="modal"
-                    name="{{firstButton}}"
-                    value="{{firstButton}}"
-                    id="{{firstButton}}"
-                    class="btn btn-primary">{{firstButton}}</button>
             {{#buttons}}
-                <button value="{{.}}"
-                        id="{{.}}"
+                <button type="{{type}}"
+                        name="modal"
+                        value="{{name}}"
+                        id="{{label}}"
                         data-dismiss="modal"
-                        class="btn">{{.}}</button>
+                        class="btn {{class}}">{{label}}</button>
             {{/buttons}}
         </div>
-    </form>
 </div>

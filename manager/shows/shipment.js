@@ -81,6 +81,7 @@ function(doc, req) {
             data.shipment = shipment;
             data.size = thisShipment.size;
             data.weight = thisShipment.weight;
+            data.box = thisShipment.box;
 
             for (barcode in thisShipment.items) {
                 if (thisShipment.items[barcode] != 0 ) {

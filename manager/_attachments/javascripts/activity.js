@@ -631,24 +631,32 @@ function runActivity(couchapp) {
             delete params['order-number'];
             delete params['shipment'];
 
-            context.getNextBoxId()
-                .then( function(boxID) {
-                    params.box = boxID;
-                    couchapp.update('shipment', params, {
-                        success: function() {
-                            context.dialogModal('Shipment saved',
+            function saveShipment(params) {
+                couchapp.update('shipment', params, {
+                    success: function() {
+                        context.dialogModal('Shipment saved',
                                                     'Shipment for order ' + orderId
-                                                    + ' is box ' + boxID)
-                                .then(function() {
-                                    showNotification('success', 'Shipment saved');
-                                    context.redirect('#/shipment/');
-                                });
-                        },
-                        error: function(status, reason, message) {
-                                showNotification('error', 'Could not save shipment: ' + message);
-                        }
-                    });
+                                                    + ' is box ' + params.box)
+                            .then(function() {
+                                showNotification('success', 'Shipment saved');
+                                context.redirect('#/shipment/');
+                            });
+                    },
+                    error: function(status, reason, message) {
+                        showNotification('error', 'Could not save shipment: ' + message);
+                    }
                 });
+            }
+
+            if (params.s === undefined) {
+                context.getNextBoxId()
+                    .then( function(boxId) {
+                        params.box = boxId;
+                        saveShipment(params);
+                    });
+            } else {
+                saveShipment(params);
+            }
         });
 
         // Presents a form to the user to start an inventory correction

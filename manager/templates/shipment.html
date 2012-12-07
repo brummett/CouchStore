@@ -65,9 +65,9 @@
         </div>
     </div>
 
-    {{#shipping-items}}
+    {{#shippingItems}}
         <input type="hidden" name="scan-{{barcode}}-quan" id="scan-{{barcode}}-quan" data-barcode="{{barcode}}" value="{{quantity}}">
-    {{/shipping-items}}
+    {{/shippingItems}}
 
     {{#_rev}}
         <input type="hidden" name="_rev" id="_rev" value="{{_rev}}">

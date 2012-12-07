@@ -67,7 +67,7 @@ function(doc, req) {
 
         data.items = [];
         order.barcodes().forEach(function(barcode) {
-            var cost = order.costForBarcode(barcode)
+            var cost = order.costForBarcode(barcode) !== undefined
                         ? Money.toDollars(order.costForBarcode(barcode))
                         : '';
             data.items.push( {  barcode: barcode,

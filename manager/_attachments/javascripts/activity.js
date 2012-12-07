@@ -904,14 +904,8 @@ function runActivity(couchapp) {
             params._id = 'order-' + order_number;
             params['order-type'] = order_type;
 
-            var whenDone = jQuery.Deferred();
             couchapp.update('order', params, {
-                success: whenDone.resolve.bind(whenDone),
-                error: whenDone.reject.bind(whenDone)
-            });
-
-            whenDone.done(
-                function(orderDoc) {
+                success: function(orderDoc) {
                     context.updateOrdersItems(orderDoc)
                         .then( function() {
                             context.showNotification('success', 'Order ' + order_number + ' saved!');
@@ -919,12 +913,12 @@ function runActivity(couchapp) {
                             context.$element().empty();
                             context.redirect(next_url);
                         });
-                });
-            whenDone.fail(
-               function(status, reason, message) {
+                },
+                error: function(status, reason, message) {
                     $.log('Problem saving order '+ order_number +"\nmessage: " + message + "\nstatus: " + status + "\nreason: "+reason);
                     context.showNotification('error' , 'Problem saving order ' + order_number + ': ' + message);
-                });
+                }
+            });
         });
 
         this.get('#/data/:type/', function dataLister(context) {

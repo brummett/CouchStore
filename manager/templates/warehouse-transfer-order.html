@@ -8,6 +8,20 @@
     </div>
 
     <div class="control-group">
+        <label class="control-label" for="order-number">Reference Number</label>
+        <div class="controls">
+            <input type="text"
+                   {{#orderNumber}}
+                        value="{{orderNumber}}"
+                        readonly="true"
+                    {{/orderNumber}}
+                    name="order-number"
+                    id="order-number"
+                    class="input-small span2{{#orderNumber}} uneditable-input{{/orderNumber}}">
+        </div>
+    </div>
+
+    <div class="control-group">
         <label class="control-label" for="source-warehouse-name">Shipped From</label>
         <div class="controls">
             <select name="source-warehouse-name" id="source-warehouse-name" class="warehouse-picker">

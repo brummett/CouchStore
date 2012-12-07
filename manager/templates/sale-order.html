@@ -15,6 +15,9 @@
                         value="{{orderNumber}}"
                         readonly="true"
                     {{/orderNumber}}
+                    {{^ordeNumber}}
+                        autofocus="autofocus"
+                    {{/orderNumber}}
                     name="order-number"
                     id="order-number"
                     class="input-small span2{{#orderNumber}} uneditable-input{{/orderNumber}}">

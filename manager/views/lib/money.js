@@ -24,7 +24,7 @@ exports.isDollarsAndCents = function(dollars) {
     return (matches && matches.length);
 }
 
-var taxRate = 0.0625;
+var taxRate = 0.06925;
 exports.taxRate = taxRate;
 exports.afterTax = function(cents) {
     return (cents + (cents * taxRate));

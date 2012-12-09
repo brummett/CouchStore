@@ -117,13 +117,6 @@ OrderWidget.prototype.common_init = function common_init(params) {
     this.orderForm.submit(this.formSubmission.bind(this));
     this.barcodeScan.submit(this.barcodeWasScanned.bind(this));
 
-    //var updateItemCallback = this.itemWasUpdated.bind(this);
-    //this.activity.bind('item-updated', updateItemCallback);
-    //this.deactivate = function() {
-    //    isactive = false;
-    //    widget.activity._unlisten('item-updated', updateItemCallback);
-    //};
-
     latestOrderWidget = this;
     this.deactivate = function() {
         latestOrderWidget = null;

@@ -18,6 +18,20 @@ function(doc, req) {
                 json: { reason: 'Document is a '+doc.type+', expected an order' }
             };
         }
+
+        data['address'] = order.customerAddress();
+        data['warehouse-name'] = order.warehouseName();
+        data['customer-name'] = order.customerName();
+        data._rev = doc._rev;
+        data['shipping-service-level'] = order.shippingServiceLevel();
+
+        data['shipping-charge'] = order.shippingCharge() ? Money.toDollars(order.shippingCharge()) : '0.00';
+
+        data.carriers = [];
+        Shipping.carriers.forEach(function(name) {
+            data.carriers.push({name: name});
+        });
+
         if ('shipment' in req.query) {
 
             data['order-number'] = order.orderNumber();
@@ -34,28 +48,22 @@ function(doc, req) {
                 data['shipping-cost'] = thisShipment['shipping-cost'];
                 data['carrier-method'] = thisShipment['carrier-method'];
 
+                for (var i = 0; i < data.carriers.length; i++) {
+                    if (data.carriers[i].name === thisShipment.carrier) {
+                        data.carriers[i].selected = true;
+                        break;
+                    }
+                }
+
                 data.action = '#/confirm-shipment/' + order.orderNumber() + '/' + req.query.shipment;
             } else {
                 // confirming a non-existent shipment?!
                 return {
                     code: 404,
-                    json: { reason: 'Order ' + order.orderNumber() + ' has no shipment ' + shipment }
+                    body: 'Order ' + order.orderNumber() + ' has no shipment ' + shipment
                 };
             }
         }
-
-        data['address'] = order.customerAddress();
-        data['warehouse-name'] = order.warehouseName();
-        data['customer-name'] = order.customerName();
-        data._rev = doc._rev;
-        data['shipping-service-level'] = order.shippingServiceLevel();
-
-        data['shipping-charge'] = order.shippingCharge() ? Money.toDollars(order.shippingCharge()) : '0.00';
-
-        data.carriers = [];
-        Shipping.carriers.forEach(function(name) {
-            data.carriers.push({name: name});
-        });
 
     } else {
         if (! req.query.type) {

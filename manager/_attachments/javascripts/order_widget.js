@@ -350,6 +350,8 @@ OrderWidget.prototype.itemWasUpdated = function itemWasUpdated(e, args) {
             tr.find('td.item-name').text(item.name);
             $('input#scan-'+scanned+'-name').val(item.name);
             $('input#scan-'+scanned+'-sku').val(item.sku);
+
+            widget.barcodeInput.focus();
         });
 };
 

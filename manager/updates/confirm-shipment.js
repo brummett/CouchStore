@@ -16,6 +16,7 @@ function(doc,req) {
     doc.shipments[shipmentNum]['weight']            = Updates.valueFor('weight', req) || '';
     doc.shipments[shipmentNum]['size']              = Updates.valueFor('size', req) || '';
     doc.shipments[shipmentNum]['carrier']           = Updates.valueFor('carrier', req);
+    doc.shipments[shipmentNum]['carrier-method']    = Updates.valueFor('carrier-method', req);
 
     return [doc, JSON.stringify({ success: true })];
 }

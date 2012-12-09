@@ -32,6 +32,7 @@ function(doc, req) {
                 data['weight'] = thisShipment.weight;
                 data['tracking-number'] = thisShipment['tracking-number'];
                 data['shipping-cost'] = thisShipment['shipping-cost'];
+                data['carrier-method'] = thisShipment['carrier-method'];
 
                 data.action = '#/confirm-shipment/' + order.orderNumber() + '/' + req.query.shipment;
             } else {

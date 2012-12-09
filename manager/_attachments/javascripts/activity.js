@@ -521,6 +521,7 @@ function runActivity(couchapp) {
                                                     s: params.shipment,
                                                     'tracking-number': params['tracking-number'],
                                                     'shipping-cost': cost,
+                                                    'carrier-method': params['carrier-method'],
                                                     'carrier': params.carrier },
                         {
                             success: function() {

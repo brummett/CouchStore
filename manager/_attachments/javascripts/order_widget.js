@@ -412,6 +412,7 @@ OrderWidget.prototype.getTableRowForScan = function getTableRowForScan(scan) {
             widget.orderTable.append(content);
             widget.wireUpEditButtons(content, scan);
             d.resolve(content);
+            return $(content);
         };
 
         widget.couchapp.view('items-by-barcode', {
@@ -429,7 +430,9 @@ OrderWidget.prototype.getTableRowForScan = function getTableRowForScan(scan) {
                                 renderRow(data.rows[0].doc);
                             } else if (widget.allow_unknown) {
                                 // This is an unknown item
-                                renderRow({ 'cost-cents': '', name: ''}, true);
+                                var row = renderRow({ 'cost-cents': '', name: ''}, true);
+                                row[0].scrollIntoView(false);
+                                widget.barcodeInput.blur();
                             } else {
                                 widget.context.errorModal(scan + ' is an unknown barcode or sku');
                             }

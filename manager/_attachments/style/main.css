@@ -15,6 +15,16 @@ form {
   background-color:#ddd;  
 }
 
+
+div#inline-notification {
+    position: fixed;
+    top: 60px;
+    left: 20px;
+    margin: 0 auto;
+    min-width: 30%;
+    z-index: 99;
+}
+
 /* unknown items in the receive/sale order table */
 table.table-striped.item-table tr.is-unknown td {
     background-color:#DA4F49;    /* Same color as the Bootstrap 'Danger' button  */

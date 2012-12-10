@@ -21,7 +21,9 @@ function(head,req) {
                             });
             typeaheadData.push(orderNumber);
         }
-        data.typeaheadSource = JSON.stringify(typeaheadData);
+        if (typeaheadData.length) {
+            data.typeaheadSource = "['" + typeaheadData.join("','") + "']";
+        }
 
         return Mustache.to_html(ddoc.templates['shipment-order-picker'], data);
     });

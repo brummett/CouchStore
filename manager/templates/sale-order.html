@@ -56,7 +56,16 @@
         <label class="control-label" for="shipping-charge">Shipping charge</label>
         <div class="controls">
             <div class="input-prepend">
-                <span class="add-on">$</span><input type="text" value="{{shippingCharge}}" name="shipping-charge" id="shipping-charge" class="input-small">
+                <span class="add-on">$</span><input type="text"
+                                                    {{#shippingCharge}}
+                                                        value="{{shippingCharge}}"
+                                                    {{/shippingCharge}}
+                                                    {{^shippingCharge}}
+                                                        value="0.00"
+                                                    {{/shippingCharge}}
+                                                    name="shipping-charge"
+                                                    id="shipping-charge"
+                                                    class="input-small">
             </div>
         </div>
     </div>

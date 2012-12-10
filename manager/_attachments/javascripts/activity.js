@@ -515,7 +515,8 @@ function runActivity(couchapp) {
         this.post('#/confirm-shipment/:orderNumber/:shipment', function(context) {
             var params = context.params,
                 cost = Money.toCents(params['shipping-cost']),
-                docid = 'order-'+params.orderNumber;
+                docid = 'order-'+params.orderNumber,
+                hasErrors = false;
 
             if ((params['tracking-number'] === undefined) || (params['tracking-number'] === '')) {
                 // tracking number is required
@@ -525,6 +526,19 @@ function runActivity(couchapp) {
                     .find('div.controls')
                     .append('<span class="help-inline">Required</span>');
                 }
+                hasErrors = true;
+            }
+            if (! Money.dollarsAndCentsRegex.test(context.params['shipping-cost'])) {
+                var controlGroup = $('input[name="shipping-cost"]').parents('.control-group');
+                if (! controlGroup.hasClass('error')) {
+                    controlGroup.addClass('error')
+                    .find('div.controls')
+                    .append('<span class="help-inline">Bad money format</span>');
+                }
+                hasErrors = true;
+            }
+
+            if (hasErrors) {
                 return;
             }
 
@@ -1043,6 +1057,14 @@ function runActivity(couchapp) {
                 return;
             }
             if (type == 'item') {
+                if ((context.params.cost != '') && (! Money.dollarsAndCentsRegex.test(context.params.cost))) {
+                    noteError({field: 'cost', reason: 'Money format'});
+                    savable.reject();
+                }
+                if ((context.params.price != '') && (! Money.dollarsAndCentsRegex.test(context.params.price))) {
+                    noteError({field: 'price', reason: 'Money format'});
+                    savable.reject();
+                }
                 var checkdupsCount = 2;
                 ['barcode','sku'].forEach(function(param) {
                     validator.unique(param)

@@ -250,8 +250,9 @@ OrderWidget.prototype.validateFormInputs = function validateFormInputs() {
     this.v_is_date(dateInput);
     this.v_required( this.orderNumberInput, this.orderForm);
     this.v_required( $('input#customer-name', this.orderForm) );
+    this.v_checkCostsPrices($('input#shipping-charge', this.orderForm));
 
-    this.v_checkKnownCustomer( $('input#customer-name'), this.orderForm)
+    this.v_checkKnownCustomer( $('input#customer-name', this.orderForm));
 
     // Do checkUnknownItems after checkKnownCustomer so the latter can make an 'id-unknown' button if necessary
     this.v_checkUnknownItems($('button.is-unknown', this.context.$element()));

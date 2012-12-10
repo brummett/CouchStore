@@ -9,7 +9,6 @@ function(doc) {
         count;
 
     if (order && order.isShippable()) {
-        // order doc IDs start with the string 'order-'
         order_number = order.orderNumber();
 
         count = order.unshippedQuantity();
@@ -17,7 +16,7 @@ function(doc) {
         if (count != 0) {
             emit([shipping.priority(doc), order_number],
                 {   count: count,
-                    warehouse: doc['warehouse-name'],
+                    orderSource: doc['order-source'],
                     shipping: doc['shipping-service-level'],
                     isBackordered: order.hasShipments()
                 });

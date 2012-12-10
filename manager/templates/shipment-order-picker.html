@@ -11,7 +11,7 @@
         <div class="controls">
             <select id="select-order-number" class="span3">
                 {{#orders}}
-                    <option value={{id}} class="alert-info">{{#isBackordered}}Partial: {{/isBackordered}}{{order-number}} {{count}} items from {{warehouse}}{{#shipping}}, {{shipping}} shipping{{/shipping}}</option>
+                    <option value={{id}} class="alert-info">{{#isBackordered}}Partial: {{/isBackordered}}{{order-number}} {{count}} items via {{orderSource}}{{#shipping}}, {{shipping}} shipping{{/shipping}}</option>
                 {{/orders}}
             </select>
         </div>

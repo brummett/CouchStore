@@ -16,7 +16,7 @@ function(head,req) {
                                 isBackordered: row.value.isBackordered,
                                 'order-number': orderNumber,
                                 count: row.value.count,
-                                warehouse: row.value.warehouse,
+                                orderSource: row.value.orderSource,
                                 shipping: row.value.shipping
                             });
             typeaheadData.push(orderNumber);

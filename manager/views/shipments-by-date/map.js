@@ -55,6 +55,7 @@ function(doc) {
                 'shipment-number': idx,
                 'tracking-number': shipment['tracking-number'],
                 'carrier': shipment['carrier'],
+                'carrier-method': shipment['carrier-method'],
                 'shipping-charge': order.shippingCharge(),
                 'shipping-cost': shipment['shipping-cost'],
                 'total-charge': totalCharged,

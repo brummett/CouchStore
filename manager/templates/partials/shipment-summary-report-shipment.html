@@ -2,7 +2,7 @@
 
 <div class="keep-together">
     <div class="row">
-        <div class="span4">
+        <div class="span5">
             <div>
                 <span><strong>Order number:</strong> {{order-number}}</span>
             </div>
@@ -12,9 +12,11 @@
                 <span><strong>Warehouse:</strong> {{warehouse}}</span>
             </div>
             <div>
-                <span><strong>Shipped via</strong> {{carrier}} <strong>Tracking #:</strong> {{tracking-number}}</span>
+                <span><strong>Shipped via</strong> {{carrier}}</span>
+                <span><strong>Tracking #:</strong> {{tracking-number}}</span>
             </div>
             <div>
+                <span><strong>Method: </strong> {{carrier-method}}</span>
                 <span><strong>Shipping Cost:</strong> ${{shipping-cost}}</span>
             </div>
         </div>
@@ -26,7 +28,7 @@
                 <pre>{{customer-address}}</pre>
             </div>
         </div>
-        <div class="span4"></div>
+        <div class="span3"></div>
     </div>
 
     <div><table class="table table-condensed"</table>

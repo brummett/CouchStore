@@ -517,6 +517,17 @@ function runActivity(couchapp) {
                 cost = Money.toCents(params['shipping-cost']),
                 docid = 'order-'+params.orderNumber;
 
+            if ((params['tracking-number'] === undefined) || (params['tracking-number'] === '')) {
+                // tracking number is required
+                var controlGroup = $('input[name="tracking-number"]').parents('.control-group');
+                if (! controlGroup.hasClass('error')) {
+                    controlGroup.addClass('error')
+                    .find('div.controls')
+                    .append('<span class="help-inline">Required</span>');
+                }
+                return;
+            }
+
             couchapp.update('confirm-shipment', {   _id: docid,
                                                     s: params.shipment,
                                                     'tracking-number': params['tracking-number'],

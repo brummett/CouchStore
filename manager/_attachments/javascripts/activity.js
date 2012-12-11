@@ -131,7 +131,9 @@ function runActivity(couchapp) {
 
         this.notFound = function() { };
 
-        this.get('#/', function(context) { });
+        this.get('#/', function(context) {
+            context.$element().empty()
+         });
 
         this.get('#/login', function(context) {
             context.render('templates/account-loginForm.template')

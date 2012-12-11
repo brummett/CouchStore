@@ -738,12 +738,17 @@ function runActivity(couchapp) {
         this.get('#/inventory-commit/', function(context) {
             context.deactivateOrderWidget();
             this.title('Commit Physical Inventory');
-            var content = $.mustache(couchapp.ddoc.templates['confirm-inventory-corrections'],
-                                    { action: '#/inventory-commit/' },
-                                    couchapp.ddoc.templates.partials);
-            context.$element().html(content);
-            context.$element('div#corrections')
-                    .load('_list/proposed-inventory-correction/inventory-by-permanent-warehouse-barcode?group=true');
+
+            couchapp.list('proposed-inventory-correction', 'inventory-by-permanent-warehouse-barcode', {
+                group: true,
+                dataType: 'html',
+                success: function(content) {
+                    context.$element().html(content);
+                },
+                error: function(status, reason, message) {
+                    context.showNotification('error', 'Cannot get inventory correction list: '+message);
+                }
+            });
         });
 
         this.post('#/inventory-commit/', function(context) {
@@ -974,6 +979,7 @@ function runActivity(couchapp) {
                         couchapp.list('proposed-inventory-correction', 'inventory-by-permanent-warehouse-barcode', {
                             group: true,
                             dataType: 'html',
+                            listOnly: true,
                             success: function(content) {
                                 context.$element().append(content);
                             },

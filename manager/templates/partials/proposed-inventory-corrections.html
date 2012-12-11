@@ -1,3 +1,7 @@
+{{^sawCorrection}}
+    {{> proposed-inventory-corrections-empty}}
+{{/sawCorrection}}
+{{#sawCorrection}}
 {{#warehouses}}
     <div>
         {{#warehouseName}}
@@ -17,7 +21,7 @@
 
             <tbody>
                 {{^items}}
-                    <tr><td><i>No corrections</i></td></tr>
+                    <tr><td><h2><i>No corrections</i></h2></td></tr>
                 {{/items}}
                 {{#items}}
                     <tr>
@@ -31,4 +35,4 @@
         </table>
     </div>
 {{/warehouses}}
-            
+{{/sawCorrection}}

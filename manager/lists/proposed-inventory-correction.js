@@ -9,10 +9,14 @@ function(head,req) {
         row,
         warehouse,
         barcode,
+        sawCorrection = false,  // True if we come across at least one 'inventory' record
         warehouses = {};
 
     // Keys will be [ is-permanent, warehouse-name, barcode], depending on the grouping
     while( row = getRow() ) {
+        if (row.key[0] === 0) {
+            sawCorrection = true;
+        }
         warehouse = row.key[1];
         barcode = row.key[2];
         
@@ -28,7 +32,10 @@ function(head,req) {
 
     provides('html', function() {
         var Mustache = require('vendor/couchapp/lib/mustache'),
-            data = { warehouses: [] },
+            data = { warehouses: [],
+                     action: '#/inventory-commit/',
+                     sawCorrection: sawCorrection
+                     },
             warehouse;
             
         function item_list_for_warehouse(warehouse) {
@@ -44,6 +51,9 @@ function(head,req) {
             data.warehouses.push( { warehouseName: warehouse, items: item_list_for_warehouse(warehouse) } );
         }
 
-        return Mustache.to_html(ddoc.templates.partials['proposed-inventory-corrections'], data);
+        var template = req.query.listOnly
+                    ? ddoc.templates.partials['proposed-inventory-corrections']
+                    : ddoc.templates['confirm-inventory-corrections'];
+        return Mustache.to_html(template, data, ddoc.templates.partials);
     });
 }

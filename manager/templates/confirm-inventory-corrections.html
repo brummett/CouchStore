@@ -1,13 +1,18 @@
 <h1>Confirm Inventory Corrections</h1>
-<p>
-This is a sumamry of the proposed inventory corrections.  Press the Accept
-button below to make them permanent.
-</p>
-<form action="{{action}}" method="post">
-    <button type="submit" name="submit" class="btn btn-danger"><i class='icon-step-forward icon-white'></i> Accept</button>
-    <a href="#/" class="btn">Cancel</a>
-</form>
+{{#sawCorrection}}
+    <p>
+    This is a sumamry of the proposed inventory corrections.  Press the Accept
+    button below to make them permanent.
+    </p>
+    <form action="{{action}}" method="post">
+        <button type="submit" name="submit" class="btn btn-danger"><i class='icon-step-forward icon-white'></i> Accept</button>
+        <a href="#/" class="btn">Cancel</a>
+    </form>
 
-<div id="corrections">
-{{> proposed-inventory-corrections}}
-</div>
+    <div id="corrections">
+    {{> proposed-inventory-corrections}}
+    </div>
+{{/sawCorrection}}
+{{^sawCorrection}}
+    {{> proposed-inventory-corrections-empty}}
+{{/sawCorrection}}

@@ -24,7 +24,11 @@ function(doc, req) {
         data = {order: order.orderNumber(),
                 shipment: req.query.shipment,
                 items: [],
-                box: thisShipment.box
+                date:               thisShipment['date'],
+                'tracking-number':  thisShipment['tracking-number'],
+                carrier:            thisShipment['carrier'],
+                'carrier-method':   thisShipment['carrier-method'],
+                box:                thisShipment['box']
             };
 
     if (order.orderType === 'warehouse-transfer') {

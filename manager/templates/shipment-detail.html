@@ -14,6 +14,9 @@
         {{/items}}
     </table>
     {{#box}}
-    <p>Box <span class="badge badge-success">{{box}}</span></p>
+        <p>Box <span class="badge badge-success">{{box}}</span></p>
     {{/box}}
+    {{#tracking-number}}
+        <p>{{carrier-method}} via {{carrier}} <span class="badge badge-info">{{tracking-number}}</span></p>
+    {{/tracking-number}}
 </div>

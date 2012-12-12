@@ -11,6 +11,7 @@
         <label class="control-label" for="order-number">Order number</label>
         <div class="controls">
             <input  type="text"
+                    tabindex="1"
                     {{#orderNumber}}
                         value="{{orderNumber}}"
                         readonly="true"
@@ -27,7 +28,7 @@
     <div class="control-group">
         <label class="control-label" for="customer-name">Shipped from vendor</label>
         <div class="controls">
-            <input type="text" value="{{customerName}}" name="customer-name" id="customer-name" class="input-small span2">
+            <input tabindex="2" type="text" value="{{customerName}}" name="customer-name" id="customer-name" class="input-small span2">
             <input type="hidden" value="{{customerId}}" name="customer-id" id="customer-id">
         </div>
     </div>
@@ -35,7 +36,7 @@
     <div class="control-group">
         <label class="control-label" for="warehouse-name">Received to</label>
         <div class="controls">
-            <select name="warehouse-name" id="warehouse-name" class="warehouse-picker">
+            <select tabindex="3" name="warehouse-name" id="warehouse-name" class="warehouse-picker">
             </select>
         </div>
     </div>
@@ -52,7 +53,7 @@
     {{/_rev}}
     <input type="hidden" name="is-taxable" id="is-taxable" value="{{isTaxable}}">
 
-    <button class="btn" type="submit" id="all-done"><i class="icon-ok"></i> All done</button>
+    <button class="btn btn-primary" type="submit" id="all-done"><i class="icon-ok icon-white"></i> All done</button>
 
 </form>
 

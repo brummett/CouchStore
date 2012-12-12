@@ -1,84 +1,95 @@
 <h1>{{title}}</h1>
 <form action="{{action}}" method="post" class="form-horizontal" id="order-form" data-order-type="{{orderType}}">
-    <div class="control-group">
-        <label class="control-label" for="date">Date</label>
-        <div class="controls">
-            <input type="date" name="date" id="date" class="input-small" value="{{date}}">
-        </div>
-    </div>
-
-    <div class="control-group">
-        <label class="control-label" for="order-number">Order number</label>
-        <div class="controls">
-            <input type="text"
-                   {{#orderNumber}}
-                        value="{{orderNumber}}"
-                        readonly="true"
-                    {{/orderNumber}}
-                    {{^ordeNumber}}
-                        autofocus="autofocus"
-                    {{/orderNumber}}
-                    name="order-number"
-                    id="order-number"
-                    class="input-small span2{{#orderNumber}} uneditable-input{{/orderNumber}}">
-        </div>
-    </div>
-
-    <div class="control-group">
-        <label class="control-label" for="warehouse-name">Shipped From</label>
-        <div class="controls">
-            <select name="warehouse-name" id="warehouse-name" class="warehouse-picker">
-            </select>
-        </div>
-    </div>
-
-    <div class="control-group">
-        <label class="control-label" for="customer-name">Customer</label>
-        <div class="controls">
-            <input type="text" value="{{customerName}}" name="customer-name" id="customer-name" class="input-small span2">
-            <input type="hidden" value="{{customerId}}" name="customer-id" id="customer-id">
-            <input type="hidden" value="{{customerAddress}}" name="customer-address" id="customer-address">
-        </div>
-    </div>
-
-    <div class="control-group">
-       <label class="control-label" for="shipping-service-level">Shipping service level</label>
-        <div class="controls">
-            <select name="shipping-service-level" id="shipping-service-level">
-                {{#shipServiceLevels}}
-                    <option value="{{id}}"{{#selected}} selected="selected"{{/selected}}>{{id}}</option>
-                {{/shipServiceLevels}}
-            </select>
-        </div>
-    </div>
-
-    <div class="control-group">
-        <label class="control-label" for="shipping-charge">Shipping charge</label>
-        <div class="controls">
-            <div class="input-prepend">
-                <span class="add-on">$</span><input type="text"
-                                                    {{#shippingCharge}}
-                                                        value="{{shippingCharge}}"
-                                                    {{/shippingCharge}}
-                                                    {{^shippingCharge}}
-                                                        value="0.00"
-                                                    {{/shippingCharge}}
-                                                    name="shipping-charge"
-                                                    id="shipping-charge"
-                                                    class="input-small">
+    <div class="row">
+        <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="date">Date</label>
+                <div class="controls">
+                    <input type="date" name="date" id="date" class="input-small" value="{{date}}">
+                </div>
             </div>
-        </div>
-    </div>
 
-    <div class="control-group">
-       <label class="control-label" for="order-source">Order source</label>
-        <div class="controls">
-            <select name="order-source" id="order-source">
-                {{#orderSources}}
-                    <option value="{{id}}"{{#selected}} selected="selected"{{/selected}}>{{id}}</option>
-                {{/orderSources}}
-            </select>
-        </div>
+            <div class="control-group">
+                <label class="control-label" for="order-number">Order number</label>
+                <div class="controls">
+                    <input type="text"
+                            tabindex="1"
+                           {{#orderNumber}}
+                                value="{{orderNumber}}"
+                                readonly="true"
+                            {{/orderNumber}}
+                            {{^ordeNumber}}
+                                autofocus="autofocus"
+                            {{/orderNumber}}
+                            name="order-number"
+                            id="order-number"
+                            class="input-small span2{{#orderNumber}} uneditable-input{{/orderNumber}}">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="warehouse-name">Shipped From</label>
+                <div class="controls">
+                    <select tabindex="2" name="warehouse-name" id="warehouse-name" class="warehouse-picker">
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" type="submit" id="all-done"><i class="icon-ok icon-white"></i> All done</button>
+
+        </div> <!- end of first column >
+
+        <div class="span7">
+            <div class="control-group">
+                <label class="control-label" for="customer-name">Customer</label>
+                <div class="controls">
+                    <input tabindex="3" type="text" value="{{customerName}}" name="customer-name" id="customer-name" class="input-small span2">
+                    <input type="hidden" value="{{customerId}}" name="customer-id" id="customer-id">
+                    <input type="hidden" value="{{customerAddress}}" name="customer-address" id="customer-address">
+                </div>
+            </div>
+
+            <div class="control-group">
+               <label class="control-label" for="shipping-service-level">Shipping service level</label>
+               <div class="controls">
+                    <select tabindex="4" name="shipping-service-level" id="shipping-service-level">
+                        {{#shipServiceLevels}}
+                            <option value="{{id}}"{{#selected}} selected="selected"{{/selected}}>{{id}}</option>
+                        {{/shipServiceLevels}}
+                    </select>
+                </div>
+            </div>
+        
+            <div class="control-group">
+                <label class="control-label" for="shipping-charge">Shipping charge</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <span class="add-on">$</span><input type="text"
+                                                            tabindex="5"
+                                                            {{#shippingCharge}}
+                                                                value="{{shippingCharge}}"
+                                                            {{/shippingCharge}}
+                                                            {{^shippingCharge}}
+                                                                value="0.00"
+                                                            {{/shippingCharge}}
+                                                            name="shipping-charge"
+                                                            id="shipping-charge"
+                                                            class="input-small">
+                    </div>
+                </div>
+            </div>
+        
+            <div class="control-group">
+               <label class="control-label" for="order-source">Order source</label>
+                <div class="controls">
+                    <select tabindex="6" name="order-source" id="order-source">
+                        {{#orderSources}}
+                            <option value="{{id}}"{{#selected}} selected="selected"{{/selected}}>{{id}}</option>
+                        {{/orderSources}}
+                    </select>
+                </div>
+            </div>
+        </div> <!- End of second column>
     </div>
 
     {{#items}}
@@ -91,8 +102,6 @@
         <input type="hidden" name="_rev" id="_rev" value="{{_rev}}">
     {{/_rev}}
     <input type="hidden" name="is-taxable" id="is-taxable" value="{{isTaxable}}">
-
-    <button class="btn" type="submit" id="all-done"><i class="icon-ok"></i> All done</button>
 
 </form>
 

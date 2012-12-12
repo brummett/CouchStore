@@ -6,7 +6,7 @@ function(doc,req) {
         // Creating a new thing
         doc = { _id: req.uuid, type: 'warehouse' };
     } else if (doc.type !== 'warehouse') {
-        throw({forbidden: doc._id+' is not a warehouse'});
+        return [ null, { code: 403, json: { reason: doc._id+' is not a warehouse'}}];
     }
 
     var set_params = Updates.makeParamSetter(doc, req);

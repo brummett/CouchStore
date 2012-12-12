@@ -4,9 +4,9 @@ function(doc,req) {
 
     if (! doc) {
         // Creating a new thing
-        throw({forbidden: 'No document with that id'});
+        return [ null, { code: 404, json: { reason: 'No document with that id'}}];
     } else if (doc.type !== 'item') {
-        throw({forbidden: doc._id+' is not an item'});
+        return [ null, { code: 403, json: { reason: doc._id+' is not an item'}}];
     }
 
     var set_params = Updates.makeParamSetter(doc, req);

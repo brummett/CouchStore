@@ -13,7 +13,7 @@ function(doc, req) {
         }
 
     } else if (doc.type !== 'inventory') {
-        throw({ forbidden: 'not an inventory correction'});
+        return [ null, { code: 403, json: { reason: 'Not an inventory correction'}}];
     }
 
     var set_params = Updates.makeParamSetter(doc, req);

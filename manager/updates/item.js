@@ -6,8 +6,7 @@ function(doc,req) {
         // Creating a new thing
         doc = { _id: req.uuid, type: 'item' };
     } else if (doc.type !== 'item') {
-        //return [null, 'error:'+doc._id+' is not an item'];
-        throw({forbidden: doc._id+' is not an item'});
+        return [null, { code: 403, json: { reason: doc._id+' is not an item'}}];
     }
 
     var set_params = Updates.makeParamSetter(doc, req);

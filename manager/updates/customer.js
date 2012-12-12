@@ -6,7 +6,7 @@ function(doc,req) {
         // Creating a new thing
         doc = { _id: req.uuid, type: 'customer' };
     } else if (doc.type !== 'customer') {
-        throw({forbidden: doc._id+' is not a customer'});
+        return [null, { code: 403, json: { reason: doc._id+' is not a customer' }}];
     }
 
     var set_params = Updates.makeParamSetter(doc, req);

@@ -11,7 +11,7 @@ function(doc, req) {
         }
 
     } else if (doc.type !== 'order') {
-        throw({ forbidden: 'not an order'});
+        return [ null, { code: 403, json: { reason: 'Not an order'}}];
     }
 
     var set_params = Updates.makeParamSetter(doc, req),

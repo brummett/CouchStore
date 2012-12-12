@@ -4,9 +4,9 @@ function(doc,req) {
 
     if (! doc) {
         // Creating a new thing
-        throw({forbidden: 'No document with that id'});
+        return [null, { code: 404, json: { reason: 'No document with that id'}}];
     } else if (doc.type !== 'order') {
-        throw({forbidden: doc._id+' is not an order'});
+        return [null, { code: 403, json: { reason: doc._id+' is not an order'}}];
     }
 
     var shipmentNum = Updates.valueFor('s', req);

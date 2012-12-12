@@ -13,7 +13,7 @@ function(doc,req) {
                 'item-names': {}
             };
     } else if ((doc.type !== 'order') || (doc.order_type !== 'inventory-correction')) {
-        throw({forbidden: doc._id+' is not an inventory correction order'});
+        return [null, { code: 403, json: { reason: doc._id+' is not an inventory correction order'}}];
     }
 
     var param_set = Updates.makeParamSetter(doc, req);

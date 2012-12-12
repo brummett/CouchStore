@@ -1,0 +1,19 @@
+<div>
+    <span>{{order}} shipment {{shipment}}</span>
+    {{#warehouseTransfer}}
+        <span> transfer from <span class="badge badge-info">{{source}}</span>
+            to <span class="badge badge-info">{{dest}}</span>
+        </span>
+    {{/warehouseTransfer}}
+    {{^warehouseTransfer}}
+        <span> to {{dest}}<span>
+    {{/warehouseTransfer}}
+    <table class="table table-condensed">
+        {{#items}}
+        <tr><td>{{count}}</td><td>{{name}}</td></tr>
+        {{/items}}
+    </table>
+    {{#box}}
+    <p>Box <span class="badge badge-success">{{box}}</span></p>
+    {{/box}}
+</div>

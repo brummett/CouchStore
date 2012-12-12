@@ -1291,6 +1291,27 @@ function runActivity(couchapp) {
             couchapp.list('popular-items-report', view, options);
         });
 
+        this.get('#/shipment-detail-modal/:orderNumber/:shipment', function(context) {
+            var show_q = '_show/shipment-detail/order-'
+                        + context.params.orderNumber
+                        + '?shipment=' + context.params.shipment;
+            $.get(show_q,
+                    function(content) {
+                        var dialog = context.dialogModal('Shipment Detail', $(content), ['Ok']);
+                        dialog.always(function() { window.history.back() });
+                    },
+                    errorNotifier('Cannot get shipment details'),
+                    'html');
+            //couchapp.show('shipment-detail', 'order-'+context.params.orderNumber, {
+            //    shipment: context.params.shipment,
+            //    dataType: 'html',
+            //    success: function(content) {
+            //        context.dialogModal('Shipment Detail', $(content), ['Ok']);
+            //    },
+            //    error: errorNotifier('Cannot get shipment details')
+            //});
+        });
+
     });
 
     activity.run('#/');

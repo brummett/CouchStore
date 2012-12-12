@@ -86,8 +86,12 @@ Order.prototype.costForBarcode = function(barcode) {
     return this.__doc['item-costs'][barcode];
 }
 
-Order.prototype.shipments = function(barcode) {
+Order.prototype.shipments = function() {
     return this.__doc.shipments;
+}
+
+Order.prototype.shipment = function(n) {
+    return this.__doc.shipments[n];
 }
 
 // Some mutable properites

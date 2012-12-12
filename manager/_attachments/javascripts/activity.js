@@ -45,7 +45,19 @@ function runActivity(couchapp) {
 
     var errorNotifier = function(message, cb) {
         return function(resp, status, reason) {
-            showNotification('error', message + ': ' + resp.responseText);
+            var text = resp.responseText,
+                errorObj;
+            // Try to deduce what the cause of the error was
+            try { errorObj = JSON.parse(resp.responseText); } catch(err) {}
+            if (errorObj) {
+                if ('reason' in errorObj) {
+                    text = errorObj.reason;
+                } else if ('error' in errorObj) {
+                    text = errorObj.error;
+                }
+            }
+
+            showNotification('error', message + ': ' + text)
             if (cb) {
                 cb();
             }

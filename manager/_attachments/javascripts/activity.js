@@ -385,7 +385,7 @@ function runActivity(couchapp) {
                                         d.notify();
                                     },
                                     error: errorNotifier('Problem updating '
-                                                            + cost_price_key + 'for item '
+                                                            + update_method + 'for item '
                                                             + orderDoc['item-names'][barcode],
                                                         function() { d.reject })
                                 });

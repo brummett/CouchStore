@@ -1,68 +1,78 @@
 <h1>{{title}}</h1>
 <form action="{{action}}" method="post" class="form-horizontal" id="order-form" data-order-type="{{orderType}}">
-    <div class="control-group">
-        <label class="control-label" for="date">Date</label>
-        <div class="controls">
-            <input type="date" name="date" id="date" class="input-small" value="{{date}}">
-        </div>
-    </div>
-
-    <div class="control-group">
-        <label class="control-label" for="order-number">Order number</label>
-        <div class="controls">
-            <input type="text" value="{{orderNumber}}" readonly="true" class="span2" name="order-number">
-        </div>
-    </div>
-
-    <div class="control-group">
-        <label class="control-label" for="warehouse-name">Shipped from</label>
-        <div class="controls">
-            <input type="text" value="{{warehouseName}}" name="warehouse-name" readonly="true" class="span2">
-        </div>
-    </div>
-
-    <div class="control-group">
-        <label class="control-label" for="customer-name">Customer</label>
-        <div class="controls">
-            <input type="text" value="{{customerName}}" readonly="true" name="customer-name" class="span2">
-        </div>
-    </div>
-
-    <div class="control-group">
-       <label class="control-label" for="shipping-service-level">Shipping service level</label>
-        <div class="controls">
-            <input type="text" value="{{shippingServiceLevel}}" readonly="true" name="shipping-service-level" class="span2">
-        </div>
-    </div>
-
-    <div class="control-group">
-        <label class="control-label" for="shipping-charge">Shipping charge</label>
-        <div class="controls">
-            <div class="input-prepend">
-                <span class="add-on">$</span><input type="text" value="{{shippingCharge}}" readonly="true" class="">
+    <div class="row">
+        <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="date">Date</label>
+                <div class="controls">
+                    <input type="date" name="date" id="date" class="input-small" value="{{date}}">
+                </div>
             </div>
-        </div>
-    </div>
+        
+            <div class="control-group">
+                <label class="control-label" for="order-number">Order number</label>
+                <div class="controls">
+                    <input type="text" value="{{orderNumber}}" readonly="true" class="span2" name="order-number">
+                </div>
+            </div>
 
-    <div class="control-group">
-       <label class="control-label" for="order-source">Order source</label>
-        <div class="controls">
-            <input type="text" value="{{orderSource}}" readonly="true" name="order-source" class="span2">
-        </div>
-    </div>
+            <div class="control-group">
+                <label class="control-label" for="weight">Weight</label>
+                <div class="controls">
+                    <input tabindex="1" type="text" name="weight" id="weight" value="{{weight}}" autofocus="autofocus">
+                </div>
+            </div>
+        
+            <div class="control-group">
+                <label class="control-label" for="size">Size</label>
+                <div class="controls">
+                    <input tabindex="2" type="text" name="size" id="size" value="{{size}}">
+                </div>
+            </div>
 
-    <div class="control-group">
-        <label class="control-label" for="weight">Weight</label>
-        <div class="controls">
-            <input type="text" name="weight" id="weight" value="{{weight}}" autofocus="autofocus">
-        </div>
-    </div>
+            <button class="btn btn-primary" type="submit" id="all-done"><i class="icon-ok icon-white"></i> All done</button>
 
-    <div class="control-group">
-        <label class="control-label" for="size">Size</label>
-        <div class="controls">
-            <input type="text" name="size" id="size" value="{{size}}">
-        </div>
+        </div> <!- end of first column>
+
+        <div class="span5">
+            <div class="control-group">
+                <label class="control-label" for="warehouse-name">Shipped from</label>
+                <div class="controls">
+                    <input type="text" value="{{warehouseName}}" name="warehouse-name" readonly="true" class="span2">
+                </div>
+            </div>
+        
+            <div class="control-group">
+                <label class="control-label" for="customer-name">Customer</label>
+                <div class="controls">
+                    <input type="text" value="{{customerName}}" readonly="true" name="customer-name" class="span2">
+                </div>
+            </div>
+        
+            <div class="control-group">
+               <label class="control-label" for="shipping-service-level">Shipping service level</label>
+                <div class="controls">
+                    <input type="text" value="{{shippingServiceLevel}}" readonly="true" name="shipping-service-level" class="span2">
+                </div>
+            </div>
+        
+            <div class="control-group">
+                <label class="control-label" for="shipping-charge">Shipping charge</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <span class="add-on">$</span><input type="text" value="{{shippingCharge}}" readonly="true" class="">
+                    </div>
+                </div>
+            </div>
+        
+            <div class="control-group">
+               <label class="control-label" for="order-source">Order source</label>
+                <div class="controls">
+                    <input type="text" value="{{orderSource}}" readonly="true" name="order-source" class="span2">
+                </div>
+            </div>
+        
+        </div><!- End of second column>
     </div>
 
     {{#shippingItems}}
@@ -79,8 +89,6 @@
     {{#box}}
         <input type="hidden" name="box" value="{{box}}">
     {{/box}}
-
-    <button class="btn" type="submit" id="all-done"><i class="icon-ok"></i> All done</button>
 
 </form>
 

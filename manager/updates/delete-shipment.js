@@ -1,4 +1,4 @@
-// depete a shipment
+// delete a shipment
 function(doc,req) {
     var Updates = require('lib/updateHelpers');
 

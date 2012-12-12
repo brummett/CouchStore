@@ -10,7 +10,7 @@
     <div class="control-group">
         <label class="control-label" for="Section">Section</label>
         <div class="controls">
-            <input type="text" name="section" autofocus="autofocus"
+            <input tabindex="1" type="text" name="section" autofocus="autofocus"
                     id="section" {{#section}}value={{section}} readonly="true"{{/section}}
                     class="input-small span2 {{#section}} uneditable-input{{/section}}">
         </div>
@@ -19,7 +19,7 @@
     <div class="control-group">
         <label class="control-label" for="warehouse-name">Warehouse</label>
         <div class="controls">
-            <select name="warehouse-name" id="warehouse-name" class="warehouse-picker">
+            <select tabindex="2" name="warehouse-name" id="warehouse-name" class="warehouse-picker">
             </select>
         </div>
     </div>
@@ -37,7 +37,7 @@
         <input type="hidden" name="_id" id="_id" value="{{_id}}">
     {{/_id}}
 
-    <button class="btn" type="submit" id="all-done"><i class="icon-ok"></i> All done</button>
+    <button class="btn btn-primary" type="submit" id="all-done"><i class="icon-ok icon-white"></i> All done</button>
 
 </form>
 

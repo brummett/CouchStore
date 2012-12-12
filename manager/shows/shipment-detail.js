@@ -38,23 +38,16 @@ function(doc, req) {
     } else {
         data.dest = order.customerName();
     }
-log('customer '+order.customerName());
-log('this shipment');
-log(thisShipment);
     for (var barcode in thisShipment.items) {
-log('item barcode '+barcode);
         data.items.push({ name: order.nameForBarcode(barcode),
                           count: thisShipment.items[barcode] });
     }
 
     provides('json', function() {
-log('returning json data');
         return JSON.stringify(data);
     });
 
     provides('html', function() {
-log('returning html data');
-log(data);
         return Mustache.to_html(this.templates['shipment-detail'], data);
     });
 }

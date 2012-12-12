@@ -62,9 +62,9 @@ exports.list = function(list, view, options) {
         }, options));
 };
 
-exports.show = function(docid, options) {
+exports.show = function(show, docid, options) {
     options = options || {};
-    var url = this.db.uri + '/' + this.design.doc_is + '_show/' + docid + encodeOptions(options);
+    var url = this.db.uri + '/' + this.design.doc_id + '/_show/' + show + '/' + docid + encodeOptions(options);
 
     $.ajax( $.extend({
         url: url,

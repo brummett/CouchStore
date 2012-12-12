@@ -43,6 +43,15 @@ function runActivity(couchapp) {
                 });
     };
 
+    var errorNotifier = function(message, cb) {
+        return function(resp, status, reason) {
+            showNotification('error', message + ': ' + resp.responseText);
+            if (cb) {
+                cb();
+            }
+        }
+    };
+
     var loggedInUser = false;
 
     var account = $.sammy('#account', function() {
@@ -98,10 +107,7 @@ function runActivity(couchapp) {
                     success: function(s) {
                         context.doWithValidUser(function() { account.trigger('loggedIn') }, true );
                     },
-                    error: function(code, error, reason) {
-                        account.trigger('loggedOut');
-                        showNotification('error', reason);
-                    }
+                    error: errorNotifier('login failed', function() { account.trigger('loggedOut')})
                 });
             },
             logout: function() {
@@ -111,9 +117,7 @@ function runActivity(couchapp) {
                         user.logegdInUser = false;
                         account.trigger('loggedOut');
                     },
-                    error: function(code, error, reason) {
-                        showNotification('error', reason);
-                    }
+                    error: errorNotifier('logout failed')
                 });
             },
             signup: function(name, password) {
@@ -122,9 +126,7 @@ function runActivity(couchapp) {
                     success: function() {
                         this.login(name, password);
                     },
-                    error: function() {
-                        showNotification('error', reason);
-                    }
+                    error: errorNotifier('Cannot create account')
                 });
             }
         });  // end helpers
@@ -368,13 +370,10 @@ function runActivity(couchapp) {
                                     success: function() {
                                         d.notify();
                                     },
-                                    error: function(status, reason, message) {
-                                        var itemName = orderDoc['item-names'][barcode];
-                                        context.showNotification(
-                                                'error',
-                                                'Problem updating ' + cost_price_key + ' for item ' + itemName + ': ' + message);
-                                        d.reject();
-                                    }
+                                    error: errorNotifier('Problem updating '
+                                                            + cost_price_key + 'for item '
+                                                            + orderDoc['item-names'][barcode],
+                                                        function() { d.reject })
                                 });
                             }
                         }
@@ -436,9 +435,7 @@ function runActivity(couchapp) {
                 success: function(data) {
                     d.resolve(data.rows);
                 },
-                error: function() {
-                    d.reject();
-                },
+                error: errorNotifier('Cannot get warehouse list', function() {d.reject()})
             });
             return d.promise();
         }
@@ -553,9 +550,7 @@ function runActivity(couchapp) {
                                 showNotification('success', 'Shipment confirmed');
                                 context.redirect('#/confirm-shipment/');
                             },
-                            error: function(status, reason, message) {
-                                showNotification('error', 'Could not confirm shipment: ' + message);
-                            }
+                            error: errorNotifier('Could not confirm shipment')
                         });
         });
 
@@ -593,10 +588,7 @@ function runActivity(couchapp) {
                             activity: activity
                         });
                     })
-                    .fail(function(resp,  status, reason) {
-                        message = $.parseJSON(resp.responseText).reason;
-                        showNotification('error', 'Could not generate shipment for order ' + orderNumber + ': ' + message);
-                    });
+                    .fail(errorNotifier('Could not generate shipment for order ' + orderNumber))
             }
         });
 
@@ -636,10 +628,7 @@ function runActivity(couchapp) {
                             window.history.back();
                             showNotification('success', 'Shipment deleted');
                         },
-                        error: function(status, reason, message) {
-                            window.history.back();
-                            showNotification('error', 'Could not delete shipment: '+message);
-                        }
+                        error: errorNotifier('Cannot delete shipment', function() { window.history.back(); } )
                     });
                 } else {
                     window.history.back();
@@ -668,9 +657,7 @@ function runActivity(couchapp) {
                                 context.redirect('#/shipment/');
                             });
                     },
-                    error: function(status, reason, message) {
-                        showNotification('error', 'Could not save shipment: ' + message);
-                    }
+                    error: errorNotifier('Cannot save shipment')
                 });
             }
 
@@ -724,10 +711,7 @@ function runActivity(couchapp) {
                     context.$element().empty();
                     context.redirect(next_url);
                 },
-               error: function(status, reason, message) {
-                    $.log('Problem saving inventory for section  '+ section +"\nmessage: " + message + "\nstatus: " + status + "\nreason: "+reason);
-                    context.showNotification('error' , 'Problem saving inventory for section ' + section + ': ' + message);
-                }
+               error: errorNotifier('Cannot save inventory for section ' + section)
             });
         });
 
@@ -752,20 +736,18 @@ function runActivity(couchapp) {
             couchapp.list('proposed-inventory-correction', 'inventory-by-permanent-warehouse-barcode', {
                 group: true,
                 success: processRows,
-                error: function(status, reason, message) {
-                    done.reject('Cannot get inventory correnctions: '+message);
-                }
+                error: errorNotifier('Cannot get inventory correnctions',
+                                    function() { done.reject() })
             });
 
             done.done(function() {
                 showNotification('success', 'Inventory changes applied successfully');
                 context.redirect('#/');
             });
-            done.fail(function(message) {
+            done.fail(function() {
                 remove_on_error.forEach(function(orderDoc) {
                     couchapp.db.removeDoc(orderDoc);
                 });
-                showNotification('error', message);
             });
 
             function processRows(warehouses) {
@@ -798,9 +780,8 @@ function runActivity(couchapp) {
                                     removePartialInventories();
                                 }
                             },
-                            error: function(status, reason, message) {
-                                done.reject('Cannot save inventory correction for '+warehouse+': '+message);
-                            }
+                            error: errorNotifier('Cannot save inventory correction for '+warehouse,
+                                                function() { done.reject(); })
                         });
                     })(warehouse);
                 }
@@ -815,9 +796,8 @@ function runActivity(couchapp) {
                         left_to_delete = data.rows.length;
                         data.rows.forEach(removeThisPartialInventory);
                     },
-                    error: function(status, reason, message) {
-                        done.reject('Cannot get list of partial inventories: '+message);
-                    }
+                    error: errorNotifier('Cannot get list of partial inventories',
+                                        function() { done.reject(); })
                 });
             }
 
@@ -829,9 +809,8 @@ function runActivity(couchapp) {
                             done.resolve();
                         }
                     },
-                    error: function(status, reason, message) {
-                        done.reject('Cannot remove partial inventory doc '+row.id);
-                    }
+                    error: errorNotifier('Cannot remove partial inventory doc '+row.id,
+                                        function() { done.reject(); })
                 });
             }
         });
@@ -940,10 +919,7 @@ function runActivity(couchapp) {
                             context.redirect(next_url);
                         });
                 },
-                error: function(status, reason, message) {
-                    $.log('Problem saving order '+ order_number +"\nmessage: " + message + "\nstatus: " + status + "\nreason: "+reason);
-                    context.showNotification('error' , 'Problem saving order ' + order_number + ': ' + message);
-                }
+                error: errorNotifier('Problem saving order ' + order_number)
             });
         });
 
@@ -975,15 +951,11 @@ function runActivity(couchapp) {
                             success: function(content) {
                                 context.$element().append(content);
                             },
-                            error: function(status, reason, message) {
-                                showNotification('error', "Can't get physical inventory list: "+message);
-                            }
+                            error: errorNotifier("Can't get physical inventory list")
                         });
                     }
                 },
-                error: function(result) {
-                    showNotification('error', 'Error getting data for '+type+ ': ' + $.parseJSON(result.responseText).reason);
-                }
+                error: errorNotifier('Cannot get data for '+type)
             });
         });
 
@@ -1037,10 +1009,8 @@ function runActivity(couchapp) {
                         activity.trigger(type + '-updated', { item: newDoc, scanned: scanned });
                         showNotification('success', type + ' saved');
                     },
-                    error: function(status, reason, message) {
-                        modal.modal('hide');
-                        showNotification('error', 'Problem saving ' + type + ': ' + message);
-                    }
+                    error: errorNotifier('Problem saving '+type,
+                                        function() { modal.modal('hide'); })
                 });
             };
 
@@ -1120,10 +1090,8 @@ function runActivity(couchapp) {
                         doc = loadedDoc;
                     }
                 },
-                error: function(code, error, reason) {
-                    cleanUpModal();
-                    context.showNotification('error', 'There is no '+ thing + 'with id ' + docid);
-                }
+                error: errorNotifier('There is no '+ thing + 'with id ' + docid,
+                                    cleanUpModal)
             });
     
             $.get(show_q)
@@ -1141,13 +1109,7 @@ function runActivity(couchapp) {
                                     showNotification('success', context.params['thing'] + ' removed');
                                     modal.modal('hide');
                                 },
-                                error: function(status) {
-                                    context.log('delete failed after removeDoc');
-                                    context.log(doc);
-                                    context.log(status);
-                                    modal.modal('hide');
-                                    showNotification('error', 'Delete failed');
-                                }
+                                error: errorNotifier('Delete failed', function() { modal.modal('hide'); })
                             })
                             event.preventDefault();
                         });
@@ -1192,9 +1154,7 @@ function runActivity(couchapp) {
                         window.history.back()
                     });
                 },
-                error: function(code, error, message) {
-                    showNotification('error', 'History not available: '+message);
-                }
+                error: errorNotifier('History not available: '+message)
                 })
             );
         });
@@ -1218,9 +1178,7 @@ function runActivity(couchapp) {
 
             couchapp.list('shipment-summary-report','shipments-by-date',
                 $.extend(options, {
-                error: function(code, error, message) {
-                    showNotification('error', "Can't get shipment summary report: "+message);
-                },
+                error: errorNotifier('Cannot get shipment summary report'),
                 success: function(content) {
                     context.$element().html(content);
 
@@ -1307,9 +1265,7 @@ function runActivity(couchapp) {
             options.success = function(content) {
                 context.$element().html(content);
             }
-            options.error = function(code, error, message) {
-                showNotification('error', "Can't query popular items: "+message);
-            }
+            options.error = errorNotifier("Cannot query popular items");
 
             // Note - we could also pass along startkey, limit in context.params for paging
             couchapp.list('popular-items-report', view, options);

@@ -393,47 +393,24 @@ OrderWidget.prototype.getTableRowForScan = function getTableRowForScan(scan) {
         d.resolve(tr);
 
     } else {
-        var template = this.couchapp.ddoc.templates.partials[this.itemRowPartial];
-        function renderRow(item, is_unknown) {
-            var content = $( $.mustache(template,
-                                    {   barcode: scan,
-                                        cost: widget.Money.toDollarsString(widget.getCostFromItem(item)),
-                                        quantity: 0,
-                                        allowDelete: widget.allow_delete,
-                                        isUnknown: is_unknown ? true : false,
-                                        name: item['name']
-                                    }));
-            widget.orderForm.find('input#scan-'+scan+'-name').val(item.name);
-            widget.orderForm.find('input#scan-'+scan+'-sku').val(item.sku);
-            widget.orderTable.append(content);
-            widget.wireUpEditButtons(content, scan);
-            d.resolve(content);
-            return $(content);
-        };
-
-        widget.couchapp.view('items-by-barcode', {
-            include_docs: true,
+        widget.couchapp.list('order-item-row', 'items-by-barcode-or-sku', {
             key: scan,
-            success: function(data) {
-                if (data.rows.length == 1) {
-                    renderRow(data.rows[0].doc);
-                } else {
-                    widget.couchapp.view('items-by-sku', {
-                        key: scan,
-                        include_docs: true,
-                        success: function (data) {
-                            if (data.rows.length == 1) {
-                                renderRow(data.rows[0].doc);
-                            } else if (widget.allow_unknown) {
-                                // This is an unknown item
-                                var row = renderRow({ 'cost-cents': '', name: ''}, true);
-                                row[0].scrollIntoView(false);
-                                widget.barcodeInput.blur();
-                            } else {
-                                widget.context.errorModal(scan + ' is an unknown barcode or sku');
-                            }
-                        }
-                    });
+            scan: scan,
+            allowDelete: (widget.allowDelete ? '1' : '0'),
+            dataType: 'html',
+            error: widget.context.errorNotifier('Cannot show item row for scan '+scan),
+            success: function(content) {
+                content = $(content);
+                widget.orderTable.append(content);
+                widget.wireUpEditButtons(content, scan);
+                d.resolve(content);
+                if (content.length >== 1) {
+                    widget.context.showNotification('warning', 'Multiple matches for scan');
+                    widget.barcodeInput.blur();
+                }
+                if (content.hasClass('isUnknown')) {
+                    content.get(0).scrollIntoView(false);
+                    widget.barcodeInput.blur();
                 }
             }
         });

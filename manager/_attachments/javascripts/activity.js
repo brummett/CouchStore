@@ -206,6 +206,7 @@ function runActivity(couchapp) {
 
         this.helpers({
             showNotification: showNotification,
+            errorNotifier: errorNotifier,
 
             showNav: function() {
                 $('#navbar .logged-in-menu').show();

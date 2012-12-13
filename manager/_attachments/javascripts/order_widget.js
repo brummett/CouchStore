@@ -305,7 +305,7 @@ OrderWidget.prototype.barcodeWasScanned = function barcodeWasScanned(e) {
 // Given a scan (usually a barcode), return the hidden input
 // element from order-form that stores the quantity.  It creates a new
 // input for the name and quantity if it's not there yet
-OrderWidget.prototype.inputForScan = function inputForScan(scan) {
+OrderWidget.prototype.inputForBarcode = function inputForBarcode(scan) {
     var input_id = 'scan-'+scan+'-quan',
         name_id  = 'scan-'+scan+'-name',
         sku_id   = 'scan-'+scan+'-sku';
@@ -331,6 +331,7 @@ OrderWidget.prototype.renameInputsForNewBarcode = function renameInputsForNewBar
     ['name','sku','quan'].forEach(function(ext) {
         elt = $('input#scan-' + oldBc + '-' + ext);
         elt.attr('name', 'scan-' + newBc + '-' + ext);
+        elt.attr('id', 'scan-' + newBc + '-' + ext);
     });
 };
 
@@ -349,6 +350,10 @@ OrderWidget.prototype.itemWasUpdated = function itemWasUpdated(e, args) {
             tr.removeClass('is-unknown')
                 .find('input.unit-cost').val(widget.Money.toDollarsString(widget.getCostFromItem(item)));
             tr.find('td.item-name').text(item.name);
+            tr.attr('data-sku', item.sku);
+            tr.attr('data-barcode', item.barcode);
+            tr.attr('data-name', item.name);
+            tr.attr('id', 'scan-'+item.barcode);
             $('input#scan-'+scanned+'-name').val(item.name);
             $('input#scan-'+scanned+'-sku').val(item.sku);
 
@@ -381,12 +386,14 @@ OrderWidget.prototype.getTableRowForScan = function getTableRowForScan(scan) {
         d       = jQuery.Deferred(),
         widget  = this;
 
-    tr = this.orderTable.find('tr#scan-' + scan);  // first lookup by id
-    if (tr.length == 0) {
-        // Didn't find a row by id, maybe by name?
-        // This can happen if an unknown item was scanned and when the user filled in the 
-        // info, the scanned string wasn't the barcode, and later they scanned the barcode
-        tr = this.orderTable.find('tr[name="scan-'+scan+'"]');
+    tr = this.orderTable.find('tr#scan-' + scan);  // first lookup by barcode
+    if (tr.length === 0) {
+        // Didn't find by barcode try by sku
+        tr = this.orderTable.find('tr[data-sku="'+scan+'"]');
+    }
+    if (tr.length === 0) {
+        // Now try just the scan
+        tr = this.orderTable.find('tr[data-scan="'+scan+'"]');
     }
 
     if (tr.length) {
@@ -404,13 +411,18 @@ OrderWidget.prototype.getTableRowForScan = function getTableRowForScan(scan) {
                 widget.orderTable.append(content);
                 widget.wireUpEditButtons(content, scan);
                 d.resolve(content);
-                if (content.length >== 1) {
+                if (content.length > 1) {
                     widget.context.showNotification('warning', 'Multiple matches for scan');
                     widget.barcodeInput.blur();
                 }
                 if (content.hasClass('isUnknown')) {
                     content.get(0).scrollIntoView(false);
                     widget.barcodeInput.blur();
+                } else {
+                    // Update the 'name' and 'sku' inputs
+                    var barcode = content.attr('data-barcode');
+                    widget.orderForm.find('input#scan-'+barcode+'-name').val(content.attr('data-name'));
+                    widget.orderForm.find('input#scan-'+barcode+'-sku').val(content.attr('data-sku'));
                 }
             }
         });
@@ -427,25 +439,33 @@ OrderWidget.prototype.wireUpEditButtons = function wireUpEditButtons(content, sc
 };
 
 OrderWidget.prototype.addRemoveItem = function addRemoveItem(scan, delta) {
-    var input = this.inputForScan(scan);
-        count = parseInt(input.val());
-    count += delta;
-    input.val(count);
+    var widget = this;
 
     this.getTableRowForScan(scan)
         .then(function(tr) {
+            var barcode = tr.attr('data-barcode'),
+                input = widget.inputForBarcode(barcode),
+                count = parseInt(input.val());
+
+            count += delta;
+            input.val(count);
+
             $('td.item-count',tr).text(count);
         });
 };
 
 OrderWidget.prototype.deleteItem = function deleteItem(scan) {
-    var input = this.inputForScan(scan);
+    var widget = this;
 
-    input.remove();
-    this.orderForm.find('input#scan-'+scan+'-name').remove();
-    this.orderForm.find('input#scan-'+scan+'-sku').remove();
     this.getTableRowForScan(scan)
         .then(function(tr) {
+            var barcode = tr.attr('data-barcode'),
+                input = widget.inputForBarcode(barcode);
+
+            input.remove();
+            widget.orderForm.find('input#scan-'+barcode+'-name').remove();
+            widget.orderForm.find('input#scan-'+scan+'-sku').remove();
+
             tr.animate( { height: '0px',
                           opacity: 0.0 },
                         500,

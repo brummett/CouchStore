@@ -402,7 +402,7 @@ OrderWidget.prototype.getTableRowForScan = function getTableRowForScan(scan) {
         widget.couchapp.list('order-item-row', 'items-by-barcode-or-sku', {
             key: scan,
             scan: scan,
-            allowDelete: (widget.allowDelete ? '1' : '0'),
+            allowDelete: (widget.allow_delete ? '1' : '0'),
             dataType: 'html',
             error: widget.context.errorNotifier('Cannot show item row for scan '+scan),
             success: function(content) {

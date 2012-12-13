@@ -33,6 +33,7 @@ function(head, req) {
                                                 quantity: 0,
                                                 name: '',
                                                 cost: '',
+                                                allowDelete: (req.query.allowDelete == "1"),
                                                 sku: req.query.scan,
                                                 scan: req.query.scan,
                                                 barcode: req.query.scan });

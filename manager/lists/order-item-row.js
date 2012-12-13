@@ -22,6 +22,7 @@ function(head, req) {
                 item.quantity = 0;
                 item.allowDelete = (req.query.allowDelete == "1");
                 item.cost = Money.toDollars( item[ costKey ] );
+                item.scan = req.query.scan;
 
                 send( Mustache.to_html(template, item) );
             }
@@ -32,6 +33,8 @@ function(head, req) {
                                                 quantity: 0,
                                                 name: '',
                                                 cost: '',
+                                                sku: req.query.scan,
+                                                scan: req.query.scan,
                                                 barcode: req.query.scan });
         }
         return '';

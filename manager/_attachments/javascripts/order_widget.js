@@ -327,9 +327,8 @@ OrderWidget.prototype.getCostFromItem = function getCostFromItem(item) {
 };
 
 OrderWidget.prototype.renameInputsForNewBarcode = function renameInputsForNewBarcode(oldBc,newBc) {
-    var ext, elt, id;
     ['name','sku','quan'].forEach(function(ext) {
-        elt = $('input#scan-' + oldBc + '-' + ext);
+        var elt = $('input#scan-' + oldBc + '-' + ext);
         elt.attr('name', 'scan-' + newBc + '-' + ext);
         elt.attr('id', 'scan-' + newBc + '-' + ext);
     });

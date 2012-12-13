@@ -353,8 +353,8 @@ OrderWidget.prototype.itemWasUpdated = function itemWasUpdated(e, args) {
             tr.attr('data-barcode', item.barcode);
             tr.attr('data-name', item.name);
             tr.attr('id', 'scan-'+item.barcode);
-            $('input#scan-'+scanned+'-name').val(item.name);
-            $('input#scan-'+scanned+'-sku').val(item.sku);
+            $('input#scan-'+item.barcode+'-name').val(item.name);
+            $('input#scan-'+item.barcode+'-sku').val(item.sku);
 
             widget.barcodeInput.focus();
         });
@@ -463,7 +463,7 @@ OrderWidget.prototype.deleteItem = function deleteItem(scan) {
 
             input.remove();
             widget.orderForm.find('input#scan-'+barcode+'-name').remove();
-            widget.orderForm.find('input#scan-'+scan+'-sku').remove();
+            widget.orderForm.find('input#scan-'+barcode+'-sku').remove();
 
             tr.animate( { height: '0px',
                           opacity: 0.0 },

@@ -27,10 +27,21 @@ function ShipmentWidget(params) {
     $('input[type=text]').attr('autocomplete', 'off');
 
     // Connect any already-existing item rows' button callbacks
-    $('button.add-item', unfilledTable).click(unfilledItemClicked);
-    $('button.add-all-item', unfilledTable).click(unfilledAllItemsClicked);
-    $('button.add-item', shippingTable).click(shippingItemClicked);
-    $('button.add-all-item', shippingTable).click(unfilledAllItemsClicked);
+    function clickCallbackMaker(source, dest) {
+        return function(e) {
+            var button = $(e.currentTarget),
+                barcode = button.closest('tr').attr('data-barcode');
+
+            if (button.hasClass('add-item')) {
+                moveOneItem(barcode, source, dest);
+            } else if (button.hasClass('add-all-item')) {
+                moveAllItems(barcode, source, dest);
+            }
+        }
+    };
+
+    unfilledTable.on('click', 'button', clickCallbackMaker(unfilledManager, shippingManager));
+    shippingTable.on('click', 'button', clickCallbackMaker(shippingManager, unfilledManager));
 
     initializeAvaliableCount();
 
@@ -62,27 +73,6 @@ function ShipmentWidget(params) {
     });
 
 
-    // When the select button for an unfilled item is clicked
-    function unfilledItemClicked(e) {
-        var barcode = $(e.currentTarget).attr('data-barcode');
-        moveOneItem(barcode, unfilledManager, shippingManager);
-    }
-
-    function unfilledAllItemsClicked(e) {
-        var barcode = $(e.currentTarget).attr('data-barcode');
-        moveAllItems(barcode, unfilledManager, shippingManager);
-    }
-
-    function shippingItemClicked(e) {
-        var barcode = $(e.currentTarget).attr('data-barcode');
-        moveOneItem(barcode, shippingManager, unfilledManager);
-    }
-
-    function shippingAllItemsClicked(e) {
-        var barcode = $(e.currentTarget).attr('data-barcode');
-        moveAllItems(barcode, shippingManager, unfilledManager);
-    }
-        
     function moveOneItem(barcode, source, dest) {
         var name;
         if (source.removeItem(barcode)) {
@@ -199,9 +189,6 @@ function ShipmentWidget(params) {
                         
             tr = $($.mustache(couchapp.ddoc.templates.partials['shipment-item-row'], data));
             this.table.append(tr);
-            
-            tr.find('button.add-item').click( this.table == unfilledTable ? unfilledItemClicked : shippingItemClicked );
-            tr.find('button.add-all-item').click( this.table == unfilledTable ? unfilledAllItemsClicked : shippingAllItemsClicked );
         } else {
             tr = this.trForBarcode(barcode);
         }

@@ -105,11 +105,7 @@ OrderWidget.prototype.common_init = function common_init(params) {
 
     // Connect any already-existing item rows' button callbacks
     var widget = this;
-    $('tr.line-item').each(function(idx, elt) {
-        var elt = $(elt),
-            barcode = elt.attr('id').substr(5); // Their IDs start with 'scan-'
-        widget.wireUpEditButtons(elt, barcode);
-    });
+    widget.wireUpEditButtons();
 
     // Turn off browser autocomplete for all the form fields
     $('input[type=text]').attr('autocomplete', 'off');
@@ -409,7 +405,6 @@ OrderWidget.prototype.getTableRowForScan = function getTableRowForScan(scan) {
             success: function(content) {
                 content = $(content);
                 widget.orderTable.append(content);
-                widget.wireUpEditButtons(content, scan);
                 d.resolve(content);
                 if (content.length > 1) {
                     widget.context.showNotification('warning', 'Multiple matches for scan');
@@ -430,12 +425,23 @@ OrderWidget.prototype.getTableRowForScan = function getTableRowForScan(scan) {
     return d.promise();
 };
 
-OrderWidget.prototype.wireUpEditButtons = function wireUpEditButtons(content, scan) {
+OrderWidget.prototype.wireUpEditButtons = function wireUpEditButtons() {
     var widget = this;
-    $('button.add-item', content).click( function(e) { widget.addRemoveItem(scan, 1) } );
-    $('button.remove-item', content).click( function(e) { widget.addRemoveItem(scan, -1) } );
-    $('button.delete-item', content).click( function(e) { widget.deleteItem(scan) } );
-    $('button.is-unknown', content).click( function(e) { widget.context.editItemModal('item',scan) });
+
+    this.orderTable.on('click', 'button', function(e) {
+            var button = $(e.currentTarget),
+                barcode = button.closest('tr').attr('data-barcode');
+
+            if (button.hasClass('add-item')) {
+                widget.addRemoveItem(barcode, 1);
+            } else if (button.hasClass('remove-item')) {
+                widget.addRemoveItem(barcode, -1);
+            } else if (button.hasClass('delete-item')) {
+                widget.deleteItem(barcode);
+            } else if (button.hasClass('is-unknown')) {
+                widget.context.editItemModal('item', barcode);
+            }
+        });
 };
 
 OrderWidget.prototype.addRemoveItem = function addRemoveItem(scan, delta) {

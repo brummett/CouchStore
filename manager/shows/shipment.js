@@ -61,7 +61,8 @@ function(doc, req) {
     for (barcode in unfilledItems) {
         if (unfilledItems[barcode] != 0) {
             data.unfilledItems.push( {  barcode: barcode,
-                                        name: doc['item-names'][barcode],
+                                        sku: order.skuForBarcode(barcode),
+                                        name: order.nameForBarcode(barcode),
                                         'show-available': true,
                                         quantity: unfilledItems[barcode],
                                         unfilled: true
@@ -88,7 +89,8 @@ function(doc, req) {
                 if (thisShipment.items[barcode] != 0 ) {
                     shippingSeen[barcode] = true;
                     data.shippingItems.push( {  barcode: barcode,
-                                                name: doc['item-names'][barcode],
+                                                sku: order.skuForBarcode(barcode),
+                                                name: order.nameForBarcode(barcode),
                                                 quantity: Math.abs(thisShipment.items[barcode])
                                             } );
                 }

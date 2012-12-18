@@ -12,7 +12,7 @@ function(doc,req) {
                 'item-skus': {},
                 'item-names': {}
             };
-    } else if ((doc.type !== 'order') || (doc.order_type !== 'inventory-correction')) {
+    } else if ((doc.type !== 'order') || (doc['order-type'] !== 'inventory-correction')) {
         return [null, { code: 403, json: { reason: doc._id+' is not an inventory correction order'}}];
     }
 
@@ -39,6 +39,15 @@ function(doc,req) {
         doc.items = itemData.quantities;
         doc['item-skus'] = itemData.skus;
         doc['item-names'] = itemData.names;
+    }
+
+    // Prune out items with 0 count - they won't validate
+    for (var barcode in doc.items) {
+        if (doc.items[barcode] === 0) {
+            delete doc['items'][barcode];
+            delete doc['item-skus'][barcode];
+            delete doc['item-names'][barcode];
+        }
     }
 
     return [doc, JSON.stringify(doc) ];

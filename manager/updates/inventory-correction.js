@@ -12,7 +12,7 @@ function(doc,req) {
                 'item-skus': {},
                 'item-names': {}
             };
-    } else if ((doc.type !== 'order') || (doc.order_type !== 'inventory-correction')) {
+    } else if ((doc.type !== 'order') || (doc['order-type'] !== 'inventory-correction')) {
         throw({forbidden: doc._id+' is not an inventory correction order'});
     }
 

@@ -19,7 +19,10 @@ function(doc,req) {
         for (prop in props) {
             matches = /scan-(\w+)-quan/.exec(prop);
             if (matches && matches.length) {
-                items[matches[1]] = parseInt(props[prop]);
+                var count = parseInt(props[prop]);
+                if (count !== 0) {
+                    items[matches[1]] = count;
+                }
             }
         }
     }

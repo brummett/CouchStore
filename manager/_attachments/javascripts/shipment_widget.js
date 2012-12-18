@@ -177,7 +177,7 @@ function ShipmentWidget(params) {
             quantity,
             data;
         if (! this.hasBarcode(barcode)) {
-            this.context.showNotification('error', 'Barcode '+barcode+' is not part of the order');
+            context.showNotification('error', 'Barcode '+barcode+' is not part of the order');
         } else {
             tr = this.trForBarcode(barcode);
             tr.show();

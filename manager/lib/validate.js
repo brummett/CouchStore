@@ -199,9 +199,16 @@ function Validator(newDoc, oldDoc, userCtx) {
                     'Shipment ' + i + ' has no items list');
             that.enforce('date' in thisShipment,
                     'Shipment ' + i + ' has no date');
+
+            that.enforce(Object.keys(thisShipment.items).length > 0,
+                    'Shipment '+ i + ' has no items');
+
             for (barcode in thisShipment.items) {
                 that.enforce(barcode in newDoc.items,
                         'Shipment ' + i + ' has barcode ' + barcode + ' which is not in the items list');
+
+                that.enforce(thisShipment.items[barcode] > 0,
+                    'Shipment ' + i + ' has item count less than 0 for barcode '+barcode);
 
                 count[barcode] -= Math.abs(thisShipment.items[barcode]);
                 that.enforce(count[barcode] >= 0, 'Shipments for barcode ' + barcode + ' are more than the items');

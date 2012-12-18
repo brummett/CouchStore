@@ -54,8 +54,10 @@ Order.prototype.unshippedQuantityForBarcode = function(barcode) {
         if (this.hasShipments()) {
             // shipment counts are positive
             this.shipments().forEach(function(shipment) {
-                for (var barcode in shipment.items) {
-                    count -= shipment.items[barcode];
+                for (var ship_barcode in shipment.items) {
+                    if (ship_barcode === barcode) {
+                        count -= shipment.items[barcode];
+                    }
                 }
             });
         }

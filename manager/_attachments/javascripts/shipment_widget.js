@@ -142,7 +142,8 @@ function ShipmentWidget(params) {
         return this.trForBarcode(barcode).length > 0;
     }
     ItemManager.prototype.trForBarcode = function(barcode) {
-        return this.table.find('button.add-item[data-barcode="'+barcode+'"]').parents('tr.line-item').first();
+        //return this.table.find('button.add-item[data-barcode="'+barcode+'"]').parents('tr.line-item').first();
+        return this.table.find('tr[data-barcode="'+barcode+'"]');
     }
     ItemManager.prototype.quantity = function(barcode, quantity) {
         var tr = this.trForBarcode(barcode),
@@ -176,26 +177,15 @@ function ShipmentWidget(params) {
             quantity,
             data;
         if (! this.hasBarcode(barcode)) {
-            data = {    barcode: barcode,
-                            quantity: 0,
-                            name: name
-                        };
-
-            if (this.table == unfilledTable) {
-                data.add = true;
-            } else {
-                data.remove = true;
-            }
-                        
-            tr = $($.mustache(couchapp.ddoc.templates.partials['shipment-item-row'], data));
-            this.table.append(tr);
+            this.context.showNotification('error', 'Barcode '+barcode+' is not part of the order');
         } else {
             tr = this.trForBarcode(barcode);
-        }
+            tr.show();
 
-        quantity = this.quantity(barcode);
-        this.quantity(barcode, quantity + 1);
-        tr.removeClass('is-satisfied');
+            quantity = this.quantity(barcode);
+            this.quantity(barcode, quantity + 1);
+            tr.removeClass('is-satisfied');
+        }
     }
 
 }

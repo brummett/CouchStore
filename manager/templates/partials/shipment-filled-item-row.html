@@ -1,0 +1,18 @@
+<tr class="line-item" data-barcode="{{barcode}}" {{#unfilled}}style="display:none;"{{/unfilled}}>
+    <td><div>
+            <button class="add-item btn btn-mini btn-info" data-barcode="{{barcode}}">
+                <i class="icon-minus-sign icon-white"></i>
+            </button>
+            <button class="add-all-item btn btn-mini btn-info" data-barcode="{{barcode}}">
+                <i class="icon-remove-sign icon-white"></i>
+            </button>
+        </div>
+    </td>
+    <td class="item-count">{{quantity}}</td>
+    <td class="item-name control-group">
+        <div class="controls">
+            {{name}}
+        </div>
+    </td>
+    <td class="item-scan">{{barcode}}</td>
+</tr>

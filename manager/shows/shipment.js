@@ -64,13 +64,14 @@ function(doc, req) {
                                         name: doc['item-names'][barcode],
                                         'show-available': true,
                                         quantity: unfilledItems[barcode],
-                                        add: true
+                                        unfilled: true
                                     });
         }
     }
 
     // Items already part of this shipment
     data.shippingItems = [];
+    var shippingSeen = {};
     if ('shipment' in req.query) {
         var shipment = req.query.shipment;
         if (doc.shipments[shipment]) {
@@ -85,9 +86,9 @@ function(doc, req) {
 
             for (barcode in thisShipment.items) {
                 if (thisShipment.items[barcode] != 0 ) {
+                    shippingSeen[barcode] = true;
                     data.shippingItems.push( {  barcode: barcode,
                                                 name: doc['item-names'][barcode],
-                                                remove: true,
                                                 quantity: Math.abs(thisShipment.items[barcode])
                                             } );
                 }
@@ -102,6 +103,15 @@ function(doc, req) {
         // Creating a new shipment
         data.date = req.query.date;
     }
+
+    data.hiddenUnfilledItems = [];
+    data.unfilledItems.forEach(function(item) {
+        var copy = { name: item.name, barcode: item.barcode, quantity: 0, unfilled: true };
+        if (! shippingSeen[item.barcode]) {
+            shippingSeen[barcode] = true;
+            data.hiddenUnfilledItems.push(copy);
+        }
+    });
 
     return Mustache.to_html(ddoc.templates['shipment'], data, ddoc.templates.partials);
 }

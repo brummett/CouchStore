@@ -110,7 +110,7 @@
         </thead>
         <tbody>
             {{#unfilledItems}}
-                {{> shipment-item-row}}
+                {{> shipment-unfilled-item-row}}
             {{/unfilledItems}}
         </tbody>
     </table>
@@ -130,8 +130,11 @@
         </thead>
         <tbody>
             {{#shippingItems}}
-                {{> shipment-item-row}}
+                {{> shipment-filled-item-row}}
             {{/shippingItems}}
+            {{#hiddenUnfilledItems}}
+                {{> shipment-filled-item-row}}
+            {{/hiddenUnfilledItems}}
         </tbody>
     </table>
 </div>

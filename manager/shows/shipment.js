@@ -106,9 +106,9 @@ function(doc, req) {
 
     data.hiddenUnfilledItems = [];
     data.unfilledItems.forEach(function(item) {
-        var copy = { name: item.name, barcode: item.barcode, quantity: 0, unfilled: true };
         if (! shippingSeen[item.barcode]) {
-            shippingSeen[barcode] = true;
+            var copy = { name: item.name, barcode: item.barcode, quantity: 0, unfilled: true };
+            shippingSeen[item.barcode] = true;
             data.hiddenUnfilledItems.push(copy);
         }
     });

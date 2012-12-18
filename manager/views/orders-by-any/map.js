@@ -40,5 +40,10 @@ function(doc) {
 
         emit(order_number, results);
         emit(order.customerName(), results);
+
+        order.barcodes().forEach(function(barcode) {
+            emit(barcode, results);
+            emit(order.skuForBarcode(barcode), results);
+        });
     }
 }

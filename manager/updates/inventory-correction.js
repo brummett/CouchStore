@@ -41,5 +41,14 @@ function(doc,req) {
         doc['item-names'] = itemData.names;
     }
 
+    // Prune out items with 0 count - they won't validate
+    for (var barcode in doc.items) {
+        if (doc.items[barcode] === 0) {
+            delete doc['items'][barcode];
+            delete doc['item-skus'][barcode];
+            delete doc['item-names'][barcode];
+        }
+    }
+
     return [doc, JSON.stringify(doc) ];
 }

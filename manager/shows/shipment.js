@@ -7,9 +7,9 @@ function(doc, req) {
         order,
         data = {},
         unfilledItems = {},
-        templateName = '',
+        shipmentSeen = {},
         i = 0,
-        thisShipment,
+        thisShipmentId,
         barcode = '';
 
     if (! doc) {
@@ -29,6 +29,22 @@ function(doc, req) {
         };
     }
 
+    var shipments = order.shipments(),
+        thisShipmentId,
+        thisShipment;
+
+    if ('shipment' in req.query) {
+        thisShipmentId = parseInt(req.query.shipment);
+        thisShipment = shipments[thisShipmentId];
+    }
+
+    if ((thisShipmentId !== undefined) && (thisShipment === undefined)) {
+        return {
+            code: 404,
+            json: { reason: 'Order ' + order.orderNumber() + ' has no shipment ' + shipment }
+        };
+    }
+
     data.action = '#/shipment/'
     data.title = 'Create shipment';
 
@@ -39,6 +55,7 @@ function(doc, req) {
     data.customerName           = order.customerName();
     data.shippingServiceLevel   = order.shippingServiceLevel();
     data.orderSource            = order.orderSource();
+    data.date                   = req.query.date;
 
     data.shippingCharge = order.shippingCharge() ? Money.toDollars(order.shippingCharge()) : '0.00';
 
@@ -47,47 +64,27 @@ function(doc, req) {
     order.barcodes().forEach(function(barcode) {
         unfilledItems[barcode] = Math.abs(order.quantityForBarcode(barcode));
     });
-    // Deduct items already shipped
-    if ('shipments' in doc) {
-        order.shipments().forEach(function(shipment) {
-            var barcode;
-            for (barcode in shipment.items) {
-                unfilledItems[barcode] -= shipment.items[barcode];
-            }
-        });
-    }
-    // Only include non-zero items to avoid cluttering up the interface
-    data.unfilledItems = [];
-    for (barcode in unfilledItems) {
-        if (unfilledItems[barcode] != 0) {
-            data.unfilledItems.push( {  barcode: barcode,
-                                        sku: order.skuForBarcode(barcode),
-                                        name: order.nameForBarcode(barcode),
-                                        'show-available': true,
-                                        quantity: unfilledItems[barcode],
-                                        unfilled: true
-                                    });
-        }
-    }
 
-    // Items already part of this shipment
     data.shippingItems = [];
-    var shippingSeen = {};
-    if ('shipment' in req.query) {
-        var shipment = req.query.shipment;
-        if (doc.shipments[shipment]) {
-            thisShipment = doc.shipments[shipment];
-            // An already existing shipment
-            data.title = 'Edit shipment';
-            data.date = thisShipment.date;
-            data.shipment = shipment;
-            data.size = thisShipment.size;
-            data.weight = thisShipment.weight;
-            data.box = thisShipment.box;
+    for (i = 0; i < shipments.length; i++) {
+        for (barcode in shipments[i].items) {
+            unfilledItems[barcode] -= shipments[i].items[barcode];
+        }
+
+        // Items that are part of this shipment
+        if (i === thisShipmentId) {
+            thisShipment = shipments[i];
+
+            data.title      = 'Edit Shipment';
+            data.date       = thisShipment.date;
+            data.shipment   = thisShipmentId;
+            data.size       = thisShipment.size;
+            data.weight     = thisShipment.weight;
+            data.box        = thisShipment.box;
 
             for (barcode in thisShipment.items) {
                 if (thisShipment.items[barcode] != 0 ) {
-                    shippingSeen[barcode] = true;
+                    shipmentSeen[barcode] = true;
                     data.shippingItems.push( {  barcode: barcode,
                                                 sku: order.skuForBarcode(barcode),
                                                 name: order.nameForBarcode(barcode),
@@ -95,25 +92,40 @@ function(doc, req) {
                                             } );
                 }
             }
-        } else {
-            return {
-                code: 404,
-                json: { reason: 'Order ' + orderNumber + ' has no shipment ' + shipment }
-            };
         }
-    } else {
-        // Creating a new shipment
-        data.date = req.query.date;
     }
 
-    data.hiddenUnfilledItems = [];
-    data.unfilledItems.forEach(function(item) {
-        if (! shippingSeen[item.barcode]) {
-            var copy = { name: item.name, barcode: item.barcode, quantity: 0, unfilled: true };
-            shippingSeen[item.barcode] = true;
-            data.hiddenUnfilledItems.push(copy);
+    // Only include non-zero items to avoid cluttering up the interface
+    data.unfilledItems = [];
+    for (barcode in unfilledItems) {
+        if (unfilledItems[barcode] != 0) {
+            data.unfilledItems.push( {  barcode: barcode,
+                                        sku: order.skuForBarcode(barcode),
+                                        name: order.nameForBarcode(barcode),
+                                        quantity: unfilledItems[barcode],
+                                    });
+            if (! shipmentSeen[barcode]) {
+                data.shippingItems.push( {  barcode:    barcode,
+                                            sku:        order.skuForBarcode(barcode),
+                                            name:       order.nameForBarcode(barcode),
+                                            quantity:   0,
+                                            hidden:     true
+                                        });
+            } else {
+                delete shippmentSeen[barcode];
+            }
         }
-    });
+    }
+
+    // Anything left in shipmentSeen gets added to the unfilled items as hidden
+    for (barcode in shipmentSeen) {
+        data.unfilledItems.push( {  barcode:    barcode,
+                                    sku:        order.skuForBarcode(barcode),
+                                    name:       order.nameForBarcode(barcode),
+                                    quantity:   0,
+                                    hidden:     true
+                                });
+    }
 
     return Mustache.to_html(ddoc.templates['shipment'], data, ddoc.templates.partials);
 }

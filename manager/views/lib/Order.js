@@ -89,7 +89,11 @@ Order.prototype.costForBarcode = function(barcode) {
 }
 
 Order.prototype.shipments = function() {
-    return this.__doc.shipments;
+    if ('shipments' in this.__doc) {
+        return this.__doc.shipments;
+    } else {
+        return [];
+    }
 }
 
 Order.prototype.shipment = function(n) {

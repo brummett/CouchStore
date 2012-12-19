@@ -12,7 +12,7 @@
                     <div class="control-group">
                         <label class="control-label" for="firstname">First name</label>
                         <div class="controls">
-                            <input type="text" id="firstname" name="firstname" value="{{firstname}}" autofocus="autofocus">
+                            <input type="text" id="firstname" name="firstname" value="{{firstname}}" {{#focusFirstName}}autofocus{{/focusFirstName}}>
                         </div>
                     </div>
                 </fieldset>
@@ -30,7 +30,7 @@
                     <div class="control-group">
                         <label class="control-label" for="address">Address</label>
                         <div class="controls">
-                            <textarea name="address" rows="4" cols="60">{{address}}</textarea>
+                            <textarea name="address" rows="4" cols="60" {{#focusAddress}}autofocus{{/focusAddress}}>{{address}}</textarea>
                         </div>
                     </div>
                 </fieldset>

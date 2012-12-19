@@ -17,6 +17,7 @@ function(doc, req) {
         data.email = doc.email;
         data.notes = doc.notes;
         data['add-edit-title'] = "Edit";
+        data.focusFirstName = true;
     } else {
         data['add-edit-title'] = "Add";
         if (req.id) {
@@ -24,6 +25,9 @@ function(doc, req) {
             data['firstname'] = nameParts[0].charAt(0).toUpperCase() + nameParts[0].substr(1);  // Uppercase 1st letter
             lastname = nameParts.slice(1).join(' ');
             data['lastname'] = lastname.charAt(0).toUpperCase() + lastname.substr(1);
+            data.focusAddress = true;
+        } else {
+            data.focusFirstName = true;
         }
     }
 

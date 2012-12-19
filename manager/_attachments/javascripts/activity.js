@@ -238,7 +238,6 @@ function runActivity(couchapp) {
 
                         modal = content.appendTo(context.$element())
                                            .modal({backdrop: true, keyboard: true, show: true});
-                        modal.on('shown', function() { modal.find('input:text:first').focus() });
                         modal.on('hidden',
                                 function() {
                                     modal.remove();

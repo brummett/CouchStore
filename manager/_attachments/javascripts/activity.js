@@ -1175,7 +1175,7 @@ function runActivity(couchapp) {
                         window.history.back()
                     });
                 },
-                error: errorNotifier('History not available: '+message)
+                error: errorNotifier('History not available')
                 })
             );
         });

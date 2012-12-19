@@ -345,6 +345,7 @@ OrderWidget.prototype.itemWasUpdated = function itemWasUpdated(e, args) {
             tr.removeClass('is-unknown')
                 .find('input.unit-cost').val(widget.Money.toDollarsString(widget.getCostFromItem(item)));
             tr.find('td.item-name').text(item.name);
+            tr.find('td.item-barcode').text(item.barcode);
             tr.attr('data-sku', item.sku);
             tr.attr('data-barcode', item.barcode);
             tr.attr('data-name', item.name);

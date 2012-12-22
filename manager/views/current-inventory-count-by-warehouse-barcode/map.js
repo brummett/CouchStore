@@ -16,7 +16,7 @@ function(doc) {
         orderType = order.orderType();
 
 
-    if (orderType === 'receive') {
+    if ((orderType === 'receive') || (orderType === 'inventory-correction')) {
         // For receive orders, count the whole thing positive toward
         // the warehouse's inventory
         order.barcodes().forEach(function(barcode) {
@@ -25,6 +25,8 @@ function(doc) {
 
     } else if (order.isShippable() && order.shipments()) {
         order.shipments().forEach(function(shipment) {
+            // For sale and warehouse transfers, only count the items shipped
+            // out, not the entire order
             var barcode;
             for (barcode in shipment.items) {
                 var count = shipment.items[barcode];

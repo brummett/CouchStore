@@ -9,6 +9,9 @@ function(doc) {
     var barcode;
 
     if (doc.type == 'order') {
+        var Order = require('views/lib/Order'),
+            order = Order.newFromDoc(doc);
+
         if (doc['order-type'] === 'warehouse-transfer') {
             // For warehouse transfers, the source warehouse items are decremented...
             for (barcode in doc.items) {
@@ -20,12 +23,25 @@ function(doc) {
             }
             //... and the the destination gets items incremented
         }
-        for (barcode in doc.items) {
-            emit([1, doc['warehouse-name'], barcode],
-                {   count: doc.items[barcode],
-                    name: doc['item-names'][barcode],
-                    sku: doc['item-skus'][barcode]
-                });
+        if (doc['order-type'] === 'sale') {
+            // For sales, subtract the shipped counts
+            order.shipments().forEach(function(shipment) {
+                for (barcode in shipment.items) {
+                    emit([1, order.warehouseName(), barcode],
+                        {  count:  (0 - shipment.items[barcode]),
+                            name:   order.nameForBarcode(barcode),
+                            sku:    order.skuForBarcode(barcode)
+                        });
+                }
+            });
+        } else {
+            for (barcode in doc.items) {
+                emit([1, doc['warehouse-name'], barcode],
+                    {   count: doc.items[barcode],
+                        name: doc['item-names'][barcode],
+                        sku: doc['item-skus'][barcode]
+                    });
+            }
         }
     } else if (doc.type == 'inventory') {
         for (barcode in doc.items) {

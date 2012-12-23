@@ -18,7 +18,7 @@ Take orders from multiple warehouses.  Track multiple shipments per order.
 Transfer items between warehouses.  Look up orders by customer, order number,
 item barcode or SKU.
 
-Record a year-end physical inventory done in multiple parts.n multiple parts.
+Record a year-end physical inventory done in multiple parts.
 
 ## Workflow
 

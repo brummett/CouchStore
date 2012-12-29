@@ -3,6 +3,6 @@ function(doc) {
         order = Order.newFromDoc(doc);
 
     if (order) {
-        emit(order.orderNumber, order.orderType);
+        emit(order.orderNumber(), order.orderType());
     }
 }

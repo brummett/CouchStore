@@ -1141,8 +1141,9 @@ function runActivity(couchapp) {
         this.get('#/report/inventory/', function(context) {
             context.deactivateOrderWidget();
             this.title('Current Inventory Report');
-            var search = context.params['search-query']
-                list_q = '_list/current-inventory-report/inventory-by-permanent-warehouse-barcode?group=true&startkey=[1]';
+            var search = context.params['search-query'],
+                date = context.params.date || context.dateAsString(),
+                list_q = '_list/current-inventory-report/inventory-by-permanent-warehouse-barcode?reduce=false&startkey=[1]&date='+date;
 
             if (search) {
                 list_q += '&search-query=' + encodeURIComponent(search);

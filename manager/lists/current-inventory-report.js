@@ -1,6 +1,6 @@
 // current-inventory-report
 // Use with the inventory-by-permanenet-warehouse-barcode view
-// probably with ?group=true
+// with reduce=false, and maybe limiting with date="yyyy-mm-dd"
 //
 // Shows a screen like the data lister, but customized for showing 
 // the current inventory levels
@@ -8,9 +8,12 @@ function(head,req) {
     var ddoc = this,
         search = req.query['search-query'] && req.query['search-query'].toLowerCase(),
         row,
-        data = { warehouses: [], items: [], 'search-query': req.query['search-query'], path: '#/report/inventory/' },
+        data = { warehouses: [], items: [],
+                'search-query': req.query['search-query'],
+                path: '#/report/inventory/',
+                date: req.query.date },
         all_items = {},
-        warehouses = {};
+        items_by_warehouse = {};
 
     var matches = search
                 ? function(key) { return (key !== null)
@@ -24,13 +27,19 @@ function(head,req) {
             barcode     = row.key[2],
             node        = row.value;
 
-        if (! (warehouse in warehouses)) {
-            warehouses[warehouse] = 1;
+        if (! (warehouse in items_by_warehouse)) {
+            items_by_warehouse[warehouse] = {};
             data.warehouses.push(warehouse);
         }
-        node.warehouse = warehouse;
-        node.barcode = barcode;
-        data.items.push(node);
+
+        if (barcode in items_by_warehouse[warehouse]) {
+            items_by_warehouse[warehouse][barcode].count += node.count;
+        } else {
+            node.warehouse = warehouse;
+            node.barcode = barcode;
+            items_by_warehouse[warehouse][barcode] = node;
+            data.items.push(node);
+        }
 
         if (barcode in all_items) {
             all_items[barcode].count += node.count;
@@ -53,9 +62,13 @@ function(head,req) {
 
     // Keys will be [ is-permanent, warehouse-name, barcode], depending on the grouping
     while( row = getRow() ) {
-        if (matches(row.key[2])   // barcode
-            || matches(row.value.name)
-            || matches(row.value.sku)
+        if (
+            ((data.date === undefined) || (row.value.date <= data.date))
+            &&
+            (matches(row.key[2])   // barcode
+                || matches(row.value.name)
+                || matches(row.value.sku)
+            )
         ) {
             process_row(row);
         }

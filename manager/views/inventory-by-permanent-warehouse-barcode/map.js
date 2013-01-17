@@ -18,7 +18,8 @@ function(doc) {
                 emit([1, doc['source-warehouse-name'], barcode],
                     {   count: (0 - doc.items[barcode]),
                         name: doc['item-names'][barcode],
-                        sku: doc['item-skus'][barcode]
+                        sku: doc['item-skus'][barcode],
+                        date: order.date()
                     });
             }
             //... and the the destination gets items incremented
@@ -30,7 +31,8 @@ function(doc) {
                     emit([1, order.warehouseName(), barcode],
                         {  count:  (0 - shipment.items[barcode]),
                             name:   order.nameForBarcode(barcode),
-                            sku:    order.skuForBarcode(barcode)
+                            sku:    order.skuForBarcode(barcode),
+                            date:   order.date()
                         });
                 }
             });
@@ -39,7 +41,8 @@ function(doc) {
                 emit([1, doc['warehouse-name'], barcode],
                     {   count: doc.items[barcode],
                         name: doc['item-names'][barcode],
-                        sku: doc['item-skus'][barcode]
+                        sku: doc['item-skus'][barcode],
+                        date:   order.date()
                     });
             }
         }
@@ -49,7 +52,8 @@ function(doc) {
                 {   count: 0 - doc.items[barcode],  // Make these negative
                 //{   count: doc.items[barcode],
                     name: doc['item-names'][barcode],
-                    sku: doc['item-skus'][barcode]
+                    sku: doc['item-skus'][barcode],
+                    date:   order.date()
                 });
         }
     }

@@ -13,6 +13,11 @@ function InventoryReport(params) {
 
     this.obsoleteChooser = this.context.$element('input#show-obsolete');
 
+    this.dateChooser = this.context.$element('input#date');
+    this.dateChooser.change(function(e) {
+        $(e.target).closest('form').trigger('submit');
+    });
+
     this.markUpItems();
 
     var obsoleteClicked = function(e) {

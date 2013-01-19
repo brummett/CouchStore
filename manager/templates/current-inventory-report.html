@@ -1,18 +1,23 @@
 <h2>Inventory Report</h2>
 
-<form action="{{path}}" method="get" id="search" class="well form-search">
+<form action="{{path}}" method="get" id="search" class="well form-search form-horizontal">
+<div class="row">
+  <div class="span4">
     <div class="input-prepend">
         <button class="btn btn-primary" type="submit"><i class="icon-search icon-white"></i> Search</button>
         <input type="text" name="search-query" class="search-query" value="{{search-query}}">
     </div>
-    {{#search-query}}<span><a href="{{path}}">&times;</a></span>{{/search-query}}
-
+    {{#search-query}}<a href="{{path}}">&times;</a>{{/search-query}}
+  </div>
+  <div class="span4">
     <div class="control-group">
         <label class="control-label" for="date">Date</label>
         <div class="controls">
             <input type="date" name="date" id="date" class="input-small" value="{{date}}">
         </div>
     </div>
+  </div>
+</div>
 
 </form>
 

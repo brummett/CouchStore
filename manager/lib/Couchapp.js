@@ -23,7 +23,7 @@ exports.update = function(name, data, options) {
     var docid = data._id ? data._id : null;
     var options = options || {};
     var type = 'POST';
-    var url = '/' + this.db.name + '/' + this.design.doc_id + '/_update/' + name + encodeOptions(options);
+    var url = '/' + this.db.name + '/' + this.design.doc_id + '/_update/' + name;
 
     if (docid) {
         type = 'PUT';
@@ -31,6 +31,8 @@ exports.update = function(name, data, options) {
         delete data._id;
     }
     delete data._rev;
+
+    url += encodeOptions(options);
 
     $.ajax( $.extend({  type: type,
                         url: url,

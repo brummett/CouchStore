@@ -442,6 +442,56 @@ function runActivity(couchapp) {
                 });
             },
 
+            // called by the 'edit' handler when an item's barcode, name or sku
+            // changes.  We need to find all the orders with that item and update them
+            updateOrdersForChangedItem: function(params) {
+                var changedFields = [],
+                    newValues = [],
+                    changedBarcode = params['original-barcode'];
+
+                if (changedBarcode === undefined) {
+                    return;
+                }
+
+                ['barcode','sku','name'].forEach(function(field) {
+                    var originalValue = params['original-'+field],
+                        newValue = params[field];
+
+                    if (newValue !== originalValue) {
+                        changedFields.push(field);
+                        newValues.push(newValue);
+                    }
+                });
+
+                if (changedFields.length === 0) {
+                    return;   // no changes
+                }
+
+                function updateOrdersForChange(data) {
+                    data.rows.forEach(function(row) {
+                        var i;
+                        for (i = 0; i < changedFields.length; i++) {
+                            couchapp.update('orderItemChanged',
+                                            {   _id: row.id },
+                                            { error: errorNotifier('Cannot change '+changedFields[i]+' for '
+                                                                    +row.id+' to '+newValues[i]),
+                                                field: changedFields[i],
+                                                barcode: changedBarcode,
+                                                value: newValues[i]
+                                            });
+                        }
+                    });
+                };
+
+                couchapp.view('item-history-by-barcode-date',
+                            {   startkey: [params['original-barcode']],
+                                endkey: [params['original-barcode'], {} ],
+                                success: updateOrdersForChange,
+                                error: errorNotifier('Cannot get list of orders',
+                                                    function() { context.log('with changed barcode '+params['original-barcode']) })
+                            });
+            },
+
         });
 
         function getWarehouseList () {
@@ -1029,6 +1079,7 @@ function runActivity(couchapp) {
                         modal.modal('hide');
                         activity.trigger(type + '-updated', { item: newDoc, scanned: scanned });
                         showNotification('success', type + ' saved');
+                        context.updateOrdersForChangedItem(context.params);
                     },
                     error: errorNotifier('Problem saving '+type,
                                         function() { modal.modal('hide'); })
@@ -1069,7 +1120,7 @@ function runActivity(couchapp) {
                             }
                         });
                 });
-                       
+
             } else if (type == 'customer') {
                 savable.resolve();
             } else if (type == 'warehouse') {

@@ -16,6 +16,7 @@
                         <label class="control-label" for="name">Name</label>
                         <div class="controls">
                             <input type="text" id="name" name="name" value="{{name}}">
+                            {{#name}}<input type="hidden" name="original-name" value="{{name}}">{{/name}}
                         </div>
                     </div>
                 </fieldset>
@@ -25,6 +26,7 @@
                         <label class="control-label" for="sku">SKU</label>
                         <div class="controls">
                             <input type="text" id="sku" name="sku" value="{{sku}}">
+                            {{#sku}}<input type="hidden" name="original-sku" value="{{sku}}">{{/sku}}
                         </div>
                     </div>
                 </fieldset>
@@ -36,6 +38,7 @@
                             <div class="input-prepend">
                                 <span class="add-on"><i class="icon-barcode"></i></span><input type="text" id="barcode" name="barcode" value="{{barcode}}">
                             </div>
+                            {{#barcode}}<input type="hidden" name="original-barcode" value="{{barcode}}">{{/barcode}}
                         </div>
                     </div>
                 </fieldset>

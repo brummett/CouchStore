@@ -196,4 +196,43 @@ Order.prototype.isObsolete = function(s) {
     return this.__doc['is-obsolete'];
 };
 
+// Called when an item's barcode changes.  Update all places in the order
+// where this barcode appears
+Order.prototype.itemBarcodeChanged = function(oldBc, newBc) {
+    if (oldBc in this.__doc.items) {
+        // barcode is in this order
+        var doc = this.__doc;
+
+        ['items', 'item-costs', 'item-names', 'item-skus'].forEach(function(key) {
+            doc[key][newBc] = doc[key][oldBc];
+            delete doc[key][oldBc];
+        });
+
+        if (this.hasShipments()) {
+            doc.shipments.forEach(function(shipment) {
+                if (oldBc in shipment.items) {
+                    shipment.items[newBc] = shipment.items[oldBc];
+                    delete shipment.items[oldBc];
+                }
+            });
+        }
+    }
+};
+
+Order.prototype.itemNameChanged = function(barcode, newName) {
+    if (barcode in this.__doc.items) {
+        this.__doc['item-names'][barcode] = newName;
+    }
+};
+
+Order.prototype.itemSkuChanged = function(barcode, newSku) {
+    if (barcode in this.__doc.items) {
+        this.__doc['item-skus'][barcode] = newSku;
+    }
+};
+
+Order.prototype.doc = function() {
+    return this.__doc;
+};
+
 module.exports = Order;

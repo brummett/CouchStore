@@ -8,6 +8,8 @@ function(head,req) {
         singular = '',
         addableThings = {items: 1, customers: 1, warehouses: 1};  // Show the add button for these things
 
+    //var limit = 4;
+
     itemType = itemType.substr(0, itemType.indexOf('-')); // get the type up to the first '-'
     if (itemType == 'inventories') {
         singular = 'inventory';
@@ -63,6 +65,8 @@ function(head,req) {
     provides('html', function() {
         // Pick the right header/row partial for the item type
         var partials = ddoc.templates.partials;
+        //var partials = ddoc.templates.partials,
+        //    count = 0;
         partials.headers = ddoc.templates.partials[itemType].headers;
         partials.row = ddoc.templates.partials[itemType].row;
 
@@ -79,6 +83,10 @@ function(head,req) {
             if (matches(row.key)  && ! isDuplicate(row)) {
                 row.value._id = idForRow(row);
                 row.value.editable = isEditable(row);
+                //if (++count > limit) {
+                //    data.nextKey = row.key;
+                //    break;
+                //}
                 data.items.push(row.value);
             }
         }

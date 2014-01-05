@@ -947,6 +947,7 @@ function runActivity(couchapp) {
             var search  = context.params['search-query'] || '';
                 type    = context.params['type'],
                 view    = type + '-by-any',
+                //startKey = context.params.startKey,
                 list_q  = '_list/items/' + view;
 
             this.title('List '+type);
@@ -955,6 +956,12 @@ function runActivity(couchapp) {
                 list_q += '?search-query=' + encodeURIComponent(search);
             }
 
+            //var pageParams = {};
+            //if (startKey !== undefined) {
+            //    pageParams.startKey = startKey;
+            //}
+
+            //couchapp.list('items', view, $.extend(pageParams, {
             couchapp.list('items', view, {
                 'search-query': search,
                 dataType: 'html',
@@ -977,6 +984,7 @@ function runActivity(couchapp) {
                 },
                 error: errorNotifier('Cannot get data for '+type)
             });
+            //}));
         });
 
         this.get('#/edit/(.*)/(.*)', function(context) {

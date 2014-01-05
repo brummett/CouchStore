@@ -53,7 +53,7 @@ function(doc) {
                 //{   count: doc.items[barcode],
                     name: doc['item-names'][barcode],
                     sku: doc['item-skus'][barcode],
-                    date:   order.date()
+                    date:   doc.date
                 });
         }
     }
